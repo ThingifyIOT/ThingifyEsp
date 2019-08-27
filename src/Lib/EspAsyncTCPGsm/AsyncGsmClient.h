@@ -1,4 +1,6 @@
-#pragma once
+
+#ifdef GSM
+
 #include "../ESPAsyncTCP/IAsyncClient.h"
 #include <GsmModule.h>
 #include <FixedString.h>
@@ -50,4 +52,6 @@ public:
 	void onPoll(AcConnectHandler cb, void* arg = 0);        //every 125ms when connected
 	
 };
+
+#endif
 

@@ -1,6 +1,8 @@
 #include "ContiGsm.h"
 #include <functional>
 
+#ifdef GSM
+
 using namespace std::placeholders;
 
 
@@ -132,4 +134,6 @@ uint64_t ContiGsm::WatchdogTimeoutInMs()
 {
 	return 30000;
 }
+
+#endif
 

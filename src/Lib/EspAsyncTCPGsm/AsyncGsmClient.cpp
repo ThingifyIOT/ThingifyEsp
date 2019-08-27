@@ -1,3 +1,5 @@
+#ifdef GSM
+
 #include "AsyncGsmClient.h"
 
 
@@ -188,4 +190,6 @@ void AsyncGsmClient::onPoll(AcConnectHandler cb, void* arg)
 	_onPoll = cb;
 	_onPollArg = arg;
 }
+
+#endif
 

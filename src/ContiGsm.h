@@ -1,6 +1,8 @@
 #ifndef _CONTI_GSM_H
 #define _CONTI_GSM_H
 
+#ifdef GSM
+
 #include "Conti.h"
 #include <GsmModule.h>
 #include <SimcomAtCommandsEsp32.h>
@@ -66,4 +68,5 @@ public:
 	uint64_t WatchdogTimeoutInMs();
 };
 
+#endif
 #endif
