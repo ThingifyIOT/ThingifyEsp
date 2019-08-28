@@ -32,7 +32,7 @@ void ContiLogger::log(LogComponent component, LogLevel level, const __FlashStrin
 	}
 	
 	auto time = millis();
-	Serial.printf("%02d.%03d: ", time / 1000, time % 1000);
+	Serial.printf("%02lu.%03lu: ", time / 1000, time % 1000);
 
 	const auto levelStr = LogUtils::LogLevelToString(level);
 	if(levelStr != nullptr)
