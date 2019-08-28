@@ -3,10 +3,10 @@
 class ContiConstants
 {
 public:
-	static constexpr char* LoginRequestTopicPrefix = "conti/d/req/";
-	static constexpr char* LoginResponseTopicPrefix = "conti/d/res/";
-	static constexpr char* ServerStatusTopic = "conti/server/status";
-	static constexpr char* LastWillTopicPrefix = "conti/client/lw/";
+	static constexpr const  char* LoginRequestTopicPrefix = "conti/d/req/";
+	static constexpr const  char* LoginResponseTopicPrefix = "conti/d/res/";
+	static constexpr const  char* ServerStatusTopic = "conti/server/status";
+	static constexpr const  char* LastWillTopicPrefix = "conti/client/lw/";
 
 	static const int MinimumIntervalBetweenUpdates = 1000; //in ms
 
@@ -25,7 +25,7 @@ public:
 
 	static const int MaxErrorStringLength = 50;
 
-	static constexpr char *DefaultServer = "conti.ml";
+	static constexpr const char *DefaultServer = "conti.ml";
 	static constexpr int DefaultPort = 1883;
 	static constexpr int DefaultSerialBaudrate = 115200;
 	static constexpr int MqttKeepAliveInSeconds = 60;

@@ -63,6 +63,10 @@ NodeValue::NodeValue(const NodeValue& other)
 	case ContiType::TimeSpan:
 		_timespanValue = other._timespanValue;
 		return;
+	case ContiType::Location:
+		break;
+	case ContiType::DateTime:
+		break;
 	}
 }
 
@@ -89,6 +93,10 @@ NodeValue & NodeValue::operator=(NodeValue & other)
 		break;
 	case ContiType::TimeSpan:
 		_timespanValue = other._timespanValue;
+		break;
+	case ContiType::Location:
+		break;
+	case ContiType::DateTime:
 		break;
 	}
 	return *this;
