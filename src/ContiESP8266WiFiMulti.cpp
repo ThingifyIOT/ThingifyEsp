@@ -91,9 +91,9 @@ void ContiWiFiMulti::run()
 		uint8_t sec_scan;
 		uint8_t* BSSID_scan;
 		int32_t chan_scan;
-		bool hidden_scan = false;
 
 #if ESP8266
+		bool hidden_scan = false;
 		WiFi.getNetworkInfo(i, ssid_scan, sec_scan, rssi_scan, BSSID_scan, chan_scan, hidden_scan);
 #else
 		WiFi.getNetworkInfo(i, ssid_scan, sec_scan, rssi_scan, BSSID_scan, chan_scan);

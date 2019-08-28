@@ -12,15 +12,15 @@ using namespace std::placeholders;
 
 Conti::Conti(const char *deviceId, const char *deviceName, IAsyncClient& client) :
 _mqtt(client),
-_deviceName(deviceName), 
-_deviceId(deviceId),
 _currentState(ThingState::Disabled),
-_logger(ContiLoggerInstance),
 _incomingPackets(0),
 _valueSendInterval(0),
+_errorType(ThingError::NoError),
 _packetSender(_mqtt),
-_firmwareUpdateService(_packetSender),
-_errorType(ThingError::NoError)
+_logger(ContiLoggerInstance),
+_deviceName(deviceName), 
+_deviceId(deviceId),
+_firmwareUpdateService(_packetSender)
 {
 	Serial.println("Conti::Conti");	
 	_serverName = ContiConstants::DefaultServer;

@@ -151,7 +151,6 @@ ThingSessionCreateAckPacket* Serializer::DeserializeThingSessionCreateAck(cmp_ct
 		delete thingSessionCreateAckPacket;
 		return nullptr;
 	}
-	cmp_object_t cmpObject;
 	if (!cmp_read_long(&cmp, &thingSessionCreateAckPacket->CurrentTime))
 	{
 		delete thingSessionCreateAckPacket;
@@ -693,7 +692,6 @@ bool Serializer::DeserializeNodeId(cmp_ctx_t &cmp, NodeId &nodeId)
 
 bool Serializer::SerializeNodeId(cmp_ctx_t &cmp, NodeId &nodeId)
 {
-	uint32_t arraySize;
 	if (!cmp_write_array(&cmp, 2))
 	{
 		_logger.err(L("Failed to read packet array size"));

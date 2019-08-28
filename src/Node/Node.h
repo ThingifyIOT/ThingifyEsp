@@ -30,9 +30,9 @@ class Node
 	FixedString<ContiConstants::MaxDeviceNameLength> _name;
 	uint16_t _integerId;
 	ContiUnit _unit;
-	NodeKind _kind;
 	bool _isReadOnly;
 	ContiLogger& _logger;
+	NodeKind _kind;
 	int _rangeMin;
 	int _rangeMax;
 	int _rangeStep;
@@ -50,14 +50,14 @@ public:
 	uint16_t integerId() const;
 	bool isReadOnly() const;
 
-	NodeType Type;	
+	NodeType Type;
+	NodeValue Value;
 	bool _wasUpdated;
 	bool IsHidden;
 	void HandleUpdate();
 	Node* OnChanged(void *context, ValueChangeHandler handler);
 	Node* OnChanged(ValueChangeHandler handler);
 	ValueChangeHandler ValueChanged;
-	NodeValue Value;
 	void SetValue(uint32_t value);
 	void SetValue(int value);
 	void SetValue(NodeValue newValue);

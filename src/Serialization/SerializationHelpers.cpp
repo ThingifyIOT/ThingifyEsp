@@ -117,7 +117,6 @@ bool SerializationHelpers::ReadCmpBin(cmp_ctx_t& cmp, FixedStringBase &str)
 
 	while (strSize--)
 	{
-		int8_t c;
 		char data[2];
 		if (!cmp.read(&cmp, data, 1))
 		{

@@ -3,9 +3,9 @@
 int ValueinstanceCount = 0;
 Node::Node(NodeType type, ContiType valueType, const char* name, int integerId, ContiUnit unitType):
 _logger(ContiLoggerInstance),
-_wasUpdated(false),
+_kind(NodeKind::Normal),
 Value(valueType, true),
-_kind(NodeKind::Normal)
+_wasUpdated(false)
 {
 	_name = name;
 	_unit = unitType;

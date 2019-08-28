@@ -27,6 +27,7 @@ public:
 		G = other.G;
 		B = other.B;
 		A = other.A;
+		return *this;
 	}
 	uint8_t R;
 	uint8_t G;

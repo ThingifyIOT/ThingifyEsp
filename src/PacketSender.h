@@ -11,10 +11,9 @@
 class PacketSender
 {
 	ContiLogger& _logger;
-	uint16_t _sentPacketCount;
 	FixedString50 _outTopic;
 	AsyncMqttClient& _mqtt;
-
+	uint16_t _sentPacketCount;
 public:
 
 	PacketSender(AsyncMqttClient& mqtt);
