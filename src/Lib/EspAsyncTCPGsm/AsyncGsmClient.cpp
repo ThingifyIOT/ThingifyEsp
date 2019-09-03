@@ -126,6 +126,7 @@ bool AsyncGsmClient::disconnected()
 
 int8_t AsyncGsmClient::abort()
 {
+	return 0;
 }
 
 bool AsyncGsmClient::free()

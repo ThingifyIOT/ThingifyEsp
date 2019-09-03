@@ -51,7 +51,7 @@ public:
 	bool GsmLogEnabled = true;
 	bool GsmLogAtEnabled = true;
 	RegistrationMode OperatorSelectionMode = RegistrationMode::Automatic;
-	char *NumericOperatorName = "";
+	const char *NumericOperatorName = "";
 
 	bool IsPowerSavingActive()
 	{

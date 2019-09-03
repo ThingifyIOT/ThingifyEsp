@@ -21,7 +21,7 @@ ContiGsm::ContiGsm(const char* deviceId, const char *deviceName, SimcomAtCommand
 			return;
 		}
 		auto time = millis();
-		Serial.printf("%02d.%03d [GSM]: ", time / 1000, time % 1000);
+		Serial.printf("%02lu.%03lu [GSM]: ", time / 1000, time % 1000);
 		Serial.println(logEntry);
 	});
 	_firmwareUpdateService.SetMaxChunkSize(1024*10);
