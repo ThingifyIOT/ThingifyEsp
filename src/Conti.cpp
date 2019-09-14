@@ -785,6 +785,24 @@ void Conti::HandleWatchdog()
 	{
 		return;
 	}
+
+	_stateLoopDetector.FeedState((int)_currentState);
+
+	if(_stateLoopDetector.LoopCount() > 20)
+	{
+		_logger.err(L("Device stuck in state loop state1: %s, state2: %s"), 
+			ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
+			ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
+
+		FixedString50 stateLoopString;
+			stateLoopString.appendFormat(F("StateLoop:%s:%s"),			
+				ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
+				ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
+				_stateLoopDetector.Reset();
+
+		SetError(stateLoopString.c_str());
+	}
+
 	const int MaxSecondsForState = 60;
 	if (_stateChangeTimer.ElapsedSeconds() >= MaxSecondsForState)
 	{
@@ -798,7 +816,7 @@ void Conti::HandleWatchdog()
 
 			FixedString50 stateStuckString;
 			stateStuckString.appendFormat(F("StateStuck:%s:%ds"),
-				ContiUtils::ThingStateToStr(_currentState),
+				ContiUtils::ThingStateToShortStr(_currentState),
 				MaxSecondsForState);
 
 			SetError(stateStuckString.c_str());

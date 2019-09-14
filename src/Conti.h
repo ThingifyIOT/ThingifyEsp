@@ -11,6 +11,7 @@
 #include "IModule.h"
 #include "Logging/ContiLogger.h"
 #include "Helpers/PacketLogger.h"
+#include "Helpers/StateLoopDetector.h"
 #include "ThingError.h"
 #include "Helpers/LoopWatchdog.h"
 #include "PacketSender.h"
@@ -67,6 +68,7 @@ private:
 	FixedString50 _errorStr;
 	FixedString50 _restartReason;
 	LoopWatchdog _loopWatchdog;
+	LoopStateDetector _stateLoopDetector;
 	PacketSender _packetSender;
 	void CheckErrors();
 protected:
