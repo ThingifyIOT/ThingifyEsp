@@ -1,5 +1,10 @@
 #include "EspSmartConfig.h"
+
+#ifdef ESP32
+#include <WiFi.h>
+#else
 #include <ESP8266WiFi.h>
+#endif
 
 bool EspSmartConfig::Start()
 {
@@ -44,6 +49,8 @@ void EspSmartConfig::Loop()
         _lastSmartConfigIndication = millis();
     }
     
+    #ifdef ESP8266
+
     if(WiFi.smartConfigDone() && !_isConnectingToWifiFromSmartConfig)
     {
         Serial.println("Smart config recevied credentials");
@@ -62,4 +69,6 @@ void EspSmartConfig::Loop()
         Serial.printf("connected to WiFi, IP: %s\n", WiFi.localIP().toString().c_str());
         _isConnectingToWifiFromSmartConfig = false;
     }
+
+    #endif
 }
