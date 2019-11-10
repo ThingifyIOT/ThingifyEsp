@@ -5,7 +5,7 @@
 #include "ThingState.h"
 #include "ThingError.h"
 #include <FixedString.h>
-#include <ContiConstants.h>
+#include <ThingifyConstants.h>
 
 #include <Wire.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-class ContiConstants
+class ThingifyConstants
 {
 public:
 	static constexpr const  char* LoginRequestTopicPrefix = "conti/d/req/";

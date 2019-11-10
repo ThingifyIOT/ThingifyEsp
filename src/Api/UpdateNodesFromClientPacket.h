@@ -5,7 +5,7 @@
 #include "FunctionExecutionRequestItem.h"
 #include "PacketBase.h"
 #include "Lib/FixedList/FixedList.h"
-#include "ContiConstants.h"
+#include "ThingifyConstants.h"
 
 class UpdateNodesFromClientPacket : public PacketBase
 {
@@ -15,8 +15,8 @@ public:
 		return ContiPacketType::UpdateNodesFromClient;
 	}
 	int PacketId;
-	FixedList<NodeUpdate, ContiConstants::MaxUpdatesFromClient> Updates;
-	FixedList<FunctionExecutionRequestItem,ContiConstants::MaxFunctionExecutionRequests> FunctionExecutionRequests;
+	FixedList<NodeUpdate, ThingifyConstants::MaxUpdatesFromClient> Updates;
+	FixedList<FunctionExecutionRequestItem,ThingifyConstants::MaxFunctionExecutionRequests> FunctionExecutionRequests;
 };
 
 #endif

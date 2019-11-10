@@ -177,7 +177,7 @@ const char* ContiUtils::WlDisconnectReasonToString(WiFiDisconnectReason reason)
 
 void ContiUtils::WriteRestartReason(FixedStringBase& errorStr)
 {
-	auto maxLength = ContiConstants::MaxErrorStringLength;
+	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 	auto lengthToWrite = errorStr.length() > (maxLength-1) ? (maxLength-1) : errorStr.length();
 
 	for (int i = 0; i < lengthToWrite; i++)
@@ -191,7 +191,7 @@ void ContiUtils::WriteRestartReason(FixedStringBase& errorStr)
 
 void ContiUtils::ReadRestartReason(FixedStringBase& errorStr)
 {
-	auto maxLength = ContiConstants::MaxErrorStringLength;
+	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 	errorStr.clear();
 
 	for (int i = 0; i < maxLength; i++)
@@ -206,7 +206,7 @@ void ContiUtils::ReadRestartReason(FixedStringBase& errorStr)
 }
 void ContiUtils::ClearRestartReason()
 {
-	auto maxLength = ContiConstants::MaxErrorStringLength;
+	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 
 	for (int i = 0; i < maxLength; i++)
 	{

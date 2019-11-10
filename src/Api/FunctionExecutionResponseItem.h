@@ -3,7 +3,7 @@
 
 #include "Lib/FixedList/FixedList.h"
 #include "Value/NodeValue.h"
-#include "ContiConstants.h"
+#include "ThingifyConstants.h"
 #include "Node/NodeId.h"
 
 class FunctionExecutionResponseItem
@@ -18,7 +18,7 @@ public:
 	bool IsSuccess;
 	uint64_t FunctionId;
 	NodeValue ReturnValue;
-	FixedString<ContiConstants::MaxFunctionErrorResponseBytes> ErrorMessage;
+	FixedString<ThingifyConstants::MaxFunctionErrorResponseBytes> ErrorMessage;
 };
 
 #endif

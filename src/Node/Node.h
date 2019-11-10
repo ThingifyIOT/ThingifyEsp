@@ -3,7 +3,7 @@
 
 
 #include "Value/NodeValue.h"
-#include "Value/ContiUnit.h"
+#include "Value/ThingifyUnit.h"
 
 #include "NodeType.h"
 #include "NodeKind.h"
@@ -11,12 +11,12 @@
 #include <FixedString.h>
 #include "Lib/FixedList/FixedList.h"
 
-#include "ContiConstants.h"
+#include "ThingifyConstants.h"
 #include "Logging/ContiLogger.h"
 
 class Node;
 
-typedef FixedList<NodeValue, ContiConstants::MaxFunctionArguments> FunctionArguments;
+typedef FixedList<NodeValue, ThingifyConstants::MaxFunctionArguments> FunctionArguments;
 typedef NodeValue(*FunctionExecutionCallback)(void* context, FunctionArguments& args);
 typedef bool(*ValueChangeHandler)(void* context, Node *node);
 
@@ -24,12 +24,12 @@ extern int ValueinstanceCount;
 
 class Node
 {
-	friend class Conti;
+	friend class Thingify;
 	friend class Serializer;
 	void *_context;
-	FixedString<ContiConstants::MaxDeviceNameLength> _name;
+	FixedString<ThingifyConstants::MaxDeviceNameLength> _name;
 	uint16_t _integerId;
-	ContiUnit _unit;
+	ThingifyUnit _unit;
 	bool _isReadOnly;
 	ContiLogger& _logger;
 	NodeKind _kind;
@@ -37,7 +37,7 @@ class Node
 	int _rangeMax;
 	int _rangeStep;
 public:
-	Node(NodeType type, ContiType valueType, const char* name, int integerId, ContiUnit unitType);
+	Node(NodeType type, ContiType valueType, const char* name, int integerId, ThingifyUnit unitType);
 	void SetRangeAttributes(int min, int max, int step)
 	{
 		_rangeMin = min;
@@ -45,7 +45,7 @@ public:
 		_rangeStep = step;
 	}
 	const char* name() const;
-	const ContiUnit unit() const;
+	const ThingifyUnit unit() const;
 	const NodeKind kind() const;
 	uint16_t integerId() const;
 	bool isReadOnly() const;

@@ -1,7 +1,7 @@
 #ifndef _CONTI_UNIT
 #define _CONTI_UNIT
 
-enum class ContiUnit
+enum class ThingifyUnit
 {	
 	None,
 	Percent,

@@ -31,9 +31,9 @@ class UpdateNodesPacket: public PacketBase
 {
 public:
 	int PacketId;
-	FixedList<NodeUpdateResultItem, ContiConstants::MaxUpdateResults> UpdateResults;
-	FixedList<FunctionExecutionResponseItem, ContiConstants::MaxFunctionExecutionRequests> FunctionExecutionResponses;
-	FixedList<ValueUpdateItem, ContiConstants::MaxOutgoingUpdatesCount> UpdatedNodes;
+	FixedList<NodeUpdateResultItem, ThingifyConstants::MaxUpdateResults> UpdateResults;
+	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> FunctionExecutionResponses;
+	FixedList<ValueUpdateItem, ThingifyConstants::MaxOutgoingUpdatesCount> UpdatedNodes;
 
 	ContiPacketType PacketType() override
 	{

@@ -2,14 +2,14 @@
 #define _NODE_ID_H
 
 #include <FixedString.h>
-#include "ContiConstants.h"
+#include "ThingifyConstants.h"
 
 
 class NodeId
 {
 public:
-	FixedString<ContiConstants::MaxDeviceNameLength> DeviceId;
-	FixedString<ContiConstants::MaxNodeNameLength> NodeName;
+	FixedString<ThingifyConstants::MaxDeviceNameLength> DeviceId;
+	FixedString<ThingifyConstants::MaxNodeNameLength> NodeName;
 };
 
 #endif

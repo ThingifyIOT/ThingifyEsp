@@ -833,7 +833,7 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 			_logger.err(L("Failed to read string value"));
 			return false;
 		}
-		nodeValue.stringValue = FixedString<ContiConstants::MaxStringValueSize>(nodeValueString);
+		nodeValue.stringValue = FixedString<ThingifyConstants::MaxStringValueSize>(nodeValueString);
 		return true;
 	case ContiType::Int:
 

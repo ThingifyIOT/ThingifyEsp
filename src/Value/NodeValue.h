@@ -3,7 +3,7 @@
 
 #include "Node/NodeType.h"
 #include <FixedString.h>
-#include "ContiConstants.h"
+#include "ThingifyConstants.h"
 
 
 class ContiColor
@@ -47,7 +47,7 @@ public:
 		ContiColor _colorValue;
 		uint64_t _timespanValue;
 	};
-	FixedString<ContiConstants::MaxStringValueSize> stringValue;
+	FixedString<ThingifyConstants::MaxStringValueSize> stringValue;
 
 	ContiType Type;
 	NodeValue(ContiType type, bool isNull = false);

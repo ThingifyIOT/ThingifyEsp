@@ -1,7 +1,7 @@
 #include "Node.h"
 
 int ValueinstanceCount = 0;
-Node::Node(NodeType type, ContiType valueType, const char* name, int integerId, ContiUnit unitType):
+Node::Node(NodeType type, ContiType valueType, const char* name, int integerId, ThingifyUnit unitType):
 _logger(ContiLoggerInstance),
 _kind(NodeKind::Normal),
 Value(valueType, true),
@@ -23,7 +23,7 @@ const char* Node::name() const
 	return _name.c_str();
 }
 
-const ContiUnit Node::unit() const
+const ThingifyUnit Node::unit() const
 {
 	return _unit;
 }

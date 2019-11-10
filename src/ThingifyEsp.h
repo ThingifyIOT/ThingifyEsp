@@ -1,7 +1,7 @@
 #ifndef _CONTI_ESP_H
 #define _CONTI_ESP_H
 
-#include "Conti.h"
+#include "Thingify.h"
 #include "ContiESP8266WiFiMulti.h"
 #include "SmartConfigServer.h"
 #ifdef ESP8266
@@ -10,7 +10,7 @@
 #include <WiFi.h>
 #endif
 
-class ContiEsp : public Conti
+class ThingifyEsp : public Thingify
 {
 	ContiWiFiMulti _wifi_multi;
 	SmartConfigServer _smartConfigServer;
@@ -19,7 +19,7 @@ class ContiEsp : public Conti
 	wl_status_t _previousWlanStatus = WL_NO_SHIELD;
 	bool IsNetworkConnected();
 public:
-	ContiEsp(const char* deviceId, const char* deviceName);
+	ThingifyEsp(const char* deviceId, const char* deviceName);
 
 	void Start() override;
 	void Loop() override;

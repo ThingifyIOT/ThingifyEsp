@@ -1,4 +1,4 @@
-#include "ContiEsp.h"
+#include "ThingifyEsp.h"
 #include <Arduino.h>
 #include <functional>
 
@@ -9,25 +9,25 @@ using namespace std::placeholders;
 AsyncClient wifiTcpClient;
 
 
-ContiEsp::ContiEsp(const char* deviceId, const char *deviceName):
-Conti(deviceId, deviceName, wifiTcpClient)
+ThingifyEsp::ThingifyEsp(const char* deviceId, const char *deviceName):
+Thingify(deviceId, deviceName, wifiTcpClient)
 {
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
 	WiFi.persistent(false);
 	WiFi.mode(WIFI_STA);
 
-	_wifi_multi.OnStateChanged = std::bind(&ContiEsp::OnWifiStateChanged, this, _1, _2);
+	_wifi_multi.OnStateChanged = std::bind(&ThingifyEsp::OnWifiStateChanged, this, _1, _2);
 }
 
 
-void ContiEsp::Start()
+void ThingifyEsp::Start()
 {
-	Conti::Start();
+	Thingify::Start();
 	_smartConfigServer.Start();
 }
 
-void ContiEsp::Loop()
+void ThingifyEsp::Loop()
 {
 	if(GetCurrentState() != ThingState::Disabled)
 	{
@@ -43,39 +43,39 @@ void ContiEsp::Loop()
 		_previousWlanStatus = wl_status;
 	}
 
-	Conti::Loop();
+	Thingify::Loop();
 	_smartConfigServer.Loop();
 }
 
-void ContiEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName)
+void ThingifyEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName)
 {
 	if (state == WifiMultiState::Connecting)
 	{
 		_logger.info(L("Wifi state changed to Connecting"));
-		Conti::OnNetworkConnecting(networkName);
+		Thingify::OnNetworkConnecting(networkName);
 	}
 	if (state == WifiMultiState::Searching)
 	{
 		_logger.info(L("Wifi state changed to Searching"));
-		Conti::OnNetworkDisconnected();
+		Thingify::OnNetworkDisconnected();
 	}
 	if (state == WifiMultiState::Connected)
 	{
 		_logger.info(L("Wifi state changed to Connected"));
-		Conti::OnNetworkConnected();
+		Thingify::OnNetworkConnected();
 	}
 }
-bool ContiEsp::IsNetworkConnected()
+bool ThingifyEsp::IsNetworkConnected()
 {
 	return WiFi.status() == WL_CONNECTED;
 }
 
-void ContiEsp::AddAp(const char* ssid, const char* password)
+void ThingifyEsp::AddAp(const char* ssid, const char* password)
 {
 	_wifi_multi.addAP(ssid, password);
 }
 
-void ContiEsp::AddApList(char* accessPoints[][2])
+void ThingifyEsp::AddApList(char* accessPoints[][2])
 {
 	for (int i = 0; accessPoints[i] != nullptr; i++)
 	{
@@ -89,7 +89,7 @@ void ContiEsp::AddApList(char* accessPoints[][2])
 	}
 }
 
-uint64_t ContiEsp::WatchdogTimeoutInMs()
+uint64_t ThingifyEsp::WatchdogTimeoutInMs()
 {
 	return 3000;
 }

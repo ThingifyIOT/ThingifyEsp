@@ -1,8 +1,8 @@
-#include "Conti.h"
+#include "Thingify.h"
 #include <functional>
 #include "Helpers/StringHelper.h"
 
-#include "ContiConstants.h"
+#include "ThingifyConstants.h"
 #include "Api/HeartbeatPacket.h"
 #include "Api/DeviceNodeUpdateResult.h"
 #include "Api/ClientReceivedSessionCreateAckPacket.h"
@@ -10,7 +10,7 @@
 #include <EEPROM.h>
 using namespace std::placeholders;
 
-Conti::Conti(const char *deviceId, const char *deviceName, IAsyncClient& client) :
+Thingify::Thingify(const char *deviceId, const char *deviceName, IAsyncClient& client) :
 _mqtt(client),
 _currentState(ThingState::Disabled),
 _incomingPackets(0),
@@ -23,8 +23,8 @@ _deviceId(deviceId),
 _firmwareUpdateService(_packetSender)
 {
 	Serial.println("Conti::Conti");	
-	_serverName = ContiConstants::DefaultServer;
-	_serverPort = ContiConstants::DefaultPort;
+	_serverName = ThingifyConstants::DefaultServer;
+	_serverPort = ThingifyConstants::DefaultPort;
 	_nodes.reserve(32);
 	_modules.reserve(16);
 	_mqtt.setServer(_serverName, _serverPort);
@@ -32,10 +32,10 @@ _firmwareUpdateService(_packetSender)
 	_publishedNodeCount = 0;
 	_lastNodeId = 0;
 	_lastWill.clear();
-	_lastWill.appendFormat("%s%s", ContiConstants::LastWillTopicPrefix, deviceId);
+	_lastWill.appendFormat("%s%s", ThingifyConstants::LastWillTopicPrefix, deviceId);
 
 	_mqtt.
-		setKeepAlive(ContiConstants::MqttKeepAliveInSeconds).
+		setKeepAlive(ThingifyConstants::MqttKeepAliveInSeconds).
 		setCredentials(_deviceId, "").
 		setClientId(_deviceId);
 
@@ -46,10 +46,10 @@ _firmwareUpdateService(_packetSender)
 
 	_logger.info(L("Sizeof ContiValue = %d"), sizeof(NodeValue));
 	_logger.info(L("Sizeof UpdateNodesFromClientPacket: %d"), sizeof(UpdateNodesFromClientPacket));
-	_logger.info(L("Size of function execution buffer: %d"), sizeof(FixedList<FunctionExecutionResponseItem, ContiConstants::MaxFunctionExecutionRequests>));
+	_logger.info(L("Size of function execution buffer: %d"), sizeof(FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests>));
 }
 
-void Conti::Start()
+void Thingify::Start()
 {
 	_logger.info(L("Thing::Start"));
 	_errorType = ThingError::NoError;
@@ -86,14 +86,14 @@ void Conti::Start()
 	LogNodes();
 }
 
-void Conti::Stop()
+void Thingify::Stop()
 {
 	_logger.info(L("Thing::Stop"));
 	SetState(ThingState::Disabled);
 	DisconnectMqtt();
 }
 
-void Conti::Loop()
+void Thingify::Loop()
 {
 	_loopWatchdog.Feed();
 	for (auto module : _modules)
@@ -114,7 +114,7 @@ void Conti::Loop()
 
 	if (_currentState == ThingState::ConnectingToMqtt)
 	{
-		if (_stateChangeTimer.ElapsedMs() > ContiConstants::MqttConnectingTimeout)
+		if (_stateChangeTimer.ElapsedMs() > ThingifyConstants::MqttConnectingTimeout)
 		{
 			_logger.warn(L("Connecting to mqtt timer elapsed"));
 			_disconnectedTimer = millis();
@@ -123,7 +123,7 @@ void Conti::Loop()
 	}
 	if (_currentState == ThingState::Authenticating)
 	{
-		if (_stateChangeTimer.ElapsedMs() > ContiConstants::AuthenticatingTimeout)
+		if (_stateChangeTimer.ElapsedMs() > ThingifyConstants::AuthenticatingTimeout)
 		{
 			_stateChangeTimer.Start();
 			_logger.warn(L("Authenticating timeout"));
@@ -153,19 +153,19 @@ void Conti::Loop()
 	}
 }
 
-void Conti::SubscribeToEvents()
+void Thingify::SubscribeToEvents()
 {
-	_mqtt.onConnect(bind(&Conti::onMqttConnected, this, _1));
-	_mqtt.onDisconnect(bind(&Conti::onMqttDisconnect, this, _1));
-	_mqtt.onMessage(bind(&Conti::onMqttMessage, this, _1, _2, _3, _4, _5, _6));
-	_mqtt.onSubscribe(bind(&Conti::onMqttSubscribe, this, _1));
-	_mqtt.onPublish(bind(&Conti::onMqttPublishAcknowlendged, this, _1));	
+	_mqtt.onConnect(bind(&Thingify::onMqttConnected, this, _1));
+	_mqtt.onDisconnect(bind(&Thingify::onMqttDisconnect, this, _1));
+	_mqtt.onMessage(bind(&Thingify::onMqttMessage, this, _1, _2, _3, _4, _5, _6));
+	_mqtt.onSubscribe(bind(&Thingify::onMqttSubscribe, this, _1));
+	_mqtt.onPublish(bind(&Thingify::onMqttPublishAcknowlendged, this, _1));	
 }
-void Conti::SetError(const char* errorStr)
+void Thingify::SetError(const char* errorStr)
 {
 	SetError(ThingError::Other, errorStr);
 }
-void Conti::SetError(const __FlashStringHelper* errorStr)
+void Thingify::SetError(const __FlashStringHelper* errorStr)
 {
 	FixedString50 errorTmp;
 	
@@ -173,7 +173,7 @@ void Conti::SetError(const __FlashStringHelper* errorStr)
 	SetError(ThingError::Other, errorTmp.c_str());
 }
 
-void Conti::SetError(ThingError error, const char* errorStr)
+void Thingify::SetError(ThingError error, const char* errorStr)
 {
 	SetState(ThingState::Error);
 
@@ -196,7 +196,7 @@ void Conti::SetError(ThingError error, const char* errorStr)
 	_errorType = error;
 }
 
-void Conti::OnNetworkConnecting(FixedStringBase& networkName)
+void Thingify::OnNetworkConnecting(FixedStringBase& networkName)
 {
 	_networkName = networkName;
 	_logger.info(LogComponent::Network, L("Conti::OnNetworkConnecting: '%s'"), _networkName.c_str());
@@ -207,7 +207,7 @@ void Conti::OnNetworkConnecting(FixedStringBase& networkName)
 	SetState(ThingState::ConnectingToNetwork);
 }
 
-void Conti::OnNetworkConnected()
+void Thingify::OnNetworkConnected()
 {
 	_logger.info(LogComponent::Network, L("Conti::OnNetworkConnected"));
 	if (HasTerminalState(F("OnNetworkConnected")))
@@ -225,7 +225,7 @@ void Conti::OnNetworkConnected()
 	}
 }
 
-void Conti::OnNetworkDisconnected()
+void Thingify::OnNetworkDisconnected()
 {
 	_logger.info(LogComponent::Network, L("Conti::OnNetworkDisconnected"));
 	if (HasTerminalState(F("OnNetworkDisconnected")))
@@ -236,14 +236,14 @@ void Conti::OnNetworkDisconnected()
 	DisconnectMqtt();	
 }
 
-void Conti::Authenticate()
+void Thingify::Authenticate()
 {
 	auto requestId = StringHelper::GenerateRandomString<10>();
 	_logger.debug(L("Generated request id: %s"), requestId.c_str());
 
-	auto outTopic = FixedString50(ContiConstants::LoginRequestTopicPrefix) + requestId;
+	auto outTopic = FixedString50(ThingifyConstants::LoginRequestTopicPrefix) + requestId;
 	_packetSender.SetOutTopic(outTopic);
-	_inTopic = FixedString50(ContiConstants::LoginResponseTopicPrefix) + requestId;
+	_inTopic = FixedString50(ThingifyConstants::LoginResponseTopicPrefix) + requestId;
 	
 	const uint16_t packetIdSub = _mqtt.subscribe(_inTopic.c_str(), 2);
 	_logger.debug(L("Subscribed to %s, subsId = %d"), _inTopic.c_str(), packetIdSub);
@@ -258,7 +258,7 @@ void Conti::Authenticate()
 	SendAndDeletePacket(thingSessionCreatePacket);
 }
 
-bool Conti::SendAndDeletePacket(PacketBase* packet)
+bool Thingify::SendAndDeletePacket(PacketBase* packet)
 {
 	auto result = _packetSender.SendPacket(packet);
 	delete packet;
@@ -269,7 +269,7 @@ bool Conti::SendAndDeletePacket(PacketBase* packet)
 	return result;
 }
 
-void Conti::onMqttConnected(bool sessionPresent)
+void Thingify::onMqttConnected(bool sessionPresent)
 {
 	if (HasTerminalState(F("onMqttConnected")))
 	{
@@ -280,11 +280,11 @@ void Conti::onMqttConnected(bool sessionPresent)
 	_reconnectCount++;
 	SetState(ThingState::ServiceUnavailable);
 
-	const uint16_t serverStatusSubsId = _mqtt.subscribe(ContiConstants::ServerStatusTopic, 2);
-	_logger.debug(L("Subscribed to %s, subsId = %d"), ContiConstants::ServerStatusTopic, serverStatusSubsId);
+	const uint16_t serverStatusSubsId = _mqtt.subscribe(ThingifyConstants::ServerStatusTopic, 2);
+	_logger.debug(L("Subscribed to %s, subsId = %d"), ThingifyConstants::ServerStatusTopic, serverStatusSubsId);
 }
 
-void Conti::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
+void Thingify::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 {
 	_logger.info(LogComponent::Network, L("onMqttDisconnect, reason: %d"), reason);	
 	
@@ -301,7 +301,7 @@ void Conti::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 	}
 }
 
-void Conti::ConnectToServer()
+void Thingify::ConnectToServer()
 {
 	_logger.debug(L("Last will: %s"), _lastWill.c_str());
 	_mqtt.setWill(_lastWill.c_str(), 2, false, "lw", 2);
@@ -312,7 +312,7 @@ void Conti::ConnectToServer()
 	_mqtt.connect();	
 }
 
-void Conti::DisconnectMqtt()
+void Thingify::DisconnectMqtt()
 {
 	if (!_mqtt.connected())
 	{
@@ -323,7 +323,7 @@ void Conti::DisconnectMqtt()
 	_mqtt.disconnect();
 }
 
-void Conti::LogNodes()
+void Thingify::LogNodes()
 {
 	_logger.debug(LogComponent::Node, L("Node list: "));
 	for(auto& node: _nodes)
@@ -332,12 +332,12 @@ void Conti::LogNodes()
 	}
 }
 
-void Conti::onMqttSubscribe(uint16_t packetId)
+void Thingify::onMqttSubscribe(uint16_t packetId)
 {
 	_logger.debug(LogComponent::Mqtt, L("Subscribe ACK received: packetId: %d"), packetId);
 }
 
-void Conti::HandlePacket(PacketBase *packet)
+void Thingify::HandlePacket(PacketBase *packet)
 {
 	_lastPacketReceivedTimer.Start();
 	const auto type = packet->PacketType();
@@ -465,7 +465,7 @@ void Conti::HandlePacket(PacketBase *packet)
 
 }
 
-void Conti::onMqttMessage(char* topic, 	char* payloadData, AsyncMqttClientMessageProperties properties, 
+void Thingify::onMqttMessage(char* topic, 	char* payloadData, AsyncMqttClientMessageProperties properties, 
 	size_t len, size_t index, size_t payloadLength)
 {
 	_logger.debug(LogComponent::Mqtt, L("message received on topic %s, len=%d, index=%d, payloadLength=%d"), topic, len, index,  payloadLength);
@@ -488,7 +488,7 @@ void Conti::onMqttMessage(char* topic, 	char* payloadData, AsyncMqttClientMessag
 
 
 
-	if(strcmp(topic, ContiConstants::ServerStatusTopic) == 0 && payloadLength > 0)
+	if(strcmp(topic, ThingifyConstants::ServerStatusTopic) == 0 && payloadLength > 0)
 	{
 		const bool isAvailable = payloadData[0] == '1';
 
@@ -528,13 +528,13 @@ void Conti::onMqttMessage(char* topic, 	char* payloadData, AsyncMqttClientMessag
 
 }
 
-void Conti::onMqttPublishAcknowlendged(uint16_t packetId)
+void Thingify::onMqttPublishAcknowlendged(uint16_t packetId)
 {
 	_logger.debug(LogComponent::Mqtt, L("Publish ACK received: packetId = %d"), packetId);
 }
 
 
-void Conti::SetState(ThingState newState)
+void Thingify::SetState(ThingState newState)
 {
 	if (_currentState == newState)
 	{
@@ -552,32 +552,32 @@ void Conti::SetState(ThingState newState)
 	}	
 }
 
-ThingState Conti::GetCurrentState() const
+ThingState Thingify::GetCurrentState() const
 {
 	return _currentState;
 }
 
-const char* Conti::GetServerName() const
+const char* Thingify::GetServerName() const
 {
 	return _serverName;
 }
 
-int Conti::GetReconnectCount() const
+int Thingify::GetReconnectCount() const
 {
 	return _reconnectCount;
 }
 
-uint64_t Conti::GetMillisecondsSinceConnect()
+uint64_t Thingify::GetMillisecondsSinceConnect()
 {
 	return _stateChangeTimer.ElapsedMs();
 }
 
-void Conti::AddModule(IModule * module)
+void Thingify::AddModule(IModule * module)
 {
 	_modules.push_back(module);
 }
 
-Node* Conti::AddNode(const char* nodeName, NodeType type, ContiType valueType, ContiUnit unit)
+Node* Thingify::AddNode(const char* nodeName, NodeType type, ContiType valueType, ThingifyUnit unit)
 {
 	auto existingNode = FindNode(nodeName);
 	if (existingNode != nullptr)
@@ -591,53 +591,53 @@ Node* Conti::AddNode(const char* nodeName, NodeType type, ContiType valueType, C
 	return node;
 }
 
-Node* Conti::AddBoolean(const char* nodeName, ContiUnit unit)
+Node* Thingify::AddBoolean(const char* nodeName, ThingifyUnit unit)
 {
 	return AddNode(nodeName, NodeType::BasicValue, ContiType::Bool, unit);
 }
-Node* Conti::AddString(const char* nodeName, const char *value, ContiUnit unit)
+Node* Thingify::AddString(const char* nodeName, const char *value, ThingifyUnit unit)
 {
 	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::String, unit);
 	node->SetValue(NodeValue::String(value));
 	return node;
 }
-Node* Conti::AddString(const char * nodeName, ContiUnit unit)
+Node* Thingify::AddString(const char * nodeName, ThingifyUnit unit)
 {
 	return AddString(nodeName, "", unit);
 }
-Node* Conti::AddInt(const char* nodeName, ContiUnit unit)
+Node* Thingify::AddInt(const char* nodeName, ThingifyUnit unit)
 {
 	return AddNode(nodeName, NodeType::BasicValue, ContiType::Int, unit);
 }
-Node* Conti::AddInt(const char* nodeName, int value, ContiUnit unit)
+Node* Thingify::AddInt(const char* nodeName, int value, ThingifyUnit unit)
 {	
 	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Int, unit);
 	node->SetValue(NodeValue::Int(value));
 	return node;
 }
-Node* Conti::AddFloat(const char* nodeName, float value, ContiUnit unit)
+Node* Thingify::AddFloat(const char* nodeName, float value, ThingifyUnit unit)
 {
 	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Float, unit);
 	node->SetValue(NodeValue::Float(value));
 	return node;
 }
-Node* Conti::AddFloat(const char* nodeName, ContiUnit unit)
+Node* Thingify::AddFloat(const char* nodeName, ThingifyUnit unit)
 {
 	return AddFloat(nodeName, 0.0f, unit);
 }
-Node* Conti::AddColor(const char * nodeName)
+Node* Thingify::AddColor(const char * nodeName)
 {
-	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Float, ContiUnit::None);
+	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Float, ThingifyUnit::None);
 	node->SetValue(NodeValue::NullColor());
 	return node;
 }
-Node * Conti::AddTimeSpan(const char *name)
+Node * Thingify::AddTimeSpan(const char *name)
 {
-	auto node = AddNode(name, NodeType::BasicValue, ContiType::TimeSpan, ContiUnit::None);
+	auto node = AddNode(name, NodeType::BasicValue, ContiType::TimeSpan, ThingifyUnit::None);
 	node->SetValue(NodeValue::NullColor());
 	return node;
 }
-Node* Conti::AddRange(const char * nodeName, int min, int max, int step, ContiUnit unit)
+Node* Thingify::AddRange(const char * nodeName, int min, int max, int step, ThingifyUnit unit)
 {
 	auto node = AddNode(nodeName, NodeType::Range, ContiType::Int, unit);
 	node->SetValue(NodeValue::NullInt());
@@ -645,20 +645,20 @@ Node* Conti::AddRange(const char * nodeName, int min, int max, int step, ContiUn
 	return node;
 }
 
-Node* Conti::AddFunction(const char * nodeName, FunctionExecutionCallback callback, void* context)
+Node* Thingify::AddFunction(const char * nodeName, FunctionExecutionCallback callback, void* context)
 {
-	auto node = AddNode(nodeName, NodeType::Function, ContiType::Bool, ContiUnit::None);
+	auto node = AddNode(nodeName, NodeType::Function, ContiType::Bool, ThingifyUnit::None);
 	node->_context = context;
 	node->ExecutionCallback = callback;
 	return node;
 }
 
-Node * Conti::operator[](const char * nodeName)
+Node * Thingify::operator[](const char * nodeName)
 {
 	return FindNode(nodeName);
 }
 
-Node* Conti::FindNode(const char* nodeName)
+Node* Thingify::FindNode(const char* nodeName)
 {
 	for (auto i = 0; i < _nodes.size(); i++)
 	{
@@ -670,7 +670,7 @@ Node* Conti::FindNode(const char* nodeName)
 	}
 	return nullptr;
 }
-bool Conti::RemoveNode(const char *nodeName)
+bool Thingify::RemoveNode(const char *nodeName)
 {
 	for (auto i = 0; i < _nodes.size(); i++)
 	{
@@ -684,7 +684,7 @@ bool Conti::RemoveNode(const char *nodeName)
 	}
 	return false;
 }
-std::vector<Node*> Conti::GetWorkingNodes()
+std::vector<Node*> Thingify::GetWorkingNodes()
 {
 	std::vector<Node*> workingNodes;
 	workingNodes.reserve(_nodes.size());
@@ -698,7 +698,7 @@ std::vector<Node*> Conti::GetWorkingNodes()
 	return workingNodes;
 }
 
-std::vector<Node*> Conti::GetUpdatedNodes()
+std::vector<Node*> Thingify::GetUpdatedNodes()
 {
 	std::vector<Node*> updatedNodes;
 	updatedNodes.reserve(_nodes.size());
@@ -712,7 +712,7 @@ std::vector<Node*> Conti::GetUpdatedNodes()
 	return updatedNodes;
 }
 
-void Conti::LogUpdatedNodes(std::vector<Node*> updatedNodes) const
+void Thingify::LogUpdatedNodes(std::vector<Node*> updatedNodes) const
 {
 	FixedString<50> updateNodesString;
 
@@ -724,7 +724,7 @@ void Conti::LogUpdatedNodes(std::vector<Node*> updatedNodes) const
 	_logger.debug(L("nodes: [%s] changed value, send updates"), updateNodesString.c_str());
 }
 
-void Conti::SendNodeValues()
+void Thingify::SendNodeValues()
 {
 	auto updatedNodes = GetUpdatedNodes();	
 
@@ -733,7 +733,7 @@ void Conti::SendNodeValues()
 		return;
 	}
 
-	static SoftTimer maxUpdateIntervalTimer(ContiConstants::MinimumIntervalBetweenUpdates);
+	static SoftTimer maxUpdateIntervalTimer(ThingifyConstants::MinimumIntervalBetweenUpdates);
 	if (_updateResults.empty() && _functionExecutionResults.empty())
 	{
 		if (!maxUpdateIntervalTimer.IsElapsed())
@@ -770,7 +770,7 @@ void Conti::SendNodeValues()
 	SendAndDeletePacket(updateNodesPacket);
 }
 
-bool Conti::HasTerminalState(const __FlashStringHelper* eventType)
+bool Thingify::HasTerminalState(const __FlashStringHelper* eventType)
 {
 	if (_currentState == ThingState::Error || _currentState == ThingState::Disabled)
 	{
@@ -780,13 +780,13 @@ bool Conti::HasTerminalState(const __FlashStringHelper* eventType)
 	return false;
 }
 
-void Conti::OnFunctionExecutedByExternal(Node & node)
+void Thingify::OnFunctionExecutedByExternal(Node & node)
 {
 }
-void Conti::OnNodeValueChanedByExternal(Node & node)
+void Thingify::OnNodeValueChanedByExternal(Node & node)
 {
 }
-void Conti::HandleWatchdog()
+void Thingify::HandleWatchdog()
 {
 	if (!WatchdogEnabled)
 	{
@@ -849,7 +849,7 @@ void Conti::HandleWatchdog()
 	}
 }
 
-void Conti::CheckErrors()
+void Thingify::CheckErrors()
 {
 	if (FixedString_OverflowDetected)
 	{

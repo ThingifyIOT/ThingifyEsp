@@ -112,7 +112,7 @@ NodeValue NodeValue::Boolean(bool boolValue)
 NodeValue NodeValue::String(const char* stringValue)
 {
 	NodeValue value(ContiType::String);
-	value.stringValue = FixedString<ContiConstants::MaxStringValueSize>(stringValue);
+	value.stringValue = FixedString<ThingifyConstants::MaxStringValueSize>(stringValue);
 	return value;
 }
 

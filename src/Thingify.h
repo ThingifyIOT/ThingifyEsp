@@ -19,7 +19,7 @@
 
 class IModule;
 
-class Conti
+class Thingify
 {
 private:
 	AsyncMqttClient _mqtt;
@@ -61,8 +61,8 @@ private:
 	uint64_t _disconnectedTimer;
 	ElapsedTimer _stateChangeTimer;
 	uint64_t _connectTime = 0;
-	FixedList<NodeUpdateResultItem, ContiConstants::MaxUpdateResults> _updateResults;
-	FixedList<FunctionExecutionResponseItem, ContiConstants::MaxFunctionExecutionRequests> _functionExecutionResults;
+	FixedList<NodeUpdateResultItem, ThingifyConstants::MaxUpdateResults> _updateResults;
+	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> _functionExecutionResults;
 	uint16_t _valueSendInterval;
 	ThingError _errorType;
 	FixedString50 _errorStr;
@@ -92,7 +92,7 @@ protected:
 	FirmwareUpdateService _firmwareUpdateService;
 	virtual uint64_t WatchdogTimeoutInMs() = 0;
 public:
-	Conti(const char *deviceId, const char *deviceName, IAsyncClient& client);
+	Thingify(const char *deviceId, const char *deviceName, IAsyncClient& client);
 	virtual void Start();
 	void Stop();
 	virtual void Loop();
@@ -142,16 +142,16 @@ public:
 	Node* operator[](const char* node);
 	Node* FindNode(const char *nodeName);
 	bool RemoveNode(const char *nodeName);	
-	Node* AddNode(const char* nodeName, NodeType type, ContiType valueType, ContiUnit unit = ContiUnit::None);
-	Node* AddBoolean(const char* nodeName, ContiUnit unit = ContiUnit::None);
-	Node* AddString(const char* nodeName, const char *value, ContiUnit unit = ContiUnit::None);
-	Node* AddString(const char* nodeName, ContiUnit unit = ContiUnit::None);
-	Node* AddRange(const char* nodeName, int min, int max, int step = 1, ContiUnit unit = ContiUnit::None);
+	Node* AddNode(const char* nodeName, NodeType type, ContiType valueType, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddBoolean(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddString(const char* nodeName, const char *value, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddString(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddRange(const char* nodeName, int min, int max, int step = 1, ThingifyUnit unit = ThingifyUnit::None);
 	Node* AddFunction(const char * nodeName, FunctionExecutionCallback callback, void* context = nullptr);
-	Node* AddInt(const char * nodeName, ContiUnit unit = ContiUnit::None);
-	Node* AddInt(const char* nodeName, int value, ContiUnit unit = ContiUnit::None);
-	Node* AddFloat(const char* nodeName, float value, ContiUnit unit = ContiUnit::None);
-	Node* AddFloat(const char* nodeName, ContiUnit unit = ContiUnit::None);
+	Node* AddInt(const char * nodeName, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddInt(const char* nodeName, int value, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddFloat(const char* nodeName, float value, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddFloat(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
 	Node* AddColor(const char* nodeName);
 	Node* AddTimeSpan(const char* name);
 
@@ -165,7 +165,7 @@ public:
 
 	void AddModule(IModule *module);
 
-	virtual ~Conti() = default;
+	virtual ~Thingify() = default;
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #ifdef GSM
 
-#include "Conti.h"
+#include "Thingify.h"
 #include <GsmModule.h>
 #include <SimcomAtCommandsEsp32.h>
 #include <HardwareSerial.h>
