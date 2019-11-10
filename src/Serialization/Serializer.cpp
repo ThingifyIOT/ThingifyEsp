@@ -10,6 +10,7 @@
 #include "Api/UpdateFirmwareBeginToThingPacket.h"
 #include "Api/UpdateFirmwareCommitToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
+#include "Api/ZeroConfigurationPacket.h"
 
 
 bool Serializer::SerializePacket(PacketBase* packet, FixedStringBase& outputBuffer)
@@ -96,6 +97,10 @@ PacketBase* Serializer::DeserializePacket(FixedStringBase& data)
 	{
 		return DeserializeUpdateFirmwareBeginToThing(cmp);
 	}
+	if(packetType == ContiPacketType::ZeroConfigurationPacket)
+	{
+		return DeserializeZeroConfigurationPacket(cmp);
+	}
 	return nullptr;
 }
 
@@ -158,6 +163,8 @@ ThingSessionCreateAckPacket* Serializer::DeserializeThingSessionCreateAck(cmp_ct
 	}
 	return thingSessionCreateAckPacket;
 }
+
+
 PacketBase* Serializer::DeserializeUpdateFirmwareBeginToThing(cmp_ctx_t& cmp)
 {
 	uint32_t arraySize;
@@ -191,6 +198,76 @@ PacketBase* Serializer::DeserializeUpdateFirmwareBeginToThing(cmp_ctx_t& cmp)
 	firmwareUpdateBeginPacket->FirmwareMd5 = firmwareMd5;
 	return firmwareUpdateBeginPacket;
 }
+
+PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
+{
+	uint32_t mapSize;
+	if(!cmp_read_map(&cmp, &mapSize))
+	{
+		return nullptr;
+	}
+	auto packet = new ZeroConfigurationPacket();
+	for(uint32_t i =0; i < mapSize; i++)
+	{
+		FixedString50 key;
+		if(!SerializationHelpers::ReadCmpString(cmp, key))
+		{
+			delete packet;
+			return nullptr;
+		}
+		if(key.equals("token"))
+		{
+			SerializationHelpers::ReadCmpString(cmp, packet->Token);
+		}
+		else if(key.equals("api_address"))
+		{
+			SerializationHelpers::ReadCmpString(cmp, packet->ApiAddress);
+		}
+		else if(key.equals("wifi_networks"))
+		{
+			uint32_t wifiArraySize;
+			cmp_read_array(&cmp, &wifiArraySize);
+			while (wifiArraySize-- > 0)
+			{
+				auto wifiNetwork = new WifiNetworkPacket();
+				if(!ReadWifiNetwork(cmp, *wifiNetwork))
+				{
+					delete packet;
+					return nullptr;
+				}
+				packet->WifiNetworks.push_back(wifiNetwork);
+			}			
+		}
+	}
+	return packet;
+}
+
+bool Serializer::ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetworkPacket& wifiNetwork)
+{
+	uint32_t mapSize;
+	if(!cmp_read_map(&cmp, &mapSize))
+	{
+		return false;
+	}
+	for(uint32_t i =0; i < mapSize; i++)
+	{
+		FixedString50 key;
+		if(!SerializationHelpers::ReadCmpString(cmp, key))
+		{
+			return false;
+		}
+		if(key.equals("name"))
+		{
+			SerializationHelpers::ReadCmpString(cmp, wifiNetwork.Name);
+		}
+		else if(key.equals("password"))
+		{
+			SerializationHelpers::ReadCmpString(cmp, wifiNetwork.Password);
+		}
+	}
+	return true;
+}
+
 PacketBase* Serializer::DeserializeUpdateFirmwareCommitToThing(cmp_ctx_t& cmp)
 {
 	uint32_t arraySize;

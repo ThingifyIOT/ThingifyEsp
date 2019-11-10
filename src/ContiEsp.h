@@ -3,7 +3,7 @@
 
 #include "Conti.h"
 #include "ContiESP8266WiFiMulti.h"
-
+#include "SmartConfigServer.h"
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #else
@@ -13,6 +13,7 @@
 class ContiEsp : public Conti
 {
 	ContiWiFiMulti _wifi_multi;
+	SmartConfigServer _smartConfigServer;
 	volatile bool _wlConnectOccured;
 	volatile bool _wlDisconnectOccured;
 	wl_status_t _previousWlanStatus = WL_NO_SHIELD;

@@ -86,6 +86,13 @@ void Conti::Start()
 	LogNodes();
 }
 
+void Conti::Stop()
+{
+	_logger.info(L("Thing::Stop"));
+	SetState(ThingState::Disabled);
+	DisconnectMqtt();
+}
+
 void Conti::Loop()
 {
 	_loopWatchdog.Feed();

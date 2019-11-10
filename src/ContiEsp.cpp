@@ -24,11 +24,15 @@ Conti(deviceId, deviceName, wifiTcpClient)
 void ContiEsp::Start()
 {
 	Conti::Start();
+	_smartConfigServer.Start();
 }
 
 void ContiEsp::Loop()
 {
-	_wifi_multi.run();
+	if(GetCurrentState() != ThingState::Disabled)
+	{
+		_wifi_multi.run();
+	}
 
 	const wl_status_t wl_status = WiFi.status();
 	if (_previousWlanStatus != wl_status)
@@ -40,6 +44,7 @@ void ContiEsp::Loop()
 	}
 
 	Conti::Loop();
+	_smartConfigServer.Loop();
 }
 
 void ContiEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName)

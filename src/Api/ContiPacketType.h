@@ -16,6 +16,7 @@ enum class ContiPacketType
 	ClientReceivedCreateSessionAck = 10,
 	UpdateFirmwareDataAck = 21,
 	UpdateFirmwareCommitToThing = 24,
-	UpdateFirmwareBeginToThing = 26
+	UpdateFirmwareBeginToThing = 26,
+	ZeroConfigurationPacket = 27
 };
 #endif

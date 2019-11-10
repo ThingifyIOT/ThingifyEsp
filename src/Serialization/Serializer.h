@@ -15,6 +15,7 @@
 #include "Api/ThingSessionCreateAckPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
 #include "Logging/ContiLogger.h"
+#include "Api/ZeroConfigurationPacket.h"
 
 
 class UpdateFirmwareDataAck;
@@ -70,12 +71,15 @@ public:
 	static bool SerializeNodeValue(cmp_ctx_t& cmp, NodeValue &nodeValue);
 	static bool DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue);
 	static bool SerializeUpdateResult(cmp_ctx_t& cmp, DeviceNodeUpdateResult& updateResult);
+    static bool ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetworkPacket& wifiNetwork);
 
 	static bool WriteString(cmp_ctx_t & cmp, FixedStringBase & str);
 
 	static ThingSessionCreateAckPacket* DeserializeThingSessionCreateAck(cmp_ctx_t& cmp);
 	static PacketBase* DeserializeUpdateFirmwareCommitToThing(cmp_ctx_t& cmp);
 	static PacketBase* DeserializeUpdateFirmwareBeginToThing(cmp_ctx_t& cmp);
+	static PacketBase* DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp);
+
 	static PacketBase* DeserializePacket(FixedStringBase &data);
 	static HeartbeatPacket* DeserializeHeartbeat(cmp_ctx_t& cmp);
 	static AckToDevicePacket* DeserializeAckToDevice(cmp_ctx_t& cmp);

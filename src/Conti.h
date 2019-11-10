@@ -94,6 +94,7 @@ protected:
 public:
 	Conti(const char *deviceId, const char *deviceName, IAsyncClient& client);
 	virtual void Start();
+	void Stop();
 	virtual void Loop();
 
 	bool WatchdogEnabled;
