@@ -14,7 +14,7 @@
 #include "Api/ThingSessionCreatePacket.h"
 #include "Api/ThingSessionCreateAckPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
-#include "Logging/ContiLogger.h"
+#include "Logging/Logger.h"
 #include "Api/ZeroConfigurationPacket.h"
 
 
@@ -50,7 +50,7 @@ public:
 class Serializer
 {
 public:
-	static ContiLogger& _logger;
+	static Logger& _logger;
 	static size_t FileWriter(cmp_ctx_t *ctx, const void *data, size_t count);
 	static bool FileReader(cmp_ctx_t *ctx, void *data, size_t count);
 	static bool WritePacketHeader(cmp_ctx_t &cmp, ContiPacketType packetType);

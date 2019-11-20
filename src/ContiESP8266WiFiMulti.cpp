@@ -4,7 +4,7 @@
 #include "ContiUtils.h"
 
 ContiWiFiMulti::ContiWiFiMulti():
-_logger(ContiLoggerInstance)
+_logger(LoggerInstance)
 {
 	_stateChangeTime = millis();
 	_state = WifiMultiState::Searching;

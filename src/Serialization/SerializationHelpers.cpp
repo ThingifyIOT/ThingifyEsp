@@ -1,6 +1,6 @@
 #include "SerializationHelpers.h"
 
-ContiLogger& SerializationHelpers::_logger = ContiLoggerInstance;
+Logger& SerializationHelpers::_logger = LoggerInstance;
 
 const char* SerializationHelpers::cmpTypeToStr(uint8_t cmpType)
 {

@@ -5,7 +5,7 @@
 #include "Api/UpdateFirmwareBeginToThingPacket.h"
 #include "Api/UpdateFirmwareCommitToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
-#include "Logging/ContiLogger.h"
+#include "Logging/Logger.h"
 #include "ContiUtils.h"
 #include <stdint.h>
 
@@ -14,7 +14,7 @@ class FirmwareUpdateService
 private:
 	uint16_t _lastFirmwareCorrelationId;
 	PacketSender& _packetSender;
-	ContiLogger& _logger;
+	Logger& _logger;
 	FixedString100 _errorString;
 	bool _isSuccess;
 	uint32_t _maxFirmwareChunkSize;

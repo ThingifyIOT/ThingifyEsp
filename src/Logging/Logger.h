@@ -10,18 +10,18 @@
 #define L(string_literal) (reinterpret_cast<const __FlashStringHelper*>(F(string_literal)))
 
 
-class ContiLogger
+class Logger
 {
 	LogComponent _currentComponent;
 	LogLevel _currrentLevel;
 	bool ShouldIncludeEntry(LogComponent component, LogLevel level);
 	void log(LogComponent component, LogLevel level, const __FlashStringHelper* format, bool skipNewLine, va_list argptr);
 public:
-	ContiLogger(ContiLogger const &) = delete;
-	void operator=(ContiLogger const &x) = delete;
+	Logger(Logger const &) = delete;
+	void operator=(Logger const &x) = delete;
 	LogComponent ComponentsToInclude;
 
-	ContiLogger();
+	Logger();
 	LogLevel Level;
 	void ForceIncludeComponent(LogComponent logComponent);
 	void debug(const __FlashStringHelper * format, ...);
@@ -37,6 +37,6 @@ public:
 	void err(const __FlashStringHelper* format, ...);
 };
 
-extern ContiLogger ContiLoggerInstance;
+extern Logger LoggerInstance;
 
 #endif

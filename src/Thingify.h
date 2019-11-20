@@ -9,7 +9,7 @@
 #include "Serialization/Serializer.h"
 #include "ContiUtils.h"
 #include "IModule.h"
-#include "Logging/ContiLogger.h"
+#include "Logging/Logger.h"
 #include "Helpers/PacketLogger.h"
 #include "Helpers/StateLoopDetector.h"
 #include "ThingError.h"
@@ -84,7 +84,7 @@ protected:
 	virtual void OnFunctionExecutedByExternal(Node& node);
 	virtual void OnNodeValueChanedByExternal(Node& node);
 	virtual bool IsNetworkConnected() = 0;
-	ContiLogger& _logger;
+	Logger& _logger;
 	const char* _deviceName;
 	const char* _deviceId;
 	const char* _serverName;

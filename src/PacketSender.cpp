@@ -3,7 +3,7 @@
 #include "Serialization/Serializer.h"
 
 PacketSender::PacketSender(AsyncMqttClient& mqtt) :
-	_logger(ContiLoggerInstance),
+	_logger(LoggerInstance),
 	_mqtt(mqtt),
 	_sentPacketCount(0)
 {

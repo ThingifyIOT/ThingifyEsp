@@ -12,7 +12,7 @@
 #include "Api/UpdateFirmwareBeginToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
 
-ContiLogger& PacketLogger::_logger = ContiLoggerInstance;
+Logger& PacketLogger::_logger = LoggerInstance;
 
 void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 {

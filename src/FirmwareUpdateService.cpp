@@ -11,7 +11,7 @@
 FirmwareUpdateService::FirmwareUpdateService(PacketSender& packetSender) :
 	_lastFirmwareCorrelationId(0),
 	_packetSender(packetSender),
-	_logger(ContiLoggerInstance),
+	_logger(LoggerInstance),
 	_maxFirmwareChunkSize(50*1024),
 	_isUpdatingFirmware(false),
 	_updateProgress(0)

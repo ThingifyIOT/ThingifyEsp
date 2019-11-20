@@ -949,7 +949,7 @@ size_t Serializer::FileWriter(cmp_ctx_t *ctx, const void *data, size_t count)
 }
 
 
-ContiLogger& Serializer::_logger = ContiLoggerInstance;
+Logger& Serializer::_logger = LoggerInstance;
 
 
 

@@ -5,11 +5,11 @@
 #include "Api/PacketBase.h"
 
 
-#include "Logging/ContiLogger.h"
+#include "Logging/Logger.h"
 
 class PacketLogger
 {
-	static ContiLogger& _logger;
+	static Logger& _logger;
 public:
 	static void LogPacket(const char* prefix, PacketBase* packet);
 };

@@ -12,7 +12,7 @@
 #include "Lib/FixedList/FixedList.h"
 
 #include "ThingifyConstants.h"
-#include "Logging/ContiLogger.h"
+#include "Logging/Logger.h"
 
 class Node;
 
@@ -31,7 +31,7 @@ class Node
 	uint16_t _integerId;
 	ThingifyUnit _unit;
 	bool _isReadOnly;
-	ContiLogger& _logger;
+	Logger& _logger;
 	NodeKind _kind;
 	int _rangeMin;
 	int _rangeMax;

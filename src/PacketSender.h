@@ -4,13 +4,13 @@
 
 #include "Lib/AsyncMqtt/AsyncMqttClient.h"
 #include "Api/PacketBase.h"
-#include "Logging/ContiLogger.h"
+#include "Logging/Logger.h"
 #include <FixedString.h>
 #include <stdint.h>
 
 class PacketSender
 {
-	ContiLogger& _logger;
+	Logger& _logger;
 	FixedString50 _outTopic;
 	AsyncMqttClient& _mqtt;
 	uint16_t _sentPacketCount;

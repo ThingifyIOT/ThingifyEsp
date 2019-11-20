@@ -1,9 +1,9 @@
-#include "ContiLogger.h"
+#include "Logger.h"
 #include "LogUtils.h"
 
 #include <Arduino.h>
 
-ContiLogger::ContiLogger()
+Logger::Logger()
 {
 	Level = LogLevel::Info;
 	ComponentsToInclude = static_cast<LogComponent>(
@@ -11,7 +11,7 @@ ContiLogger::ContiLogger()
 	);
 }
 
-bool ContiLogger::ShouldIncludeEntry(LogComponent component, LogLevel level)
+bool Logger::ShouldIncludeEntry(LogComponent component, LogLevel level)
 {
 	const auto includeRegardlessLevel = (static_cast<int>(ComponentsToInclude) & static_cast<int>(component)) > 0;
 	if (level < Level && !includeRegardlessLevel)
@@ -21,7 +21,7 @@ bool ContiLogger::ShouldIncludeEntry(LogComponent component, LogLevel level)
 	return true;
 }
 
-void ContiLogger::log(LogComponent component, LogLevel level, const __FlashStringHelper* format, bool skipNewLine, va_list argptr)
+void Logger::log(LogComponent component, LogLevel level, const __FlashStringHelper* format, bool skipNewLine, va_list argptr)
 {
 	_currentComponent = component;
 	_currrentLevel = level;
@@ -58,14 +58,14 @@ void ContiLogger::log(LogComponent component, LogLevel level, const __FlashStrin
 	Serial.flush();
 }
 
-void ContiLogger::ForceIncludeComponent(LogComponent logComponent)
+void Logger::ForceIncludeComponent(LogComponent logComponent)
 {
 	ComponentsToInclude = static_cast<LogComponent>(
 		static_cast<int>(ComponentsToInclude) |static_cast<int>(logComponent));
 }
 
 
-void ContiLogger::info(const __FlashStringHelper* format, ...)
+void Logger::info(const __FlashStringHelper* format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -74,7 +74,7 @@ void ContiLogger::info(const __FlashStringHelper* format, ...)
 }
 
 
-void ContiLogger::info(LogComponent component, const __FlashStringHelper* format, ...)
+void Logger::info(LogComponent component, const __FlashStringHelper* format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -82,7 +82,7 @@ void ContiLogger::info(LogComponent component, const __FlashStringHelper* format
 	va_end(argptr);
 }
 
-void ContiLogger::infoBegin(const __FlashStringHelper * format, ...)
+void Logger::infoBegin(const __FlashStringHelper * format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -90,7 +90,7 @@ void ContiLogger::infoBegin(const __FlashStringHelper * format, ...)
 	va_end(argptr);
 }
 
-void ContiLogger::infoBegin(LogComponent component, const __FlashStringHelper * format, ...)
+void Logger::infoBegin(LogComponent component, const __FlashStringHelper * format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -98,7 +98,7 @@ void ContiLogger::infoBegin(LogComponent component, const __FlashStringHelper * 
 	va_end(argptr);
 }
 
-void ContiLogger::add(const __FlashStringHelper * format, ...)
+void Logger::add(const __FlashStringHelper * format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -112,7 +112,7 @@ void ContiLogger::add(const __FlashStringHelper * format, ...)
 	va_end(argptr);
 }
 
-void ContiLogger::end()
+void Logger::end()
 {
 	if (!ShouldIncludeEntry(_currentComponent, _currrentLevel))
 	{
@@ -123,7 +123,7 @@ void ContiLogger::end()
 }
 
 
-void ContiLogger::warn(const __FlashStringHelper* format, ...)
+void Logger::warn(const __FlashStringHelper* format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -131,7 +131,7 @@ void ContiLogger::warn(const __FlashStringHelper* format, ...)
 	va_end(argptr);
 }
 
-void ContiLogger::err(const __FlashStringHelper* format, ...)
+void Logger::err(const __FlashStringHelper* format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -139,7 +139,7 @@ void ContiLogger::err(const __FlashStringHelper* format, ...)
 	va_end(argptr);
 }
 
-void ContiLogger::debug(const __FlashStringHelper* format, ...)
+void Logger::debug(const __FlashStringHelper* format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -147,7 +147,7 @@ void ContiLogger::debug(const __FlashStringHelper* format, ...)
 	va_end(argptr);
 }
 
-void ContiLogger::debug(LogComponent component, const __FlashStringHelper* format, ...)
+void Logger::debug(LogComponent component, const __FlashStringHelper* format, ...)
 {
 	va_list argptr;
 	va_start(argptr, format);
@@ -155,5 +155,5 @@ void ContiLogger::debug(LogComponent component, const __FlashStringHelper* forma
 	va_end(argptr);
 }
 
-ContiLogger ContiLoggerInstance;
+Logger LoggerInstance;
 

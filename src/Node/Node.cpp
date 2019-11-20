@@ -2,7 +2,7 @@
 
 int ValueinstanceCount = 0;
 Node::Node(NodeType type, ContiType valueType, const char* name, int integerId, ThingifyUnit unitType):
-_logger(ContiLoggerInstance),
+_logger(LoggerInstance),
 _kind(NodeKind::Normal),
 Value(valueType, true),
 _wasUpdated(false)

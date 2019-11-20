@@ -17,7 +17,7 @@ _incomingPackets(0),
 _valueSendInterval(0),
 _errorType(ThingError::NoError),
 _packetSender(_mqtt),
-_logger(ContiLoggerInstance),
+_logger(LoggerInstance),
 _deviceName(deviceName), 
 _deviceId(deviceId),
 _firmwareUpdateService(_packetSender)

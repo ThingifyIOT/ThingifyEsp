@@ -2,7 +2,7 @@
 #define _CONTI_ESP_WIFI_MULTI_H
 
 #include <Arduino.h>
-#include <Logging/ContiLogger.h>
+#include <Logging/Logger.h>
 #include <FixedString.h>
 
 #ifdef ESP8266
@@ -41,7 +41,7 @@ public:
     void run();
 	void PrintConnectResult(wl_status_t status);
 	std::function<void(WifiMultiState, FixedStringBase&)> OnStateChanged;
-	ContiLogger& _logger;
+	Logger& _logger;
 };
 
 #endif
