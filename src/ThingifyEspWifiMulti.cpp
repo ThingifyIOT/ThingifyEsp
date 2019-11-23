@@ -1,21 +1,21 @@
-#include "ContiESP8266WiFiMulti.h"
+#include "ThingifyEspWifiMulti.h"
 #include <limits.h>
 #include <string.h>
 #include "ThingifyUtils.h"
 
-ContiWiFiMulti::ContiWiFiMulti():
+ThingifyEspWiFiMulti::ThingifyEspWiFiMulti():
 _logger(LoggerInstance)
 {
 	_stateChangeTime = millis();
 	_state = WifiMultiState::Searching;
 }
 
-bool ContiWiFiMulti::addAP(const char* ssid, const char *passphrase)
+bool ThingifyEspWiFiMulti::addAP(const char* ssid, const char *passphrase)
 {
     return APlistAdd(ssid, passphrase);
 }
 
-void ContiWiFiMulti::run()
+void ThingifyEspWiFiMulti::run()
 {    
     wl_status_t status = WiFi.status();
 
@@ -169,7 +169,7 @@ void ContiWiFiMulti::run()
 
 // ##################################################################################
 
-void ContiWiFiMulti::PrintConnectResult(wl_status_t status)
+void ThingifyEspWiFiMulti::PrintConnectResult(wl_status_t status)
 {
 	IPAddress ip = WiFi.localIP();
 	uint8_t * mac = WiFi.BSSID();
@@ -195,7 +195,7 @@ void ContiWiFiMulti::PrintConnectResult(wl_status_t status)
 }
 
 
-bool ContiWiFiMulti::APlistAdd(const char* ssid, const char *passphrase) {
+bool ThingifyEspWiFiMulti::APlistAdd(const char* ssid, const char *passphrase) {
 
     WifiAPlist_t newAP;
 
@@ -234,7 +234,7 @@ bool ContiWiFiMulti::APlistAdd(const char* ssid, const char *passphrase) {
     return true;
 }
 
-void ContiWiFiMulti::APlistClean(void) {
+void ThingifyEspWiFiMulti::APlistClean(void) {
     for(uint32_t i = 0; i < APlist.size(); i++) 
 	{
         WifiAPlist_t entry = APlist[i];
@@ -248,7 +248,7 @@ void ContiWiFiMulti::APlistClean(void) {
     APlist.clear();
 }
 
-void ContiWiFiMulti::ChangeState(WifiMultiState state, FixedStringBase& ssid)
+void ThingifyEspWiFiMulti::ChangeState(WifiMultiState state, FixedStringBase& ssid)
 {
 	if (_state == state)
 	{

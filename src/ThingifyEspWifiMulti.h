@@ -1,5 +1,5 @@
-#ifndef _CONTI_ESP_WIFI_MULTI_H
-#define _CONTI_ESP_WIFI_MULTI_H
+#ifndef _THINGIFY_ESP_WIFI_MULTI_H
+#define _THINGIFY_ESP_WIFI_MULTI_H
 
 #include <Arduino.h>
 #include <Logging/Logger.h>
@@ -26,7 +26,7 @@ enum class WifiMultiState
 	Connecting, Searching, Connected
 };
 
-class ContiWiFiMulti 
+class ThingifyEspWiFiMulti 
 {
 private:
 	WifiMultiState _state;
@@ -36,7 +36,7 @@ private:
 	void ChangeState(WifiMultiState state, FixedStringBase& ssid);
 	uint64_t _stateChangeTime;
 public:
-	ContiWiFiMulti();
+	ThingifyEspWiFiMulti();
     bool addAP(const char* ssid, const char *passphrase = nullptr);
     void run();
 	void PrintConnectResult(wl_status_t status);

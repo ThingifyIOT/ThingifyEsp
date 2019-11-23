@@ -1,5 +1,5 @@
-#ifndef _CONTI_LOGGER_H
-#define _CONTI_LOGGER_H
+#ifndef _LOGGER_H
+#define _LOGGER_H
 
 #include "LogComponent.h"
 #include "LogLevel.h"

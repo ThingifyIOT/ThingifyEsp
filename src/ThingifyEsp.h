@@ -1,8 +1,8 @@
-#ifndef _CONTI_ESP_H
-#define _CONTI_ESP_H
+#ifndef _THINGIFY_ESP_H
+#define _THINGIFY_ESP_H
 
 #include "Thingify.h"
-#include "ContiESP8266WiFiMulti.h"
+#include "ThingifyEspWifiMulti.h"
 #include "SmartConfigServer.h"
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -12,7 +12,7 @@
 
 class ThingifyEsp : public Thingify
 {
-	ContiWiFiMulti _wifi_multi;
+	ThingifyEspWiFiMulti _wifi_multi;
 	SmartConfigServer _smartConfigServer;
 	volatile bool _wlConnectOccured;
 	volatile bool _wlDisconnectOccured;

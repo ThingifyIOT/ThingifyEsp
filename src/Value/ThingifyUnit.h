@@ -1,5 +1,5 @@
-#ifndef _CONTI_UNIT
-#define _CONTI_UNIT
+#ifndef _THINGIFY_UNIT
+#define _THINGIFY_UNIT
 
 enum class ThingifyUnit
 {	

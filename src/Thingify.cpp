@@ -43,7 +43,7 @@ _firmwareUpdateService(_packetSender)
 	_stateChangeTimer.Start();
 	WatchdogEnabled = true;
 
-	_logger.info(L("Sizeof ContiValue = %d"), sizeof(NodeValue));
+	_logger.info(L("Sizeof NodeValue = %d"), sizeof(NodeValue));
 	_logger.info(L("Sizeof UpdateNodesFromClientPacket: %d"), sizeof(UpdateNodesFromClientPacket));
 	_logger.info(L("Size of function execution buffer: %d"), sizeof(FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests>));
 }
@@ -73,7 +73,7 @@ void Thingify::Start()
 
 	if (IsNetworkConnected())
 	{
-		_logger.debug(L("Call ConnectToServer from Conti::Start"));
+		_logger.debug(L("Call ConnectToServer from Thingify::Start"));
 		ConnectToServer();
 	}
 	else
@@ -198,7 +198,7 @@ void Thingify::SetError(ThingError error, const char* errorStr)
 void Thingify::OnNetworkConnecting(FixedStringBase& networkName)
 {
 	_networkName = networkName;
-	_logger.info(LogComponent::Network, L("Conti::OnNetworkConnecting: '%s'"), _networkName.c_str());
+	_logger.info(LogComponent::Network, L("Thingify::OnNetworkConnecting: '%s'"), _networkName.c_str());
 	if (HasTerminalState(F("OnNetworkConnecting")))
 	{
 		return;
@@ -208,7 +208,7 @@ void Thingify::OnNetworkConnecting(FixedStringBase& networkName)
 
 void Thingify::OnNetworkConnected()
 {
-	_logger.info(LogComponent::Network, L("Conti::OnNetworkConnected"));
+	_logger.info(LogComponent::Network, L("Thingify::OnNetworkConnected"));
 	if (HasTerminalState(F("OnNetworkConnected")))
 	{
 		return;
@@ -218,7 +218,7 @@ void Thingify::OnNetworkConnected()
 		_currentState == ThingState::ConnectingToMqtt ||
 		_currentState == ThingState::SearchingForNetwork)
 	{
-		_logger.debug(L("Call ConnectToServer from Conti::OnNetworkConnected"));
+		_logger.debug(L("Call ConnectToServer from Thingify::OnNetworkConnected"));
 
 		ConnectToServer();
 	}
@@ -226,7 +226,7 @@ void Thingify::OnNetworkConnected()
 
 void Thingify::OnNetworkDisconnected()
 {
-	_logger.info(LogComponent::Network, L("Conti::OnNetworkDisconnected"));
+	_logger.info(LogComponent::Network, L("Thingify::OnNetworkDisconnected"));
 	if (HasTerminalState(F("OnNetworkDisconnected")))
 	{
 		return;

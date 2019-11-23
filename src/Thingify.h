@@ -1,5 +1,5 @@
-#ifndef _CONTI_H
-#define _CONTI_H
+#ifndef _THINGIFY_H
+#define _THINGIFY_H
 
 #include <vector>
 #include "Lib/AsyncMqtt/AsyncMqttClient.h"
