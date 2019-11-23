@@ -1,7 +1,7 @@
 #include "Node.h"
 
 int ValueinstanceCount = 0;
-Node::Node(NodeType type, ContiType valueType, const char* name, int integerId, ThingifyUnit unitType):
+Node::Node(NodeType type, ValueType valueType, const char* name, int integerId, ThingifyUnit unitType):
 _logger(LoggerInstance),
 _kind(NodeKind::Normal),
 Value(valueType, true),

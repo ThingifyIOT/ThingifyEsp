@@ -38,8 +38,8 @@ void ThingifyEsp::Loop()
 	if (_previousWlanStatus != wl_status)
 	{
 		_logger.info(LogComponent::Wifi, L("Status changed %s -> %s"),
-			ContiUtils::WlStatusToStr(_previousWlanStatus),
-			ContiUtils::WlStatusToStr(wl_status));
+			ThingifyUtils::WlStatusToStr(_previousWlanStatus),
+			ThingifyUtils::WlStatusToStr(wl_status));
 		_previousWlanStatus = wl_status;
 	}
 

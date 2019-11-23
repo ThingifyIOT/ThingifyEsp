@@ -5,35 +5,35 @@
 
 
 
-NodeValue::NodeValue(ContiType type, bool isNull):_isNull(isNull)
+NodeValue::NodeValue(ValueType type, bool isNull):_isNull(isNull)
 {
 	Type = type;
 	switch(Type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		_boolValue = false;
 		break;
-	case ContiType::Int:
+	case ValueType::Int:
 		_intValue = 0;
 		break;
-	case ContiType::String:
+	case ValueType::String:
 		stringValue = "";
 		break;
-	case ContiType::Float:
+	case ValueType::Float:
 		_floatValue = 0.0f;
 		break;
-	case ContiType::Color:
+	case ValueType::Color:
 		_colorValue.R = 0;
 		_colorValue.G = 0;
 		_colorValue.B = 0;
 		_colorValue.A = 0;
 		break;
-	case ContiType::TimeSpan:
+	case ValueType::TimeSpan:
 		_timespanValue = 0;
 		break;
 
-	case ContiType::Location: break;
-	case ContiType::DateTime: break;
+	case ValueType::Location: break;
+	case ValueType::DateTime: break;
 	default: ;
 	}
 }
@@ -45,27 +45,27 @@ NodeValue::NodeValue(const NodeValue& other)
 
 	switch (Type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		_boolValue = other._boolValue;
 		return;
-	case ContiType::Int:
+	case ValueType::Int:
 		_intValue = other._intValue;
 		return;
-	case ContiType::String:
+	case ValueType::String:
 		stringValue = other.stringValue;
 		return;
-	case ContiType::Float:
+	case ValueType::Float:
 		_floatValue = other._floatValue;
 		return;
-	case ContiType::Color:
+	case ValueType::Color:
 		_colorValue = other._colorValue;
 		return;
-	case ContiType::TimeSpan:
+	case ValueType::TimeSpan:
 		_timespanValue = other._timespanValue;
 		return;
-	case ContiType::Location:
+	case ValueType::Location:
 		break;
-	case ContiType::DateTime:
+	case ValueType::DateTime:
 		break;
 	}
 }
@@ -76,27 +76,27 @@ NodeValue & NodeValue::operator=(NodeValue & other)
 	_isNull = other._isNull;
 	switch (Type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		_boolValue = other._boolValue;
 		break;
-	case ContiType::Int:
+	case ValueType::Int:
 		_intValue = other._intValue;
 		break;
-	case ContiType::String:
+	case ValueType::String:
 		stringValue = other.stringValue;
 		break;
-	case ContiType::Float:
+	case ValueType::Float:
 		_floatValue = other._floatValue;
 		break;
-	case ContiType::Color:
+	case ValueType::Color:
 		_colorValue = other._colorValue;
 		break;
-	case ContiType::TimeSpan:
+	case ValueType::TimeSpan:
 		_timespanValue = other._timespanValue;
 		break;
-	case ContiType::Location:
+	case ValueType::Location:
 		break;
-	case ContiType::DateTime:
+	case ValueType::DateTime:
 		break;
 	}
 	return *this;
@@ -104,41 +104,41 @@ NodeValue & NodeValue::operator=(NodeValue & other)
 
 NodeValue NodeValue::Boolean(bool boolValue)
 {
-	NodeValue value(ContiType::Bool);
+	NodeValue value(ValueType::Bool);
 	value._boolValue = boolValue;
 	return value;
 }
 
 NodeValue NodeValue::String(const char* stringValue)
 {
-	NodeValue value(ContiType::String);
+	NodeValue value(ValueType::String);
 	value.stringValue = FixedString<ThingifyConstants::MaxStringValueSize>(stringValue);
 	return value;
 }
 
 NodeValue NodeValue::Int(int integerValue)
 {
-	NodeValue value(ContiType::Int);
+	NodeValue value(ValueType::Int);
 	value._intValue = integerValue;
 	return value;
 }
 
 NodeValue NodeValue::Range(int integerValue)
 {
-	NodeValue value(ContiType::Int);
+	NodeValue value(ValueType::Int);
 	value._intValue = integerValue;
 	return value;
 }
 
 NodeValue NodeValue::Float(float floatValue)
 {
-	NodeValue value(ContiType::Float);
+	NodeValue value(ValueType::Float);
 	value._floatValue = floatValue;
 	return value;
 }
 NodeValue NodeValue::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-	NodeValue value(ContiType::Color);
+	NodeValue value(ValueType::Color);
 	value._colorValue.R = r;
 	value._colorValue.G = g;
 	value._colorValue.B = b;
@@ -147,33 +147,33 @@ NodeValue NodeValue::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 }
 NodeValue NodeValue::TimeSpan(uint64_t ms)
 {
-	NodeValue value(ContiType::TimeSpan);
+	NodeValue value(ValueType::TimeSpan);
 	value._timespanValue = ms * 10000;
 	return value;
 }
 NodeValue NodeValue::NullString()
 {
-	NodeValue value(ContiType::String, true);
+	NodeValue value(ValueType::String, true);
 	return value;
 }
 NodeValue NodeValue::NullInt()
 {
-	NodeValue value(ContiType::Int, true);
+	NodeValue value(ValueType::Int, true);
 	return value;
 }
 NodeValue NodeValue::NullFloat()
 {
-	NodeValue value(ContiType::Float, true);
+	NodeValue value(ValueType::Float, true);
 	return value;
 }
 NodeValue NodeValue::NullColor()
 {
-	NodeValue value(ContiType::Color, true);
+	NodeValue value(ValueType::Color, true);
 	return value;
 }
 NodeValue NodeValue::NullTimeSpan()
 {
-	NodeValue value(ContiType::TimeSpan, true);
+	NodeValue value(ValueType::TimeSpan, true);
 	return value;
 }
 bool NodeValue::AsBool() const
@@ -222,13 +222,13 @@ bool NodeValue::IsSameAs(NodeValue& other) const
 	}
 	switch (Type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		return _boolValue == other._boolValue;
-	case ContiType::Int:
+	case ValueType::Int:
 		return _intValue == other._intValue;
-	case ContiType::String:		
+	case ValueType::String:		
 		return strcmp(stringValue.c_str(), other.stringValue.c_str()) == 0;
-	case ContiType::Float:
+	case ValueType::Float:
 		return _floatValue == other._floatValue;	
 	default:
 		return false;
@@ -250,19 +250,19 @@ FixedString<50> NodeValue::toString() const
 	}
 	switch (Type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		str.appendFormat("%d", _boolValue);
 		break;
-	case ContiType::Int:
+	case ValueType::Int:
 		str.appendFormat("%d", _intValue);
 		break;
-	case ContiType::String:
+	case ValueType::String:
 		str.append(stringValue.c_str());
 		break;
-	case ContiType::Float:
+	case ValueType::Float:
 		str.appendFormat("%f", _floatValue);
 		break;
-	case ContiType::Color:
+	case ValueType::Color:
 		str.appendFormat("[%d,%d,%d,%d]", _colorValue.R, _colorValue.G, _colorValue.B, _colorValue.A);
 		break;
 	default:

@@ -1,9 +1,9 @@
-#include "ContiUtils.h"
+#include "ThingifyUtils.h"
 #include <Arduino.h>
 #include "Node/NodeType.h"
 #include <EEPROM.h>
 
-void ContiUtils::PrintHex(const void* data, int count)
+void ThingifyUtils::PrintHex(const void* data, int count)
 {
 	for (int i = 0; i < count; i++)
 	{
@@ -12,7 +12,7 @@ void ContiUtils::PrintHex(const void* data, int count)
 	Serial.println();
 }
 
-const char* ContiUtils::ThingStateToStr(ThingState thingState)
+const char* ThingifyUtils::ThingStateToStr(ThingState thingState)
 {
 	switch (thingState)
 	{
@@ -31,7 +31,7 @@ const char* ContiUtils::ThingStateToStr(ThingState thingState)
 	}
 }
 
-const char* ContiUtils::ThingStateToShortStr(ThingState thingState)
+const char* ThingifyUtils::ThingStateToShortStr(ThingState thingState)
 {
 	switch (thingState)
 	{
@@ -49,7 +49,7 @@ const char* ContiUtils::ThingStateToShortStr(ThingState thingState)
 	}
 }
 
-const char* ContiUtils::WlStatusToStr(wl_status_t wlStatus)
+const char* ThingifyUtils::WlStatusToStr(wl_status_t wlStatus)
 {
 	switch (wlStatus)
 	{
@@ -65,7 +65,7 @@ const char* ContiUtils::WlStatusToStr(wl_status_t wlStatus)
 	}
 }
 
-void ContiUtils::ScanI2C(TwoWire & wire)
+void ThingifyUtils::ScanI2C(TwoWire & wire)
 {
 	int nDevices = 0;
 	Serial.println("\nLooking for I2C devices:");
@@ -85,7 +85,7 @@ void ContiUtils::ScanI2C(TwoWire & wire)
 
 }
 
-FixedString<20> ContiUtils::TimeToShortStr(ulong timeInSeconds)
+FixedString<20> ThingifyUtils::TimeToShortStr(ulong timeInSeconds)
 {
 	FixedString<20> buffer;
 
@@ -109,7 +109,7 @@ FixedString<20> ContiUtils::TimeToShortStr(ulong timeInSeconds)
 	return buffer;
 }
 
-const char* ContiUtils::NodeTypeToStr(NodeType nodeType)
+const char* ThingifyUtils::NodeTypeToStr(NodeType nodeType)
 {
 	switch (nodeType)
 	{
@@ -121,7 +121,7 @@ const char* ContiUtils::NodeTypeToStr(NodeType nodeType)
 	}
 }
 
-const __FlashStringHelper* ContiUtils::ThingErrorToStr(ThingError error)
+const __FlashStringHelper* ThingifyUtils::ThingErrorToStr(ThingError error)
 {
 	switch (error)
 	{
@@ -138,7 +138,7 @@ const __FlashStringHelper* ContiUtils::ThingErrorToStr(ThingError error)
 }
 
 #ifdef ESP8266
-const char* ContiUtils::WlDisconnectReasonToString(WiFiDisconnectReason reason)
+const char* ThingifyUtils::WlDisconnectReasonToString(WiFiDisconnectReason reason)
 {
 	switch (reason)
 	{
@@ -175,7 +175,7 @@ const char* ContiUtils::WlDisconnectReasonToString(WiFiDisconnectReason reason)
 }
 #endif
 
-void ContiUtils::WriteRestartReason(FixedStringBase& errorStr)
+void ThingifyUtils::WriteRestartReason(FixedStringBase& errorStr)
 {
 	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 	auto lengthToWrite = errorStr.length() > (maxLength-1) ? (maxLength-1) : errorStr.length();
@@ -189,7 +189,7 @@ void ContiUtils::WriteRestartReason(FixedStringBase& errorStr)
 }
 
 
-void ContiUtils::ReadRestartReason(FixedStringBase& errorStr)
+void ThingifyUtils::ReadRestartReason(FixedStringBase& errorStr)
 {
 	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 	errorStr.clear();
@@ -204,7 +204,7 @@ void ContiUtils::ReadRestartReason(FixedStringBase& errorStr)
 		errorStr.append(c);
 	}
 }
-void ContiUtils::ClearRestartReason()
+void ThingifyUtils::ClearRestartReason()
 {
 	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 
@@ -215,7 +215,7 @@ void ContiUtils::ClearRestartReason()
 	EEPROM.commit();
 }
 
-void ContiUtils::RestartDevice()
+void ThingifyUtils::RestartDevice()
 {
 #if ESP8266
 	ESP.reset();

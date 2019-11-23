@@ -1,7 +1,7 @@
 #include "ContiESP8266WiFiMulti.h"
 #include <limits.h>
 #include <string.h>
-#include "ContiUtils.h"
+#include "ThingifyUtils.h"
 
 ContiWiFiMulti::ContiWiFiMulti():
 _logger(LoggerInstance)

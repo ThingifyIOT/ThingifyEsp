@@ -10,7 +10,7 @@ enum class NodeType : unsigned char
 };
 
 
-enum class ContiType : unsigned char
+enum class ValueType : unsigned char
 {
 	Bool = 0,
 	Int = 1,

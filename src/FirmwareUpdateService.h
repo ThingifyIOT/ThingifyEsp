@@ -6,7 +6,7 @@
 #include "Api/UpdateFirmwareCommitToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
 #include "Logging/Logger.h"
-#include "ContiUtils.h"
+#include "ThingifyUtils.h"
 #include <stdint.h>
 
 class FirmwareUpdateService

@@ -1,5 +1,5 @@
 #include "Serializer.h"
-#include <ContiUtils.h>
+#include <ThingifyUtils.h>
 #include "Api/PacketBase.h"
 #include "Node/Node.h"
 #include "Node/NodeId.h"
@@ -543,7 +543,7 @@ UpdateNodesFromClientPacket* Serializer::DeserializeUpdateNodesFromClient(cmp_ct
 			return nullptr;
 		}
 
-		NodeValue nodeValue(ContiType::Bool);
+		NodeValue nodeValue(ValueType::Bool);
 		if (!DeserializeNodeValue(cmp, nodeValue))
 		{
 			_logger.err(L("Failed to read node value"));
@@ -602,7 +602,7 @@ UpdateNodesFromClientPacket* Serializer::DeserializeUpdateNodesFromClient(cmp_ct
 		}
 		for (uint32_t j = 0; j < argumentsArraySize; j++)
 		{
-			NodeValue argument(ContiType::Bool);
+			NodeValue argument(ValueType::Bool);
 			if (!Serializer::DeserializeNodeValue(cmp, argument))
 			{
 				_logger.err(L("Failed to deserialize argument %d"), j);
@@ -689,13 +689,13 @@ bool Serializer::SerializeNodeValue(cmp_ctx_t& cmp, NodeValue &nodeValue)
 
 	switch (nodeValue.Type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		cmp_write_bool(&cmp, nodeValue.AsBool());
 		break;
-	case ContiType::Int:
+	case ValueType::Int:
 		cmp_write_int(&cmp, nodeValue.AsInt());
 		break;
-	case ContiType::String:
+	case ValueType::String:
 		if (nodeValue.AsString() == nullptr)
 		{
 			cmp_write_str(&cmp, "", 0);
@@ -703,21 +703,21 @@ bool Serializer::SerializeNodeValue(cmp_ctx_t& cmp, NodeValue &nodeValue)
 		}
 		cmp_write_str(&cmp, nodeValue.AsString(), strlen(nodeValue.AsString()));
 		break;
-	case ContiType::Float:
+	case ValueType::Float:
 		cmp_write_double(&cmp, nodeValue.AsFloat());
 		break;
-	case ContiType::Color:
+	case ValueType::Color:
 		cmp_write_array(&cmp, 4);
 		cmp_write_u8(&cmp, nodeValue._colorValue.R);
 		cmp_write_u8(&cmp, nodeValue._colorValue.G);
 		cmp_write_u8(&cmp, nodeValue._colorValue.B);
 		cmp_write_u8(&cmp, nodeValue._colorValue.A);
 		break;
-	case ContiType::TimeSpan:
+	case ValueType::TimeSpan:
 		cmp_write_u64(&cmp, nodeValue._timespanValue);
 		break;
-	case ContiType::DateTime:
-	case ContiType::Location:
+	case ValueType::DateTime:
+	case ValueType::Location:
 		_logger.err(L("Not implemented value type"));
 			break;
 	default:
@@ -809,14 +809,14 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 		return false;
 	}
 
-	const auto type = static_cast<ContiType>(valueTypeInt);
+	const auto type = static_cast<ValueType>(valueTypeInt);
 
 	unsigned int stringSize = 100;
 	int nodeValueInteger;
 	nodeValue.Type = type;
 	switch (type)
 	{
-	case ContiType::Bool:
+	case ValueType::Bool:
 		bool boolValue;
 		
 		if (!cmp_read_bool(&cmp, &boolValue))
@@ -826,7 +826,7 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 		}
 		nodeValue._boolValue = boolValue;
 		return true;
-	case ContiType::String:
+	case ValueType::String:
 		char nodeValueString[100];
 		if(!cmp_read_str(&cmp, nodeValueString, &stringSize))
 		{
@@ -835,7 +835,7 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 		}
 		nodeValue.stringValue = FixedString<ThingifyConstants::MaxStringValueSize>(nodeValueString);
 		return true;
-	case ContiType::Int:
+	case ValueType::Int:
 
 		if(!cmp_read_int(&cmp, &nodeValueInteger))
 		{
@@ -845,7 +845,7 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 		}		
 		nodeValue._intValue = nodeValueInteger;
 		return true;
-	case ContiType::Float:
+	case ValueType::Float:
 		float nodeValueFloat;
 		int nodeValueInt;
 		if (!cmp_read_float(&cmp, &nodeValueFloat))
@@ -859,7 +859,7 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 		}
 		nodeValue._floatValue = nodeValueFloat;
 		return true;
-	case ContiType::Color:
+	case ValueType::Color:
 	{
 		uint32_t colorArraySize = 0;
 		if (!cmp_read_array(&cmp, &colorArraySize))

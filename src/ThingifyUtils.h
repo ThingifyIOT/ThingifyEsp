@@ -1,5 +1,5 @@
-#ifndef _CONTI_UTILS_H
-#define _CONTI_UTILS_H
+#ifndef _THINGIFY_UTILS_H
+#define _THINGIFY_UTILS_H
 
 #include <cinttypes>
 #include "ThingState.h"
@@ -17,7 +17,7 @@
 
 enum class NodeType : unsigned char;
 
-class ContiUtils
+class ThingifyUtils
 {
 public:
 	static void PrintHex(const void* data, int count);

@@ -37,7 +37,7 @@ class Node
 	int _rangeMax;
 	int _rangeStep;
 public:
-	Node(NodeType type, ContiType valueType, const char* name, int integerId, ThingifyUnit unitType);
+	Node(NodeType type, ValueType valueType, const char* name, int integerId, ThingifyUnit unitType);
 	void SetRangeAttributes(int min, int max, int step)
 	{
 		_rangeMin = min;

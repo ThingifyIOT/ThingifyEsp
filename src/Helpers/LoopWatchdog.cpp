@@ -1,5 +1,5 @@
 #include "LoopWatchdog.h"
-#include "../ContiUtils.h"
+#include "../ThingifyUtils.h"
 #include <FixedString.h>
 
 #ifdef ESP32
@@ -9,7 +9,7 @@ void IRAM_ATTR resetModule()
 	FixedString20 restartReason;
 	
 	restartReason.append(F("WdtReset"));
-	ContiUtils::WriteRestartReason(restartReason);
+	ThingifyUtils::WriteRestartReason(restartReason);
 	Serial.println("WatchdogReset");
 	esp_restart();
 }

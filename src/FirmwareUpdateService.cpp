@@ -186,9 +186,9 @@ void FirmwareUpdateService::Loop()
 		_logger.info(L("Restarting thing..."));
 
 		FixedString50 restartReason = "FirmwareUpdate";
-		ContiUtils::WriteRestartReason(restartReason);
+		ThingifyUtils::WriteRestartReason(restartReason);
 		delay(100);
-		ContiUtils::RestartDevice();
+		ThingifyUtils::RestartDevice();
 	}
 }
 

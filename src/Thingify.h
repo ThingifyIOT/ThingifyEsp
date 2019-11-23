@@ -7,7 +7,7 @@
 #include "Node/Node.h"
 #include "ThingState.h"
 #include "Serialization/Serializer.h"
-#include "ContiUtils.h"
+#include "ThingifyUtils.h"
 #include "IModule.h"
 #include "Logging/Logger.h"
 #include "Helpers/PacketLogger.h"
@@ -142,7 +142,7 @@ public:
 	Node* operator[](const char* node);
 	Node* FindNode(const char *nodeName);
 	bool RemoveNode(const char *nodeName);	
-	Node* AddNode(const char* nodeName, NodeType type, ContiType valueType, ThingifyUnit unit = ThingifyUnit::None);
+	Node* AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit = ThingifyUnit::None);
 	Node* AddBoolean(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
 	Node* AddString(const char* nodeName, const char *value, ThingifyUnit unit = ThingifyUnit::None);
 	Node* AddString(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);

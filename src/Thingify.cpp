@@ -22,7 +22,6 @@ _deviceName(deviceName),
 _deviceId(deviceId),
 _firmwareUpdateService(_packetSender)
 {
-	Serial.println("Conti::Conti");	
 	_serverName = ThingifyConstants::DefaultServer;
 	_serverPort = ThingifyConstants::DefaultPort;
 	_nodes.reserve(32);
@@ -54,13 +53,13 @@ void Thingify::Start()
 	_logger.info(L("Thing::Start"));
 	_errorType = ThingError::NoError;
 	EEPROM.begin(100);
-	ContiUtils::ReadRestartReason(_restartReason);
+	ThingifyUtils::ReadRestartReason(_restartReason);
 	_loopWatchdog.Start(WatchdogTimeoutInMs());
 	if (_restartReason.length() > 0)
 	{
 		_logger.err(L("Restart reason: %s"), _restartReason.c_str());
 	}
-	ContiUtils::ClearRestartReason();
+	ThingifyUtils::ClearRestartReason();
 
 	_logger.info(L("Module count: %d"), _modules.size());
 	for (auto module : _modules)
@@ -185,7 +184,7 @@ void Thingify::SetError(ThingError error, const char* errorStr)
 	}
 	if (error != ThingError::Other)
 	{
-		_errorStr = ContiUtils::ThingErrorToStr(error);
+		_errorStr = ThingifyUtils::ThingErrorToStr(error);
 	}
 	if (errorStr != nullptr)
 	{
@@ -542,8 +541,8 @@ void Thingify::SetState(ThingState newState)
 	}
 	_stateChangeTimer.Start();
 	_logger.info(L("   STATE CHANGE: %s -> %s"),
-		ContiUtils::ThingStateToStr(_currentState),
-		ContiUtils::ThingStateToStr(newState));
+		ThingifyUtils::ThingStateToStr(_currentState),
+		ThingifyUtils::ThingStateToStr(newState));
 
 	_currentState = newState;
 	if (OnStateChanged != nullptr)
@@ -577,7 +576,7 @@ void Thingify::AddModule(IModule * module)
 	_modules.push_back(module);
 }
 
-Node* Thingify::AddNode(const char* nodeName, NodeType type, ContiType valueType, ThingifyUnit unit)
+Node* Thingify::AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit)
 {
 	auto existingNode = FindNode(nodeName);
 	if (existingNode != nullptr)
@@ -593,11 +592,11 @@ Node* Thingify::AddNode(const char* nodeName, NodeType type, ContiType valueType
 
 Node* Thingify::AddBoolean(const char* nodeName, ThingifyUnit unit)
 {
-	return AddNode(nodeName, NodeType::BasicValue, ContiType::Bool, unit);
+	return AddNode(nodeName, NodeType::BasicValue, ValueType::Bool, unit);
 }
 Node* Thingify::AddString(const char* nodeName, const char *value, ThingifyUnit unit)
 {
-	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::String, unit);
+	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::String, unit);
 	node->SetValue(NodeValue::String(value));
 	return node;
 }
@@ -607,17 +606,17 @@ Node* Thingify::AddString(const char * nodeName, ThingifyUnit unit)
 }
 Node* Thingify::AddInt(const char* nodeName, ThingifyUnit unit)
 {
-	return AddNode(nodeName, NodeType::BasicValue, ContiType::Int, unit);
+	return AddNode(nodeName, NodeType::BasicValue, ValueType::Int, unit);
 }
 Node* Thingify::AddInt(const char* nodeName, int value, ThingifyUnit unit)
 {	
-	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Int, unit);
+	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Int, unit);
 	node->SetValue(NodeValue::Int(value));
 	return node;
 }
 Node* Thingify::AddFloat(const char* nodeName, float value, ThingifyUnit unit)
 {
-	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Float, unit);
+	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Float, unit);
 	node->SetValue(NodeValue::Float(value));
 	return node;
 }
@@ -627,19 +626,19 @@ Node* Thingify::AddFloat(const char* nodeName, ThingifyUnit unit)
 }
 Node* Thingify::AddColor(const char * nodeName)
 {
-	auto node = AddNode(nodeName, NodeType::BasicValue, ContiType::Float, ThingifyUnit::None);
+	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Float, ThingifyUnit::None);
 	node->SetValue(NodeValue::NullColor());
 	return node;
 }
 Node * Thingify::AddTimeSpan(const char *name)
 {
-	auto node = AddNode(name, NodeType::BasicValue, ContiType::TimeSpan, ThingifyUnit::None);
+	auto node = AddNode(name, NodeType::BasicValue, ValueType::TimeSpan, ThingifyUnit::None);
 	node->SetValue(NodeValue::NullColor());
 	return node;
 }
 Node* Thingify::AddRange(const char * nodeName, int min, int max, int step, ThingifyUnit unit)
 {
-	auto node = AddNode(nodeName, NodeType::Range, ContiType::Int, unit);
+	auto node = AddNode(nodeName, NodeType::Range, ValueType::Int, unit);
 	node->SetValue(NodeValue::NullInt());
 	node->SetRangeAttributes(min, max, step);
 	return node;
@@ -647,7 +646,7 @@ Node* Thingify::AddRange(const char * nodeName, int min, int max, int step, Thin
 
 Node* Thingify::AddFunction(const char * nodeName, FunctionExecutionCallback callback, void* context)
 {
-	auto node = AddNode(nodeName, NodeType::Function, ContiType::Bool, ThingifyUnit::None);
+	auto node = AddNode(nodeName, NodeType::Function, ValueType::Bool, ThingifyUnit::None);
 	node->_context = context;
 	node->ExecutionCallback = callback;
 	return node;
@@ -774,7 +773,7 @@ bool Thingify::HasTerminalState(const __FlashStringHelper* eventType)
 {
 	if (_currentState == ThingState::Error || _currentState == ThingState::Disabled)
 	{
-		_logger.warn(L("%s ignored, state = %s"), eventType, ContiUtils::ThingStateToStr(_currentState));
+		_logger.warn(L("%s ignored, state = %s"), eventType, ThingifyUtils::ThingStateToStr(_currentState));
 		return true;
 	}
 	return false;
@@ -798,13 +797,13 @@ void Thingify::HandleWatchdog()
 	if(_stateLoopDetector.LoopCount() > 20)
 	{
 		_logger.err(L("Device stuck in state loop state1: %s, state2: %s"), 
-			ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
-			ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
+			ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
+			ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
 
 		FixedString50 stateLoopString;
 			stateLoopString.appendFormat(F("StateLoop:%s:%s"),			
-				ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
-				ContiUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
+				ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
+				ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
 				_stateLoopDetector.Reset();
 
 		SetError(stateLoopString.c_str());
@@ -819,11 +818,11 @@ void Thingify::HandleWatchdog()
 			_currentState == ThingState::SearchingForNetwork ||
 			_currentState == ThingState::ServiceUnavailable)
 		{
-			_logger.err(L("Device stuck in %s state for 60s"), ContiUtils::ThingStateToStr(_currentState));
+			_logger.err(L("Device stuck in %s state for 60s"), ThingifyUtils::ThingStateToStr(_currentState));
 
 			FixedString50 stateStuckString;
 			stateStuckString.appendFormat(F("StateStuck:%s:%ds"),
-				ContiUtils::ThingStateToShortStr(_currentState),
+				ThingifyUtils::ThingStateToShortStr(_currentState),
 				MaxSecondsForState);
 
 			SetError(stateStuckString.c_str());
@@ -834,8 +833,8 @@ void Thingify::HandleWatchdog()
 	{
 		if (_stateChangeTimer.ElapsedSeconds() > 5)
 		{
-			ContiUtils::WriteRestartReason(_errorStr);
-			ContiUtils::RestartDevice();
+			ThingifyUtils::WriteRestartReason(_errorStr);
+			ThingifyUtils::RestartDevice();
 		}
 	}
 

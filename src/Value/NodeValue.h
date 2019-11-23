@@ -49,8 +49,8 @@ public:
 	};
 	FixedString<ThingifyConstants::MaxStringValueSize> stringValue;
 
-	ContiType Type;
-	NodeValue(ContiType type, bool isNull = false);
+	ValueType Type;
+	NodeValue(ValueType type, bool isNull = false);
 	NodeValue(const NodeValue& other);
 	NodeValue& operator=(NodeValue &other);
 	~NodeValue();
