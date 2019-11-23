@@ -1,6 +1,6 @@
 #include "PacketLogger.h"
 
-#include "Api/ContiPacketType.h"
+#include "Api/ThingifyPacketType.h"
 #include "Api/LoginResponseType.h"
 #include "Api/ThingSessionCreateAckPacket.h"
 #include "Api/HeartbeatPacket.h"
