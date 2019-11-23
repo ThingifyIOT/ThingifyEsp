@@ -53,8 +53,8 @@ public:
 	static Logger& _logger;
 	static size_t FileWriter(cmp_ctx_t *ctx, const void *data, size_t count);
 	static bool FileReader(cmp_ctx_t *ctx, void *data, size_t count);
-	static bool WritePacketHeader(cmp_ctx_t &cmp, ContiPacketType packetType);
-	static bool WriteArrayPacketHeader(cmp_ctx_t &cmp, ContiPacketType packetType, int arraySize);
+	static bool WritePacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType);
+	static bool WriteArrayPacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType, int arraySize);
 
 	static bool SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, FixedStringBase& data);
 	static bool SerializePacket(PacketBase *packet, FixedStringBase & data);

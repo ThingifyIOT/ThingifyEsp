@@ -12,9 +12,9 @@ public:
 	FixedString<80> ClientOutServerInTopic;
 	int64_t CurrentTime;
 
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::ThingSessionCreateAck;
+		return ThingifyPacketType::ThingSessionCreateAck;
 	}
 
 };

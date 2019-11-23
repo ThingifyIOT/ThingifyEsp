@@ -35,9 +35,9 @@ public:
 	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> FunctionExecutionResponses;
 	FixedList<ValueUpdateItem, ThingifyConstants::MaxOutgoingUpdatesCount> UpdatedNodes;
 
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::UpdateNodes;
+		return ThingifyPacketType::UpdateNodes;
 	}
 };
 

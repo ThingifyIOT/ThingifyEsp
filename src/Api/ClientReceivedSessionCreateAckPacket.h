@@ -6,9 +6,9 @@
 class ClientReceivedSessionCreateAckPacket : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::ClientReceivedCreateSessionAck;
+		return ThingifyPacketType::ClientReceivedCreateSessionAck;
 	}
 	int PacketId;
 };

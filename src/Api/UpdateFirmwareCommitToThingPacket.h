@@ -7,9 +7,9 @@
 class UpdateFirmwareCommitToThingPacket : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::UpdateFirmwareCommitToThing;
+		return ThingifyPacketType::UpdateFirmwareCommitToThing;
 	}
 	uint32_t CorrelationId;
 };

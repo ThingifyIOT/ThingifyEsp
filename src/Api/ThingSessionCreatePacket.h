@@ -15,9 +15,9 @@ public:
 	FixedString<15> FirmwareVersion;
 	std::vector<Node*> Nodes;
 
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::ThingSessionCreate;
+		return ThingifyPacketType::ThingSessionCreate;
 	}
 };
 #endif

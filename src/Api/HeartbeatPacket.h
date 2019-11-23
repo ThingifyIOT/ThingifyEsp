@@ -5,9 +5,9 @@
 class HeartbeatPacket : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::Heartbeat;
+		return ThingifyPacketType::Heartbeat;
 	}
 	int HeartbeatNumber;
 };

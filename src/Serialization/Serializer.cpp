@@ -6,7 +6,7 @@
 #include "Api/HeartbeatPacket.h"
 #include "Api/AckToDevicePacket.h"
 #include "SerializationHelpers.h"
-#include "Api/ContiPacketType.h"
+#include "Api/ThingifyPacketType.h"
 #include "Api/UpdateFirmwareBeginToThingPacket.h"
 #include "Api/UpdateFirmwareCommitToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
@@ -17,23 +17,23 @@ bool Serializer::SerializePacket(PacketBase* packet, FixedStringBase& outputBuff
 {
 	switch (packet->PacketType())
 	{
-		case ContiPacketType::ThingSessionCreate:
+		case ThingifyPacketType::ThingSessionCreate:
 		{
 			auto thingSessionCreatePacket = static_cast<ThingSessionCreatePacket*>(packet);
 			return SerializeThingSessionCreate(thingSessionCreatePacket, outputBuffer);
 			break;
 		}
-		case ContiPacketType::UpdateNodes:
+		case ThingifyPacketType::UpdateNodes:
 		{
 			auto updateNodesPacket = static_cast<UpdateNodesPacket*>(packet);
 			return SerializeUpdateNodesPacket(updateNodesPacket, outputBuffer);
 			break;
 		}
-		case ContiPacketType::ClientReceivedCreateSessionAck:
+		case ThingifyPacketType::ClientReceivedCreateSessionAck:
 		{
 			return SerializeSessionCreateAck(outputBuffer);
 		}
-		case ContiPacketType::UpdateFirmwareDataAck:
+		case ThingifyPacketType::UpdateFirmwareDataAck:
 		{
 			auto updateFirmwareAck = static_cast<UpdateFirmwareDataAck*>(packet);
 			return SerializeUpdateFirmwareDataAck(updateFirmwareAck, outputBuffer);
@@ -71,33 +71,33 @@ PacketBase* Serializer::DeserializePacket(FixedStringBase& data)
 		return nullptr;
 	}
 
-	const auto packetType = static_cast<ContiPacketType>(packetTypeInteger);
+	const auto packetType = static_cast<ThingifyPacketType>(packetTypeInteger);
 
-	if (packetType == ContiPacketType::Heartbeat)
+	if (packetType == ThingifyPacketType::Heartbeat)
 	{
 		return DeserializeHeartbeat(cmp);
 	}
-	if (packetType == ContiPacketType::AckToDevice)
+	if (packetType == ThingifyPacketType::AckToDevice)
 	{
 		return DeserializeAckToDevice(cmp);
 	}
-	if (packetType == ContiPacketType::UpdateNodesFromClient)
+	if (packetType == ThingifyPacketType::UpdateNodesFromClient)
 	{
 		return DeserializeUpdateNodesFromClient(cmp);
 	}
-	if (packetType == ContiPacketType::ThingSessionCreateAck)
+	if (packetType == ThingifyPacketType::ThingSessionCreateAck)
 	{
 		return DeserializeThingSessionCreateAck(cmp);
 	}
-	if(packetType == ContiPacketType::UpdateFirmwareCommitToThing)
+	if(packetType == ThingifyPacketType::UpdateFirmwareCommitToThing)
 	{
 		return DeserializeUpdateFirmwareCommitToThing(cmp);
 	}
-	if (packetType == ContiPacketType::UpdateFirmwareBeginToThing)
+	if (packetType == ThingifyPacketType::UpdateFirmwareBeginToThing)
 	{
 		return DeserializeUpdateFirmwareBeginToThing(cmp);
 	}
-	if(packetType == ContiPacketType::ZeroConfigurationPacket)
+	if(packetType == ThingifyPacketType::ZeroConfigurationPacket)
 	{
 		return DeserializeZeroConfigurationPacket(cmp);
 	}
@@ -108,7 +108,7 @@ bool Serializer::SerializeThingSessionCreate(ThingSessionCreatePacket* thingSess
 {
 	cmp_ctx_t cmp;
 	cmp_init(&cmp, &outputBuffer, nullptr, FileWriter);
-	if(!WriteArrayPacketHeader(cmp, ContiPacketType::ThingSessionCreate, 4))
+	if(!WriteArrayPacketHeader(cmp, ThingifyPacketType::ThingSessionCreate, 4))
 	{
 		return false;
 	}
@@ -296,7 +296,7 @@ bool Serializer::SerializeSessionCreateAck(FixedStringBase &data)
 	cmp_ctx_t cmp;
 	cmp_init(&cmp, &data, nullptr, FileWriter);
 
-	WriteArrayPacketHeader(cmp, ContiPacketType::ClientReceivedCreateSessionAck, 0);
+	WriteArrayPacketHeader(cmp, ThingifyPacketType::ClientReceivedCreateSessionAck, 0);
 	return cmp.error == 0;
 }
 bool Serializer::SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, FixedStringBase& data)
@@ -304,7 +304,7 @@ bool Serializer::SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, F
 	cmp_ctx_t cmp;
 	cmp_init(&cmp, &data, nullptr, FileWriter);
 
-	WriteArrayPacketHeader(cmp, ContiPacketType::UpdateFirmwareDataAck, 4);
+	WriteArrayPacketHeader(cmp, ThingifyPacketType::UpdateFirmwareDataAck, 4);
 	if (!cmp_write_integer(&cmp, packet->CorrelationId))
 	{
 		return false;
@@ -329,7 +329,7 @@ bool Serializer::SerializeUpdateNodesPacket(UpdateNodesPacket* updateNodesPacket
 
 	cmp_init(&cmp, &data, 0, FileWriter);
 
-	if (!WriteArrayPacketHeader(cmp, ContiPacketType::UpdateNodes, 6))
+	if (!WriteArrayPacketHeader(cmp, ThingifyPacketType::UpdateNodes, 6))
 	{
 		return false;
 	}
@@ -896,7 +896,7 @@ bool Serializer::DeserializeNodeValue(cmp_ctx_t &cmp, NodeValue &nodeValue)
 	}
 }
 
-bool Serializer::WritePacketHeader(cmp_ctx_t &cmp, ContiPacketType packetType)
+bool Serializer::WritePacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType)
 {
 	if (!cmp_write_array(&cmp, 2))
 	{
@@ -911,7 +911,7 @@ bool Serializer::WritePacketHeader(cmp_ctx_t &cmp, ContiPacketType packetType)
 	return true;
 }
 
-bool Serializer::WriteArrayPacketHeader(cmp_ctx_t &cmp, ContiPacketType packetType, int arraySize)
+bool Serializer::WriteArrayPacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType, int arraySize)
 {
 	if(!WritePacketHeader(cmp, packetType))
 	{

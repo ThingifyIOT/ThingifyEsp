@@ -1,7 +1,7 @@
-#ifndef _CONTI_PACKET_TYPE_H
-#define _CONTI_PACKET_TYPE_H
+#ifndef _THINGIFY_PACKET_TYPE_H
+#define _THINGIFY_PACKET_TYPE_H
 
-enum class ContiPacketType
+enum class ThingifyPacketType
 {
 	Heartbeat = 0,
 	UpdateNodes = 1,

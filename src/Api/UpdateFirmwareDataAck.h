@@ -8,9 +8,9 @@
 class UpdateFirmwareDataAck : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::UpdateFirmwareDataAck;
+		return ThingifyPacketType::UpdateFirmwareDataAck;
 	}
 	uint16_t CorrelationId;
 	bool IsSuccess;

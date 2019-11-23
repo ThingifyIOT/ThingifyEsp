@@ -19,9 +19,9 @@ public:
     FixedString50 ApiAddress;
 	std::vector<WifiNetworkPacket*> WifiNetworks;
 
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::ZeroConfigurationPacket;
+		return ThingifyPacketType::ZeroConfigurationPacket;
 	}
 };
 #endif

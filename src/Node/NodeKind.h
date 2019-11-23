@@ -1,5 +1,5 @@
 #ifndef _NODE_KIND_H
-#define _NODE_KING_H
+#define _NODE_KIND_H
 
 enum class NodeKind
 {

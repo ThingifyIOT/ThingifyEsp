@@ -343,7 +343,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 	const auto type = packet->PacketType();
 	PacketLogger::LogPacket(" <- ", packet);
 
-	if(type == ContiPacketType::ThingSessionCreateAck)
+	if(type == ThingifyPacketType::ThingSessionCreateAck)
 	{
 		const auto thingSessionCreateAck = static_cast<ThingSessionCreateAckPacket*>(packet);
 		_inTopic = thingSessionCreateAck->ClientInServerOutTopic;
@@ -381,7 +381,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 		SetState(ThingState::Online);
 	}
 
-	if (type == ContiPacketType::UpdateNodesFromClient)
+	if (type == ThingifyPacketType::UpdateNodesFromClient)
 	{
 		const auto updateNodesPacket = static_cast<UpdateNodesFromClientPacket*>(packet);
 
@@ -452,12 +452,12 @@ void Thingify::HandlePacket(PacketBase *packet)
 			_functionExecutionResults.add(functionResponse);
 		}
 	}
-	if (type == ContiPacketType::UpdateFirmwareBeginToThing)
+	if (type == ThingifyPacketType::UpdateFirmwareBeginToThing)
 	{
 		const auto updateFirmwareBegin = static_cast<UpdateFirmwareBeginToThingPacket*>(packet);
 		_firmwareUpdateService.HandleUpdateFirmwareBegin(updateFirmwareBegin);
 	}
-	if (type == ContiPacketType::UpdateFirmwareCommitToThing)
+	if (type == ThingifyPacketType::UpdateFirmwareCommitToThing)
 	{
 		const auto updateFirmwareCommit = static_cast<UpdateFirmwareCommitToThingPacket*>(packet);
 		_firmwareUpdateService.HandleFirmwareCommitPacket(updateFirmwareCommit);

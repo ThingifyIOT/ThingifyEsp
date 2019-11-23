@@ -18,7 +18,7 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 {
 	switch (packet->PacketType())
 	{
-		case ContiPacketType::ThingSessionCreateAck:
+		case ThingifyPacketType::ThingSessionCreateAck:
 		{
 			_logger.infoBegin(LogComponent::Packet, L("%s ThingSessionCreateAck "), prefix);
 			const auto thingSessionCreateAck = static_cast<ThingSessionCreateAckPacket*>(packet);
@@ -49,24 +49,24 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 			_logger.end();
 			break;
 		}
-		case ContiPacketType::ClientReceivedCreateSessionAck:
+		case ThingifyPacketType::ClientReceivedCreateSessionAck:
 		{
 			_logger.info(LogComponent::Packet, L("%s ClientReceivedCreateSessionAck"), prefix);
 			break;
 		}
-		case ContiPacketType::Heartbeat:	
+		case ThingifyPacketType::Heartbeat:	
 		{
 			const auto heartbeat = static_cast<HeartbeatPacket*>(packet);
 			_logger.info(LogComponent::Packet, L("%s Heartbeat, num = %d"), prefix, heartbeat->HeartbeatNumber);
 			break;
 		}
-		case ContiPacketType::AckToDevice:
+		case ThingifyPacketType::AckToDevice:
 		{
 			const auto ackToDevice = static_cast<AckToDevicePacket*>(packet);
 			_logger.info(LogComponent::Packet, L("%s AckToDevice, packetId = %d"), prefix, ackToDevice->PacketId);
 			break;
 		}
-		case ContiPacketType::UpdateNodesFromClient:
+		case ThingifyPacketType::UpdateNodesFromClient:
 		{
 			const auto updatesFromClient = static_cast<UpdateNodesFromClientPacket*>(packet);
 
@@ -84,7 +84,7 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 			_logger.end();
 			break;
 		}
-		case ContiPacketType::UpdateNodes:
+		case ThingifyPacketType::UpdateNodes:
 		{
 			const auto updateNodesPacket = static_cast<UpdateNodesPacket*>(packet);
 			_logger.infoBegin(LogComponent::Packet, L("%s UpdateNodesPacket "), prefix);
@@ -106,7 +106,7 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 			_logger.end();
 			break;
 		}
-		case ContiPacketType::ThingSessionCreate:
+		case ThingifyPacketType::ThingSessionCreate:
 		{
 			const auto thingSessionCreate = static_cast<ThingSessionCreatePacket*>(packet);
 			_logger.info(LogComponent::Packet, L("%s ThingSessionCreate token = '%s', clientId = '%s', nodes = %d"), 
@@ -116,7 +116,7 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 				thingSessionCreate->Nodes.size());
 			break;
 		}
-		case ContiPacketType::UpdateFirmwareBeginToThing:
+		case ThingifyPacketType::UpdateFirmwareBeginToThing:
 		{
 			const auto updateFirmwareBegin = static_cast<UpdateFirmwareBeginToThingPacket*>(packet);
 			_logger.info(LogComponent::Packet, L("%s UpdateFirmwareBeginToThing corrId = %d, FirmwareSize = %lld, FirmwareMd5 = %s"),
@@ -124,14 +124,14 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 				updateFirmwareBegin->CorrelationId, updateFirmwareBegin->FirmwareSize, updateFirmwareBegin->FirmwareMd5.c_str());
 		}
 		break;
-		case ContiPacketType::UpdateFirmwareCommitToThing:
+		case ThingifyPacketType::UpdateFirmwareCommitToThing:
 		{
 		const auto updateFirmwarePacket = static_cast<UpdateFirmwareCommitToThingPacket*>(packet);
 		_logger.info(LogComponent::Packet, L("%s UpdateFirmwareCommitToThing corrId = %d"),
 			prefix,
 			updateFirmwarePacket->CorrelationId);
 		}
-		case ContiPacketType::UpdateFirmwareDataAck:
+		case ThingifyPacketType::UpdateFirmwareDataAck:
 		{
 			const auto updateFirmwareAck = static_cast<UpdateFirmwareDataAck*>(packet);
 			_logger.info(LogComponent::Packet, L("%s UpdateFirmwareDataAck corrId = %d, isSuccess = %d, errorString = %s"),

@@ -8,9 +8,9 @@
 class UpdateFirmwareBeginToThingPacket : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::UpdateFirmwareBeginToThing;
+		return ThingifyPacketType::UpdateFirmwareBeginToThing;
 	}
 	uint32_t CorrelationId;
 	uint64_t FirmwareSize;

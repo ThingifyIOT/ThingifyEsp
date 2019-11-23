@@ -10,9 +10,9 @@
 class UpdateNodesFromClientPacket : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::UpdateNodesFromClient;
+		return ThingifyPacketType::UpdateNodesFromClient;
 	}
 	int PacketId;
 	FixedList<NodeUpdate, ThingifyConstants::MaxUpdatesFromClient> Updates;

@@ -69,7 +69,7 @@ void SmartConfigServer::Loop()
         Serial.println("Failed to deserialize packet");
         return;
     }
-    if(packet->PacketType() != ContiPacketType::ZeroConfigurationPacket)
+    if(packet->PacketType() != ThingifyPacketType::ZeroConfigurationPacket)
     {
         Serial.println("Wrong packet type");
         return;

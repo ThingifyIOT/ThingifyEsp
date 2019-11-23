@@ -6,9 +6,9 @@
 class AckToDevicePacket : public PacketBase
 {
 public:
-	ContiPacketType PacketType() override
+	ThingifyPacketType PacketType() override
 	{
-		return ContiPacketType::AckToDevice;
+		return ThingifyPacketType::AckToDevice;
 	}
 	int PacketId;
 };
