@@ -1,5 +1,5 @@
-#ifndef _CONTI_GSM_H
-#define _CONTI_GSM_H
+#ifndef _THINGIFY_GSM_H
+#define _THINGIFY_GSM_H
 
 #ifdef GSM
 
@@ -10,24 +10,23 @@
 #include <stdint.h>
 #include "Lib/EspAsyncTCPGsm/AsyncGsmClient.h"
 
-struct ContiGsmP
+struct ThingifyGsmP
 {
 	GsmModule _gsm;
 	AsyncGsmClient _gsmClient;
 
-	explicit ContiGsmP(uint8_t mux, SimcomAtCommands& simcomAtCommands):
+	explicit ThingifyGsmP(uint8_t mux, SimcomAtCommands& simcomAtCommands):
 		_gsm(simcomAtCommands),
 		_gsmClient(_gsm, mux)
 	{
-		Serial.println("ContiGsmP::ContiGsmP");
 		_gsm.ApnName = "virgin-internet";
 		_gsm.BaudRate = 460800;
 	}
 };
 
-class ContiGsm : 
-	protected ContiGsmP,
-	public Conti
+class ThingifyGsm : 
+	protected ThingifyGsmP,
+	public Thingify
 {
 	GsmState _previousGsmState;
 	bool IsNetworkConnected();
@@ -38,7 +37,7 @@ class ContiGsm :
 	bool _isPowerSavingActive = false;
 	bool _isPowerSavingActivePrev = false;
 public:
-	ContiGsm(const char* deviceId, const char* deviceName, SimcomAtCommands& atCommands);
+	ThingifyGsm(const char* deviceId, const char* deviceName, SimcomAtCommands& atCommands);
 
 	void Start() override;
 	void Loop() override;

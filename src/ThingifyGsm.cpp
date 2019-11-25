@@ -1,4 +1,4 @@
-#include "ContiGsm.h"
+#include "ThingifyGsm.h"
 #include <functional>
 
 #ifdef GSM
@@ -6,11 +6,10 @@
 using namespace std::placeholders;
 
 
-ContiGsm::ContiGsm(const char* deviceId, const char *deviceName, SimcomAtCommands &atCommands):
-	ContiGsmP(0, atCommands),
-	Conti(deviceId, deviceName, _gsmClient)
+ThingifyGsm::ThingifyGsm(const char* deviceId, const char *deviceName, SimcomAtCommands &atCommands):
+	ThingifyGsmP(0, atCommands),
+	Thingify(deviceId, deviceName, _gsmClient)
 {
-	Serial.println("ContiGsm::ContiGsm");	
 	_previousGsmState = _gsm.GetState();
 
 	_gsm.At().Logger().OnLog([](const char *logEntry, bool flush)
@@ -27,12 +26,12 @@ ContiGsm::ContiGsm(const char* deviceId, const char *deviceName, SimcomAtCommand
 	_firmwareUpdateService.SetMaxChunkSize(1024*10);
 }
 
-void ContiGsm::Start()
+void ThingifyGsm::Start()
 {
-	Conti::Start();
+	Thingify::Start();
 }
 
-void ContiGsm::Loop()
+void ThingifyGsm::Loop()
 {
 	auto& gsmLogger = _gsm.At().Logger();
 
@@ -72,26 +71,26 @@ void ContiGsm::Loop()
 		}
 		_previousGsmState = gsmState;
 	}
-	Conti::Loop();
+	Thingify::Loop();
 }
 
-bool ContiGsm::IsNetworkConnected()
+bool ThingifyGsm::IsNetworkConnected()
 {
 	return _gsm.GetState() == GsmState::ConnectedToGprs;
 }
-void ContiGsm::OnFunctionExecutedByExternal(Node & node)
+void ThingifyGsm::OnFunctionExecutedByExternal(Node & node)
 {
 	_logger.info(F("Function executed by external"));
 	_lastUserRequest = millis();
 
 }
-void ContiGsm::OnNodeValueChanedByExternal(Node & node)
+void ThingifyGsm::OnNodeValueChanedByExternal(Node & node)
 {
 	_logger.info(F("Node value changed by external"));
 	_lastUserRequest = millis();
 }
 
-void ContiGsm::HandleSleepMode()
+void ThingifyGsm::HandleSleepMode()
 {
 	auto now = millis();
 	auto gsmState = _gsm.GetState();
@@ -130,7 +129,7 @@ void ContiGsm::HandleSleepMode()
 }
 
 
-uint64_t ContiGsm::WatchdogTimeoutInMs()
+uint64_t ThingifyGsm::WatchdogTimeoutInMs()
 {
 	return 30000;
 }
