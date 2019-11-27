@@ -53,7 +53,11 @@ void ThingifyEsp::StopNetwork()
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
 	WiFi.persistent(false);
+#ifdef ESP32
 	WiFi.mode(WIFI_MODE_NULL);
+#elif ESP8266
+	WiFi.mode(WIFI_OFF);
+#endif
 }
 void ThingifyEsp::StartNetwork()
 {
