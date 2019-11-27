@@ -15,7 +15,7 @@ Thingify(deviceId, deviceName, wifiTcpClient)
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
 	WiFi.persistent(false);
-	WiFi.mode(WIFI_STA);
+	StartNetwork();
 
 	_wifi_multi.OnStateChanged = std::bind(&ThingifyEsp::OnWifiStateChanged, this, _1, _2);
 }
@@ -47,6 +47,19 @@ void ThingifyEsp::Loop()
 	_smartConfigServer.Loop();
 }
 
+void ThingifyEsp::StopNetwork()
+{
+	_logger.info(F("StopNetwork"));
+	WiFi.setAutoConnect(false);
+	WiFi.setAutoReconnect(false);
+	WiFi.persistent(false);
+	WiFi.mode(WIFI_MODE_NULL);
+}
+void ThingifyEsp::StartNetwork()
+{
+	_logger.info(F("StartNetwork"));
+	WiFi.mode(WIFI_STA);
+}
 void ThingifyEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName)
 {
 	if (state == WifiMultiState::Connecting)

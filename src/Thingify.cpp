@@ -741,7 +741,6 @@ void Thingify::SendNodeValues()
 		}
 	}
 
-
 	LogUpdatedNodes(updatedNodes);	
 
 	auto updateNodesPacket = new UpdateNodesPacket();
@@ -785,6 +784,15 @@ void Thingify::OnFunctionExecutedByExternal(Node & node)
 void Thingify::OnNodeValueChanedByExternal(Node & node)
 {
 }
+
+void Thingify::RestartNetwork()
+{
+	_logger.warn(L("RestartNetwork"));
+	SetState(ThingState::Disabled);
+	StopNetwork();
+	StartNetwork();
+	SetState(ThingState::SearchingForNetwork);
+}
 void Thingify::HandleWatchdog()
 {
 	if (!WatchdogEnabled)
@@ -805,8 +813,8 @@ void Thingify::HandleWatchdog()
 				ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
 				ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
 				_stateLoopDetector.Reset();
-
-		SetError(stateLoopString.c_str());
+		RestartNetwork();
+		return;
 	}
 
 	const int MaxSecondsForState = 60;
@@ -825,16 +833,8 @@ void Thingify::HandleWatchdog()
 				ThingifyUtils::ThingStateToShortStr(_currentState),
 				MaxSecondsForState);
 
-			SetError(stateStuckString.c_str());
-		}
-	}
-
-	if (_currentState == ThingState::Error)
-	{
-		if (_stateChangeTimer.ElapsedSeconds() > 5)
-		{
-			ThingifyUtils::WriteRestartReason(_errorStr);
-			ThingifyUtils::RestartDevice();
+			RestartNetwork();
+			return;
 		}
 	}
 
@@ -842,8 +842,19 @@ void Thingify::HandleWatchdog()
 	{
 		if (_lastPacketReceivedTimer.ElapsedSeconds() > 120)
 		{
-			_logger.err(L("Device didn't receive any data for 120s"));
-			SetError(F("DataIdle120s"));
+			_logger.err(L("Thing didn't receive any data for 120s"));
+			_lastPacketReceivedTimer.Start(); // hack
+			RestartNetwork();
+			return;
+		}
+	}
+	
+	if (_currentState == ThingState::Error)
+	{
+		if (_stateChangeTimer.ElapsedSeconds() > 5)
+		{
+			ThingifyUtils::WriteRestartReason(_errorStr);
+			ThingifyUtils::RestartDevice();
 		}
 	}
 }

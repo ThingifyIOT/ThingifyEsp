@@ -12,18 +12,20 @@
 
 class ThingifyEsp : public Thingify
 {
+private:
 	ThingifyEspWiFiMulti _wifi_multi;
 	SmartConfigServer _smartConfigServer;
 	volatile bool _wlConnectOccured;
 	volatile bool _wlDisconnectOccured;
 	wl_status_t _previousWlanStatus = WL_NO_SHIELD;
-	bool IsNetworkConnected();
+	bool IsNetworkConnected();	
+	void StopNetwork() override;
+	void StartNetwork() override;
 public:
 	ThingifyEsp(const char* deviceId, const char* deviceName);
 
 	void Start() override;
 	void Loop() override;
-
 	void OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName);
 	void AddAp(const char* ssid, const char* password = nullptr);
 	void AddApList(char* accessPoints[][2]);	

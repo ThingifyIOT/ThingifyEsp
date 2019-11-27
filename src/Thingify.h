@@ -35,6 +35,7 @@ private:
 	void LogNodes();
 	void SetState(ThingState newState);
 	bool HasTerminalState(const __FlashStringHelper* eventType);
+	void RestartNetwork();
 	std::vector<Node*> GetWorkingNodes();
 	std::vector<Node*> GetUpdatedNodes();
 
@@ -84,6 +85,8 @@ protected:
 	virtual void OnFunctionExecutedByExternal(Node& node);
 	virtual void OnNodeValueChanedByExternal(Node& node);
 	virtual bool IsNetworkConnected() = 0;
+	virtual void StopNetwork() = 0;
+	virtual void StartNetwork() = 0;
 	Logger& _logger;
 	const char* _deviceName;
 	const char* _deviceId;
