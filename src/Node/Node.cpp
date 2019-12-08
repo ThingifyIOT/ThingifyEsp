@@ -4,7 +4,7 @@ int ValueinstanceCount = 0;
 Node::Node(NodeType type, ValueType valueType, const char* name, int integerId, ThingifyUnit unitType):
 _logger(LoggerInstance),
 _kind(NodeKind::Normal),
-Value(valueType, true),
+Value(valueType, false),
 _wasUpdated(false)
 {
 	_name = name;

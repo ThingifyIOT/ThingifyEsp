@@ -639,7 +639,7 @@ Node * Thingify::AddTimeSpan(const char *name)
 Node* Thingify::AddRange(const char * nodeName, int min, int max, int step, ThingifyUnit unit)
 {
 	auto node = AddNode(nodeName, NodeType::Range, ValueType::Int, unit);
-	node->SetValue(NodeValue::NullInt());
+	node->SetValue(NodeValue::Int(0));
 	node->SetRangeAttributes(min, max, step);
 	return node;
 }
