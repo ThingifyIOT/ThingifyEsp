@@ -17,6 +17,7 @@ enum class ThingifyPacketType
 	UpdateFirmwareDataAck = 21,
 	UpdateFirmwareCommitToThing = 24,
 	UpdateFirmwareBeginToThing = 26,
-	ZeroConfigurationPacket = 27
+	ZeroConfigurationPacket = 27,
+	ZeroConfigurationResponsePacket = 28
 };
 #endif

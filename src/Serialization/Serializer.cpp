@@ -37,7 +37,11 @@ bool Serializer::SerializePacket(PacketBase* packet, FixedStringBase& outputBuff
 		{
 			auto updateFirmwareAck = static_cast<UpdateFirmwareDataAck*>(packet);
 			return SerializeUpdateFirmwareDataAck(updateFirmwareAck, outputBuffer);
-		}		
+		}
+		case ThingifyPacketType::ZeroConfigurationResponsePacket:
+		{
+			return SerializeZeroConfigurationResponse(outputBuffer);
+		}
 		default:
 			_logger.err(L("Failed to serialize, unknown packet type"));
 			return false;
@@ -323,6 +327,15 @@ bool Serializer::SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, F
 	}
 	return cmp.error == 0;
 }
+
+bool Serializer::SerializeZeroConfigurationResponse(FixedStringBase &data)
+{
+	cmp_ctx_t cmp;
+	cmp_init(&cmp, &data, nullptr, FileWriter);
+	WriteArrayPacketHeader(cmp, ThingifyPacketType::ZeroConfigurationResponsePacket, 0);
+	return cmp.error == 0;
+}
+
 bool Serializer::SerializeUpdateNodesPacket(UpdateNodesPacket* updateNodesPacket, FixedStringBase& data)
 {
 	cmp_ctx_t cmp;

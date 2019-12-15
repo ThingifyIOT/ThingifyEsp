@@ -8,8 +8,9 @@
 #include "SmartConfigServer.h"
 #include "Serialization/Serializer.h"
 #include "Api/ZeroConfigurationPacket.h"
+#include "Api/ZeroConfigurationResponsePacket.h"
 
-SmartConfigServer::SmartConfigServer() : _server(8888)
+SmartConfigServer::SmartConfigServer() : _server(8888), _logger(LoggerInstance)
 {
 
 }
@@ -26,14 +27,14 @@ void SmartConfigServer::Loop()
     {    
         return;  
     }
-    Serial.printf("Got remote connection from: %s\n", client.remoteIP().toString().c_str());
+    _logger.info(F("Got remote connection from: %s"), client.remoteIP().toString().c_str());
     
     uint64_t start = millis();
     while (client.available() < 2)
     {
         if(millis() - start > 2000)
         {
-            Serial.printf("Timout waiting for header\n");
+            _logger.err(F("Timout waiting for header"));
             return;
         }
         delay(10);
@@ -50,7 +51,7 @@ void SmartConfigServer::Loop()
     {
         if(millis() - start > 2000)
         {
-            Serial.printf("Timout waiting for packet body\n");
+            _logger.err(F("Timout waiting for packet body"));
             return;
         }
         delay(10);
@@ -58,7 +59,7 @@ void SmartConfigServer::Loop()
     char packetBodyBytes[2000];
     if(client.readBytes(packetBodyBytes, packetLength) != packetLength)
     {
-        Serial.println("Failed to read packet body");
+        _logger.err(F("Failed to read packet body"));
         return;
     }
     auto payload = new FixedString<1000>;
@@ -66,20 +67,40 @@ void SmartConfigServer::Loop()
 	const auto packet = Serializer::DeserializePacket(*payload);
     if(packet == nullptr)
     {
-        Serial.println("Failed to deserialize packet");
+        _logger.err(F("Failed to deserialize packet"));
         return;
     }
     if(packet->PacketType() != ThingifyPacketType::ZeroConfigurationPacket)
     {
-        Serial.println("Wrong packet type");
+        _logger.err(F("Wrong packet type"));
         return;
     }
     auto zeroConfiguration = static_cast<ZeroConfigurationPacket*>(packet);  
 
-    Serial.printf("Got smart config: api = %s, token = %s\n", zeroConfiguration->ApiAddress.c_str(), zeroConfiguration->Token.c_str());
+    _logger.info(F("Got smart config: api = %s, token = %s"), zeroConfiguration->ApiAddress.c_str(), zeroConfiguration->Token.c_str());
 
     for(int i=0; i < zeroConfiguration->WifiNetworks.size(); i++)
     {
-        Serial.printf(" Network%d: %s, %s\n", i+1, zeroConfiguration->WifiNetworks[i]->Name.c_str(), zeroConfiguration->WifiNetworks[i]->Password.c_str());
+        _logger.info(F(" Network%d: %s, %s"), i+1, zeroConfiguration->WifiNetworks[i]->Name.c_str(), zeroConfiguration->WifiNetworks[i]->Password.c_str());
+    }
+
+    auto zeroConfigurationResponsePacket = new ZeroConfigurationResponsePacket();
+    FixedString200 responseBytes;
+    if(!Serializer::SerializePacket(zeroConfigurationResponsePacket, responseBytes))
+    {
+        _logger.err(F("Failed to serialize zero config response packet"));
+        return;
+    }
+    char lengthHeader[2];
+    *((int16_t*)lengthHeader) = htons(responseBytes.length());
+    if(client.write(lengthHeader, 2) != 2)
+    {
+        _logger.err(F("Failed to write length header"));
+        return;
+    }
+    if(client.write(responseBytes.c_str(), responseBytes.length()) != responseBytes.length())
+    {
+        _logger.err(F("Failed to write response packet"));
+        return;
     }
 }

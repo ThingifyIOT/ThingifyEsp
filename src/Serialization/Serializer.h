@@ -57,6 +57,7 @@ public:
 	static bool WriteArrayPacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType, int arraySize);
 
 	static bool SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, FixedStringBase& data);
+	static bool SerializeZeroConfigurationResponse(FixedStringBase& data);
 	static bool SerializePacket(PacketBase *packet, FixedStringBase & data);
 
 	static bool SerializeThingSessionCreate(ThingSessionCreatePacket *thingSessionCreate, FixedStringBase &outputBuffer);
