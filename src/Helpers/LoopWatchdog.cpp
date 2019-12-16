@@ -6,7 +6,7 @@
 
 void IRAM_ATTR resetModule() 
 {
-	FixedString20 restartReason;
+	FixedString32 restartReason;
 	
 	restartReason.append(F("WdtReset"));
 	ThingifyUtils::WriteRestartReason(restartReason);
