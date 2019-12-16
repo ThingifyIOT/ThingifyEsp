@@ -9,10 +9,10 @@
 class ThingSessionCreatePacket: public PacketBase
 {
 public:
-	FixedString<40> ClientId;
-	FixedString<100> DeviceName;
-	FixedString<30> LoginToken;
-	FixedString<15> FirmwareVersion;
+	FixedString64 ClientId;
+	FixedString128 DeviceName;
+	FixedString32 LoginToken;
+	FixedString16 FirmwareVersion;
 	std::vector<Node*> Nodes;
 
 	ThingifyPacketType PacketType() override

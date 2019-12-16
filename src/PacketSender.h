@@ -11,7 +11,7 @@
 class PacketSender
 {
 	Logger& _logger;
-	FixedString50 _outTopic;
+	FixedString64 _outTopic;
 	AsyncMqttClient& _mqtt;
 	uint16_t _sentPacketCount;
 public:

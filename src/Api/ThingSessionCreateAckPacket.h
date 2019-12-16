@@ -8,8 +8,8 @@ class ThingSessionCreateAckPacket: public PacketBase
 {
 public:
 	LoginResponseType Type;
-	FixedString<80> ClientInServerOutTopic;
-	FixedString<80> ClientOutServerInTopic;
+	FixedString64 ClientInServerOutTopic;
+	FixedString64 ClientOutServerInTopic;
 	int64_t CurrentTime;
 
 	ThingifyPacketType PacketType() override

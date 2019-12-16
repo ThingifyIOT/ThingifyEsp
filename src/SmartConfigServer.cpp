@@ -62,7 +62,7 @@ void SmartConfigServer::Loop()
         _logger.err(F("Failed to read packet body"));
         return;
     }
-    auto payload = new FixedString<1000>;
+    auto payload = new FixedString1024;
 	payload->append(packetBodyBytes, packetLength);
 	const auto packet = Serializer::DeserializePacket(*payload);
     if(packet == nullptr)
@@ -85,7 +85,7 @@ void SmartConfigServer::Loop()
     }
 
     auto zeroConfigurationResponsePacket = new ZeroConfigurationResponsePacket();
-    FixedString200 responseBytes;
+    FixedString128 responseBytes;
     if(!Serializer::SerializePacket(zeroConfigurationResponsePacket, responseBytes))
     {
         _logger.err(F("Failed to serialize zero config response packet"));

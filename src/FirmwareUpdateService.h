@@ -15,14 +15,14 @@ private:
 	uint16_t _lastFirmwareCorrelationId;
 	PacketSender& _packetSender;
 	Logger& _logger;
-	FixedString100 _errorString;
+	FixedString128 _errorString;
 	bool _isSuccess;
 	uint32_t _maxFirmwareChunkSize;
 	bool Begin(uint64_t size);
 	bool SetExpectedMd5(const char* md5);
 	bool WriteData(const char* data, int length);
 	bool Commit();	
-	FixedString100 GetLastError();
+	FixedString128 GetLastError();
 	bool _isUpdatingFirmware;
 	static const __FlashStringHelper* UploadErrorToString(uint8_t error);
 	ElapsedTimer _restartRequestedTimer;

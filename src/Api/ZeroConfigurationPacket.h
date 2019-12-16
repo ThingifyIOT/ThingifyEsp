@@ -8,15 +8,15 @@
 class WifiNetworkPacket
 {
     public:
-        FixedString50 Name;
-        FixedString50 Password;
+        FixedString32 Name;
+        FixedString64 Password;
 };
 
 class ZeroConfigurationPacket: public PacketBase
 {
 public:
-	FixedString50 Token;
-    FixedString50 ApiAddress;
+	FixedString32 Token;
+    FixedString32 ApiAddress;
 	std::vector<WifiNetworkPacket*> WifiNetworks;
 
 	ThingifyPacketType PacketType() override

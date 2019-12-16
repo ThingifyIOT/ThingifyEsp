@@ -14,7 +14,7 @@ public:
 	}
 	uint32_t CorrelationId;
 	uint64_t FirmwareSize;
-	FixedString50 FirmwareMd5;
+	FixedString32 FirmwareMd5;
 };
 
 #endif

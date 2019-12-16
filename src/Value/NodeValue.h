@@ -79,7 +79,7 @@ public:
 	int RangeValue() const;
 	ContiColor AsColor() const;
 
-	FixedString<50> toString() const;
+	FixedString64 toString() const;
 };
 
 #endif

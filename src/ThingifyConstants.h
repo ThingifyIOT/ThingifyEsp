@@ -16,14 +16,14 @@ public:
 
 	static const int MaxFunctionExecutionRequests = 5;
 	static const int MaxFunctionArguments = 3;
-	static const int MaxFunctionErrorResponseBytes = 40;
+	static const int MaxFunctionErrorResponseBytes = 64;
 
 
-	static const int MaxStringValueSize = 100;
-	static const int MaxDeviceNameLength = 50;
-	static const int MaxNodeNameLength = 50;
+	static const int MaxStringValueSize = 128;
+	static const int MaxDeviceNameLength = 64;
+	static const int MaxNodeNameLength = 64;
 
-	static const int MaxErrorStringLength = 50;
+	static const int MaxErrorStringLength = 64;
 
 	static constexpr const char *DefaultServer = "conti.ml";
 	static constexpr int DefaultPort = 1883;

@@ -14,7 +14,7 @@ public:
 	}
 	uint16_t CorrelationId;
 	bool IsSuccess;
-	FixedString100 ErrorString;
+	FixedString128 ErrorString;
 	uint32_t MaxChunkSize;
 };
 

@@ -41,10 +41,10 @@ private:
 
 	std::vector<Node*> _nodes;
 	std::vector<IModule*> _modules;
-	FixedString<32> _networkName;
+	FixedString32 _networkName;
 
-	FixedString50 _inTopic;
-	FixedString50 _lastWill;
+	FixedString64 _inTopic;
+	FixedString64 _lastWill;
 	ElapsedTimer _lastPacketReceivedTimer;
 	
 	void LogUpdatedNodes(std::vector<Node*> updatedNodes) const;
@@ -66,8 +66,8 @@ private:
 	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> _functionExecutionResults;
 	uint16_t _valueSendInterval;
 	ThingError _errorType;
-	FixedString50 _errorStr;
-	FixedString50 _restartReason;
+	FixedString64 _errorStr;
+	FixedString64 _restartReason;
 	LoopWatchdog _loopWatchdog;
 	LoopStateDetector _stateLoopDetector;
 	PacketSender _packetSender;
@@ -161,7 +161,7 @@ public:
 	const char* GetServerName() const;
 	int GetReconnectCount() const;
 	uint64_t GetMillisecondsSinceConnect();
-	FixedString<50> GetNetworkName()
+	FixedString32 GetNetworkName()
 	{
 		return _networkName;
 	}

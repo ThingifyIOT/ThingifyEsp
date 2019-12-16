@@ -191,7 +191,7 @@ PacketBase* Serializer::DeserializeUpdateFirmwareBeginToThing(cmp_ctx_t& cmp)
 	{
 		return nullptr;
 	}
-	FixedString50 firmwareMd5;
+	FixedString32 firmwareMd5;
 	if (!SerializationHelpers::ReadCmpString(cmp, firmwareMd5))
 	{
 		return nullptr;
@@ -213,7 +213,7 @@ PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
 	auto packet = new ZeroConfigurationPacket();
 	for(uint32_t i =0; i < mapSize; i++)
 	{
-		FixedString50 key;
+		FixedString32 key;
 		if(!SerializationHelpers::ReadCmpString(cmp, key))
 		{
 			delete packet;
@@ -255,7 +255,7 @@ bool Serializer::ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetworkPacket& wifiNetwork)
 	}
 	for(uint32_t i =0; i < mapSize; i++)
 	{
-		FixedString50 key;
+		FixedString32 key;
 		if(!SerializationHelpers::ReadCmpString(cmp, key))
 		{
 			return false;
@@ -474,7 +474,7 @@ bool Serializer::SerializeUpdateResult(cmp_ctx_t &cmp, DeviceNodeUpdateResult &u
 		{
 			return false;
 		}
-		FixedString<10> ErrorMessage;
+		FixedString16 ErrorMessage;
 		WriteString(cmp, ErrorMessage);
 	}
 	return true;

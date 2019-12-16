@@ -166,8 +166,7 @@ void Thingify::SetError(const char* errorStr)
 }
 void Thingify::SetError(const __FlashStringHelper* errorStr)
 {
-	FixedString50 errorTmp;
-	
+	FixedString64 errorTmp;	
 	errorTmp = errorStr;
 	SetError(ThingError::Other, errorTmp.c_str());
 }
@@ -240,9 +239,9 @@ void Thingify::Authenticate()
 	auto requestId = StringHelper::GenerateRandomString<10>();
 	_logger.debug(L("Generated request id: %s"), requestId.c_str());
 
-	auto outTopic = FixedString50(ThingifyConstants::LoginRequestTopicPrefix) + requestId;
+	auto outTopic = FixedString64(ThingifyConstants::LoginRequestTopicPrefix) + requestId;
 	_packetSender.SetOutTopic(outTopic);
-	_inTopic = FixedString50(ThingifyConstants::LoginResponseTopicPrefix) + requestId;
+	_inTopic = FixedString64(ThingifyConstants::LoginResponseTopicPrefix) + requestId;
 	
 	const uint16_t packetIdSub = _mqtt.subscribe(_inTopic.c_str(), 2);
 	_logger.debug(L("Subscribed to %s, subsId = %d"), _inTopic.c_str(), packetIdSub);
@@ -367,7 +366,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 			DisconnectMqtt();
 			return;
 		}
-		FixedString50 inTopicToSubscribe = _inTopic;
+		FixedString64 inTopicToSubscribe = _inTopic;
 		inTopicToSubscribe.append("/#");
 		_mqtt.subscribe(inTopicToSubscribe.c_str(), 1);
 
@@ -510,7 +509,7 @@ void Thingify::onMqttMessage(char* topic, 	char* payloadData, AsyncMqttClientMes
 	}
 	else if(strcmp(topic, _inTopic.c_str()) == 0)
 	{
-		auto payload = new FixedString<1000>;
+		auto payload = new FixedString1024;
 		payload->append(payloadData, payloadLength);
 		const auto packet = Serializer::DeserializePacket(*payload);
 		delete payload;
@@ -713,7 +712,7 @@ std::vector<Node*> Thingify::GetUpdatedNodes()
 
 void Thingify::LogUpdatedNodes(std::vector<Node*> updatedNodes) const
 {
-	FixedString<50> updateNodesString;
+	FixedString64 updateNodesString;
 
 	for (Node* updated_node : updatedNodes)
 	{
@@ -808,7 +807,7 @@ void Thingify::HandleWatchdog()
 			ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
 			ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
 
-		FixedString50 stateLoopString;
+		FixedString64 stateLoopString;
 			stateLoopString.appendFormat(F("StateLoop:%s:%s"),			
 				ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State1()),
 				ThingifyUtils::ThingStateToShortStr((ThingState)_stateLoopDetector.State2()));
@@ -828,7 +827,7 @@ void Thingify::HandleWatchdog()
 		{
 			_logger.err(L("Device stuck in %s state for 60s"), ThingifyUtils::ThingStateToStr(_currentState));
 
-			FixedString50 stateStuckString;
+			FixedString64 stateStuckString;
 			stateStuckString.appendFormat(F("StateStuck:%s:%ds"),
 				ThingifyUtils::ThingStateToShortStr(_currentState),
 				MaxSecondsForState);

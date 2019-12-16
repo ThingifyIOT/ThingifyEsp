@@ -25,14 +25,14 @@ void ThingifyEspWiFiMulti::run()
 		{
 			PrintConnectResult(status);
 			_logger.err(L("Connecting to network timed out, changing state to Searching"));
-			FixedString<0> emptySsid("");
+			FixedString16 emptySsid("");
 			ChangeState(WifiMultiState::Searching, emptySsid);
 
 			return;
 		}	
 		if (status == WL_CONNECTED)
 		{
-			FixedString<32> ssid = WiFi.SSID().c_str();
+			FixedString32 ssid = WiFi.SSID().c_str();
 			ChangeState(WifiMultiState::Connected, ssid);
 			PrintConnectResult(status);
 		}	
@@ -43,7 +43,7 @@ void ThingifyEspWiFiMulti::run()
 	{
 		if (status != WL_CONNECTED)
 		{
-			FixedString<0> emptySsid("");
+			FixedString16 emptySsid("");
 			ChangeState(WifiMultiState::Searching, emptySsid);
 		}
 		return;
@@ -158,7 +158,7 @@ void ThingifyEspWiFiMulti::run()
 	}
 
 	//_logger.debug(LogComponent::Wifi, L("Connecting BSSID: %02X:%02X:%02X:%02X:%02X:%02X SSID: %s Channal: %d (%d)"), bestBSSID[0], bestBSSID[1], bestBSSID[2], bestBSSID[3], bestBSSID[4], bestBSSID[5], bestNetwork.ssid, bestChannel, bestNetworkDb);
-	FixedString<32> bestNetworkSsid = bestNetwork.ssid;
+	FixedString32 bestNetworkSsid = bestNetwork.ssid;
 	ChangeState(WifiMultiState::Connecting, bestNetworkSsid);
 
 	_logger.info(L("Connecting to '%s' network..."), bestNetworkSsid.c_str());

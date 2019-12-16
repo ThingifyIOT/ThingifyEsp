@@ -137,9 +137,9 @@ bool FirmwareUpdateService::SetExpectedMd5(const char* md5)
 	return Update.setMD5(md5);
 }
 
-FixedString100 FirmwareUpdateService::GetLastError()
+FixedString128 FirmwareUpdateService::GetLastError()
 {
-	FixedString100 error;
+	FixedString128 error;
 	error = UploadErrorToString(Update.getError());
 	return error;
 }
@@ -185,7 +185,7 @@ void FirmwareUpdateService::Loop()
 	{
 		_logger.info(L("Restarting thing..."));
 
-		FixedString50 restartReason = "FirmwareUpdate";
+		FixedString32 restartReason = "FirmwareUpdate";
 		ThingifyUtils::WriteRestartReason(restartReason);
 		delay(100);
 		ThingifyUtils::RestartDevice();

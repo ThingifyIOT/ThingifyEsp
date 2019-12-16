@@ -240,9 +240,9 @@ bool NodeValue::IsNull()
 	return _isNull;
 }
 
-FixedString<50> NodeValue::toString() const
+FixedString64 NodeValue::toString() const
 {
-	FixedString<50> str;
+	FixedString64 str;
 	if (_isNull)
 	{
 		str.append("null");

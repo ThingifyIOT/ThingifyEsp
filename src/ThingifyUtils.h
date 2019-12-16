@@ -26,7 +26,7 @@ public:
 	static const char* WlStatusToStr(wl_status_t wlStatus);
 	static void ScanI2C(TwoWire& wire);
 
-	static FixedString<20> TimeToShortStr(ulong timeInSeconds);
+	static FixedString32 TimeToShortStr(ulong timeInSeconds);
 	static const char * NodeTypeToStr(NodeType nodeType);
 #ifdef ESP8266
 	static const char* WlDisconnectReasonToString(WiFiDisconnectReason reason);

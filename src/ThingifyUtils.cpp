@@ -85,9 +85,9 @@ void ThingifyUtils::ScanI2C(TwoWire & wire)
 
 }
 
-FixedString<20> ThingifyUtils::TimeToShortStr(ulong timeInSeconds)
+FixedString32 ThingifyUtils::TimeToShortStr(ulong timeInSeconds)
 {
-	FixedString<20> buffer;
+	FixedString32 buffer;
 
 	const int secondsInHour = 60 * 60;
 
