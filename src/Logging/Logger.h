@@ -20,7 +20,7 @@ public:
 	Logger(Logger const &) = delete;
 	void operator=(Logger const &x) = delete;
 	LogComponent ComponentsToInclude;
-
+	bool LogEnabled = true;
 	Logger();
 	LogLevel Level;
 	void ForceIncludeComponent(LogComponent logComponent);

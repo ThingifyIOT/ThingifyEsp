@@ -23,6 +23,10 @@ bool Logger::ShouldIncludeEntry(LogComponent component, LogLevel level)
 
 void Logger::log(LogComponent component, LogLevel level, const __FlashStringHelper* format, bool skipNewLine, va_list argptr)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	_currentComponent = component;
 	_currrentLevel = level;
 
@@ -67,6 +71,10 @@ void Logger::ForceIncludeComponent(LogComponent logComponent)
 
 void Logger::info(const __FlashStringHelper* format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(LogComponent::Other, LogLevel::Info, format, false, argptr);
@@ -76,6 +84,10 @@ void Logger::info(const __FlashStringHelper* format, ...)
 
 void Logger::info(LogComponent component, const __FlashStringHelper* format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(component, LogLevel::Info, format, false, argptr);
@@ -84,6 +96,10 @@ void Logger::info(LogComponent component, const __FlashStringHelper* format, ...
 
 void Logger::infoBegin(const __FlashStringHelper * format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(LogComponent::Other, LogLevel::Info, format, true, argptr);
@@ -92,6 +108,10 @@ void Logger::infoBegin(const __FlashStringHelper * format, ...)
 
 void Logger::infoBegin(LogComponent component, const __FlashStringHelper * format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(component, LogLevel::Info, format, true, argptr);
@@ -100,6 +120,10 @@ void Logger::infoBegin(LogComponent component, const __FlashStringHelper * forma
 
 void Logger::add(const __FlashStringHelper * format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 
@@ -114,6 +138,10 @@ void Logger::add(const __FlashStringHelper * format, ...)
 
 void Logger::end()
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	if (!ShouldIncludeEntry(_currentComponent, _currrentLevel))
 	{
 		return;
@@ -125,6 +153,10 @@ void Logger::end()
 
 void Logger::warn(const __FlashStringHelper* format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(LogComponent::Other, LogLevel::Warning, format, false, argptr);
@@ -133,6 +165,10 @@ void Logger::warn(const __FlashStringHelper* format, ...)
 
 void Logger::err(const __FlashStringHelper* format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(LogComponent::Other, LogLevel::Error, format, false, argptr);
@@ -141,6 +177,10 @@ void Logger::err(const __FlashStringHelper* format, ...)
 
 void Logger::debug(const __FlashStringHelper* format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(LogComponent::Other, LogLevel::Debug, format, false, argptr);
@@ -149,6 +189,10 @@ void Logger::debug(const __FlashStringHelper* format, ...)
 
 void Logger::debug(LogComponent component, const __FlashStringHelper* format, ...)
 {
+	if(!LogEnabled)
+	{
+		return;
+	}
 	va_list argptr;
 	va_start(argptr, format);
 	log(component, LogLevel::Debug, format, false, argptr);
