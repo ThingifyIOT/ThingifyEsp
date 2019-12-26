@@ -28,6 +28,7 @@ class ThingifyGsm :
 	protected ThingifyGsmP,
 	public Thingify
 {
+private:
 	GsmState _previousGsmState;
 	bool IsNetworkConnected();
 	void OnFunctionExecutedByExternal(Node & node);
@@ -36,6 +37,8 @@ class ThingifyGsm :
 	uint64_t _lastUserRequest = 0;
 	bool _isPowerSavingActive = false;
 	bool _isPowerSavingActivePrev = false;
+	void StopNetwork() override;
+	void StartNetwork() override;
 public:
 	ThingifyGsm(const char* deviceId, const char* deviceName, SimcomAtCommands& atCommands);
 
