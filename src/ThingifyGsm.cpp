@@ -49,7 +49,7 @@ void ThingifyGsm::Loop()
 
 	if (gsmState == GsmState::Error)
 	{
-		FixedString50 error;
+		FixedString64 error;
 		error.append(F("GSM:"));
 		error.append(_gsm.Error());
 		SetError(error.c_str());
@@ -94,13 +94,16 @@ void ThingifyGsm::HandleSleepMode()
 {
 	auto now = millis();
 	auto gsmState = _gsm.GetState();
-
+	auto thingState = GetCurrentState();
 	auto isPowerSavingSuspended =
 		(now - _lastUserRequest < PowerSavingSuspendTime)
 		|| (_firmwareUpdateService.IsUpdating())
 		|| (now - GetConnectTime() < PowerSavingSuspendTime)
 	    || (gsmState == GsmState::ConnectedToGprs && _gsm.GetTimeSinceStateChange() < PowerSavingSuspendTime)
-		|| (gsmState != GsmState::ConnectedToGprs);
+		|| (gsmState != GsmState::ConnectedToGprs) 
+		|| thingState == ThingState::ConnectingToMqtt
+		|| thingState == ThingState::Authenticating
+		|| thingState == ThingState::DisconnectedFromMqtt;
 
 	_isPowerSavingActive = PowerSavingEnabled && !isPowerSavingSuspended;
 
@@ -128,6 +131,14 @@ void ThingifyGsm::HandleSleepMode()
 	_isPowerSavingActivePrev = _isPowerSavingActive;
 }
 
+void ThingifyGsm::StopNetwork()
+{
+	_logger.info(F("StopNetwork"));
+}
+void ThingifyGsm::StartNetwork()
+{
+	_logger.info(F("StartNetwork"));
+}
 
 uint64_t ThingifyGsm::WatchdogTimeoutInMs()
 {

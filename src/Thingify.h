@@ -168,6 +168,7 @@ public:
 	}
 
 	void AddModule(IModule *module);
+	void AddDiagnostics(int updateInteval = 10000);
 
 	virtual ~Thingify() = default;
 };

@@ -1,7 +1,7 @@
 #include "Thingify.h"
 #include <functional>
 #include "Helpers/StringHelper.h"
-
+#include "DiagnosticsModule.h"
 #include "ThingifyConstants.h"
 #include "Api/HeartbeatPacket.h"
 #include "Api/DeviceNodeUpdateResult.h"
@@ -588,6 +588,13 @@ void Thingify::AddModule(IModule * module)
 	_modules.push_back(module);
 }
 
+void Thingify::AddDiagnostics(int updateInteval)
+{
+	auto diagnostics = new DiagnosticsModule(*this);
+	diagnostics->UpdateIntervalInMs = updateInteval;
+	AddModule(diagnostics);
+}
+
 Node* Thingify::AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit)
 {
 	auto existingNode = FindNode(nodeName);
@@ -651,7 +658,7 @@ Node * Thingify::AddTimeSpan(const char *name)
 Node* Thingify::AddRange(const char * nodeName, int min, int max, int step, ThingifyUnit unit)
 {
 	auto node = AddNode(nodeName, NodeType::Range, ValueType::Int, unit);
-	node->SetValue(NodeValue::Int(0));
+	node->SetValue(NodeValue::Int(min));
 	node->SetRangeAttributes(min, max, step);
 	return node;
 }
