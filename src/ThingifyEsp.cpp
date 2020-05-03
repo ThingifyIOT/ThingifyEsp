@@ -9,8 +9,8 @@ using namespace std::placeholders;
 AsyncClient wifiTcpClient;
 
 
-ThingifyEsp::ThingifyEsp(const char* deviceId, const char *deviceName):
-Thingify(deviceId, deviceName, wifiTcpClient)
+ThingifyEsp::ThingifyEsp(const char *deviceName):
+Thingify(deviceName, wifiTcpClient)
 {
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
@@ -29,7 +29,10 @@ void ThingifyEsp::Start()
 
 void ThingifyEsp::Loop()
 {
-	if(GetCurrentState() != ThingState::Disabled)
+	auto currentState = GetCurrentState();
+	if(currentState != ThingState::Disabled && 
+	   currentState != ThingState::NotConfigured && 
+	   currentState != ThingState::Configuring)
 	{
 		_wifi_multi.run();
 	}

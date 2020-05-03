@@ -22,7 +22,7 @@ private:
 	void StopNetwork() override;
 	void StartNetwork() override;
 public:
-	ThingifyEsp(const char* deviceId, const char* deviceName);
+	ThingifyEsp(const char* deviceName);
 
 	void Start() override;
 	void Loop() override;

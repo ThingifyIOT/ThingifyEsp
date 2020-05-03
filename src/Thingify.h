@@ -6,6 +6,7 @@
 #include <FixedString.h>
 #include "Node/Node.h"
 #include "ThingState.h"
+#include "Settings/SettingsStorage.h"
 #include "Serialization/Serializer.h"
 #include "ThingifyUtils.h"
 #include "IModule.h"
@@ -46,14 +47,15 @@ private:
 	FixedString64 _inTopic;
 	FixedString64 _lastWill;
 	ElapsedTimer _lastPacketReceivedTimer;
-	
+	SettingsStorage _settingsStorage;
+	ThingSettings _settings;
+
 	void LogUpdatedNodes(std::vector<Node*> updatedNodes) const;
 	void SendNodeValues();
 	bool SendAndDeletePacket(PacketBase *packet);
 	void HandleWatchdog();
 	void DisconnectMqtt();
 	ThingState _currentState;
-	int _serverPort;
 	int _reconnectCount;
 	uint16_t _incomingPackets;
 	uint16_t _lastNodeId;
@@ -71,7 +73,7 @@ private:
 	LoopWatchdog _loopWatchdog;
 	LoopStateDetector _stateLoopDetector;
 	PacketSender _packetSender;
-	void CheckErrors();
+	void CheckErrors();	
 protected:
 	void SetError(const char* errorStr);
 	void SetError(const __FlashStringHelper* errorStr);
@@ -88,16 +90,14 @@ protected:
 	virtual void StopNetwork() = 0;
 	virtual void StartNetwork() = 0;
 	Logger& _logger;
-	const char* _deviceName;
-	const char* _deviceId;
-	const char* _serverName;
-	
+	const char* _deviceName;	
 	FirmwareUpdateService _firmwareUpdateService;
 	virtual uint64_t WatchdogTimeoutInMs() = 0;
 public:
-	Thingify(const char *deviceId, const char *deviceName, IAsyncClient& client);
+	Thingify(const char *deviceName, IAsyncClient& client);
 	virtual void Start();
 	void Stop();
+	void ResetConfiguration();
 	virtual void Loop();
 
 	bool WatchdogEnabled;
@@ -138,6 +138,7 @@ public:
 	{
 		return _firmwareUpdateService;
 	}
+
 
 	ThingState GetCurrentState() const;
 	std::function<void(ThingState state)> OnStateChanged;

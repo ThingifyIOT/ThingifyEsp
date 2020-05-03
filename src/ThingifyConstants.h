@@ -24,9 +24,6 @@ public:
 	static const int MaxNodeNameLength = 64;
 
 	static const int MaxErrorStringLength = 64;
-
-	static constexpr const char *DefaultServer = "conti.ml";
-	static constexpr int DefaultPort = 1883;
 	static constexpr int DefaultSerialBaudrate = 115200;
 	static constexpr int MqttKeepAliveInSeconds = 60;
 

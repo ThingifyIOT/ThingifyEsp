@@ -4,6 +4,8 @@
 enum class ThingState: uint8_t
 {
 	Disabled,
+	NotConfigured,
+	Configuring,
 	SearchingForNetwork,
 	ConnectingToNetwork,
 	ConnectingToMqtt,

@@ -11,7 +11,7 @@
 #include "Api/UpdateFirmwareCommitToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
 #include "Api/ZeroConfigurationPacket.h"
-
+#include "BufferReader.h"
 
 bool Serializer::SerializePacket(PacketBase* packet, FixedStringBase& outputBuffer)
 {
@@ -53,7 +53,7 @@ PacketBase* Serializer::DeserializePacket(FixedStringBase& data)
 {
 	BufferReader bufferReader(data.c_str(), data.length());
 	cmp_ctx_t cmp;
-	cmp_init(&cmp, &bufferReader, FileReader, FileWriter);
+	cmp_init(&cmp, &bufferReader, SerializationHelpers::FileReader, SerializationHelpers::FileWriter);
 
 	uint32_t arraySize;
 	if (!cmp_read_array(&cmp, &arraySize))
@@ -111,7 +111,7 @@ PacketBase* Serializer::DeserializePacket(FixedStringBase& data)
 bool Serializer::SerializeThingSessionCreate(ThingSessionCreatePacket* thingSessionCreate, FixedStringBase& outputBuffer)
 {
 	cmp_ctx_t cmp;
-	cmp_init(&cmp, &outputBuffer, nullptr, FileWriter);
+	cmp_init(&cmp, &outputBuffer, nullptr, SerializationHelpers::FileWriter);
 	if(!WriteArrayPacketHeader(cmp, ThingifyPacketType::ThingSessionCreate, 4))
 	{
 		return false;
@@ -298,7 +298,7 @@ PacketBase* Serializer::DeserializeUpdateFirmwareCommitToThing(cmp_ctx_t& cmp)
 bool Serializer::SerializeSessionCreateAck(FixedStringBase &data)
 {
 	cmp_ctx_t cmp;
-	cmp_init(&cmp, &data, nullptr, FileWriter);
+	cmp_init(&cmp, &data, nullptr, SerializationHelpers::FileWriter);
 
 	WriteArrayPacketHeader(cmp, ThingifyPacketType::ClientReceivedCreateSessionAck, 0);
 	return cmp.error == 0;
@@ -306,7 +306,7 @@ bool Serializer::SerializeSessionCreateAck(FixedStringBase &data)
 bool Serializer::SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, FixedStringBase& data)
 {
 	cmp_ctx_t cmp;
-	cmp_init(&cmp, &data, nullptr, FileWriter);
+	cmp_init(&cmp, &data, nullptr, SerializationHelpers::FileWriter);
 
 	WriteArrayPacketHeader(cmp, ThingifyPacketType::UpdateFirmwareDataAck, 4);
 	if (!cmp_write_integer(&cmp, packet->CorrelationId))
@@ -331,7 +331,7 @@ bool Serializer::SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, F
 bool Serializer::SerializeZeroConfigurationResponse(FixedStringBase &data)
 {
 	cmp_ctx_t cmp;
-	cmp_init(&cmp, &data, nullptr, FileWriter);
+	cmp_init(&cmp, &data, nullptr, SerializationHelpers::FileWriter);
 	WriteArrayPacketHeader(cmp, ThingifyPacketType::ZeroConfigurationResponsePacket, 0);
 	return cmp.error == 0;
 }
@@ -340,7 +340,7 @@ bool Serializer::SerializeUpdateNodesPacket(UpdateNodesPacket* updateNodesPacket
 {
 	cmp_ctx_t cmp;
 
-	cmp_init(&cmp, &data, 0, FileWriter);
+	cmp_init(&cmp, &data, 0, SerializationHelpers::FileWriter);
 
 	if (!WriteArrayPacketHeader(cmp, ThingifyPacketType::UpdateNodes, 6))
 	{
@@ -937,29 +937,7 @@ bool Serializer::WriteArrayPacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packe
 	return true;
 }
 
-bool Serializer::FileReader(cmp_ctx_t *ctx, void *data, size_t count)
-{
-	BufferReader *bufferReader = reinterpret_cast<BufferReader*>(ctx->buf);
 
-	const char* readBytes = bufferReader->ReadBuffer(count);
-	if (readBytes == nullptr)
-	{
-		_logger.err(L("Read bytes returned null"));
-		return false;
-	}
-
-	memcpy(data, readBytes, count);
-
-	return true;
-}
-
-
-size_t Serializer::FileWriter(cmp_ctx_t *ctx, const void *data, size_t count)
-{
-	FixedStringBase *str = reinterpret_cast<FixedStringBase*>(ctx->buf);
-	str->append(reinterpret_cast<const char*>(data), count);
-	return count;
-}
 
 
 Logger& Serializer::_logger = LoggerInstance;

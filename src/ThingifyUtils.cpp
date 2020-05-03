@@ -16,6 +16,8 @@ const char* ThingifyUtils::ThingStateToStr(ThingState thingState)
 {
 	switch (thingState)
 	{
+	case ThingState::NotConfigured: return "NotConfigured";
+	case ThingState::Configuring: return "Configuring";
 	case ThingState::Disabled: return "Disabled";
 	case ThingState::SearchingForNetwork: return "SearchingForNetwork";
 	case ThingState::ConnectingToNetwork: return "ConnectingToNetwork";
@@ -35,6 +37,8 @@ const char* ThingifyUtils::ThingStateToShortStr(ThingState thingState)
 {
 	switch (thingState)
 	{
+	case ThingState::NotConfigured: return "NOT_CONF";
+	case ThingState::Configuring: return "CONF";
 	case ThingState::Disabled: return "DISABLED";
 	case ThingState::SearchingForNetwork: return "NET_SEARCH";
 	case ThingState::ConnectingToNetwork: return "WIFI_CONN";
@@ -121,18 +125,18 @@ const char* ThingifyUtils::NodeTypeToStr(NodeType nodeType)
 	}
 }
 
-const __FlashStringHelper* ThingifyUtils::ThingErrorToStr(ThingError error)
+const char* ThingifyUtils::ThingErrorToStr(ThingError error)
 {
 	switch (error)
 	{
-	case ThingError::InvalidToken:		return F("Invalid token");
-	case ThingError::ProtocolViolation: return F("Protocol violation");
-	case ThingError::OtherLoginError:	return F("Other login error");
-	case ThingError::StringOverflow:	return F("String overflow");
-	case ThingError::ListOverflow:		return F("List overflow");
-	case ThingError::LowFreeHeap:		return F("Low free heap");
-	case ThingError::LowFreeStack:		return F("Low free stack");
-	default: return F("No error str");
+	case ThingError::InvalidToken:		return "Invalid token";
+	case ThingError::ProtocolViolation: return "Protocol violation";
+	case ThingError::OtherLoginError:	return "Other login error";
+	case ThingError::StringOverflow:	return "String overflow";
+	case ThingError::ListOverflow:		return "List overflow";
+	case ThingError::LowFreeHeap:		return "Low free heap";
+	case ThingError::LowFreeStack:		return "Low free stack";
+	default: return "No error str";
 	}
 
 }

@@ -10,7 +10,7 @@
 #include <EEPROM.h>
 using namespace std::placeholders;
 
-Thingify::Thingify(const char *deviceId, const char *deviceName, IAsyncClient& client) :
+Thingify::Thingify(const char *deviceName, IAsyncClient& client) :
 _mqtt(client),
 _currentState(ThingState::Disabled),
 _incomingPackets(0),
@@ -19,24 +19,13 @@ _errorType(ThingError::NoError),
 _packetSender(_mqtt),
 _logger(LoggerInstance),
 _deviceName(deviceName), 
-_deviceId(deviceId),
 _firmwareUpdateService(_packetSender)
 {
-	_serverName = ThingifyConstants::DefaultServer;
-	_serverPort = ThingifyConstants::DefaultPort;
 	_nodes.reserve(32);
 	_modules.reserve(16);
-	_mqtt.setServer(_serverName, _serverPort);
-
 	_publishedNodeCount = 0;
 	_lastNodeId = 0;
-	_lastWill.clear();
-	_lastWill.appendFormat("%s%s", ThingifyConstants::LastWillTopicPrefix, deviceId);
-
-	_mqtt.
-		setKeepAlive(ThingifyConstants::MqttKeepAliveInSeconds).
-		setCredentials(_deviceId, "").
-		setClientId(_deviceId);
+	
 
 	SubscribeToEvents();	
 	_outgoingPacketId = 0;
@@ -71,6 +60,14 @@ void Thingify::Start()
 		}
 	}
 
+	if(!_settingsStorage.Get(_settings))
+	{
+		_logger.info(F("Failed to read configuration"));
+		SetState(ThingState::NotConfigured);
+		return;
+	}
+	_logger.info(F("Configuration read successfull"));
+
 	if (IsNetworkConnected())
 	{
 		_logger.debug(L("Call ConnectToServer from Thingify::Start"));
@@ -92,6 +89,13 @@ void Thingify::Stop()
 	DisconnectMqtt();
 }
 
+void Thingify::ResetConfiguration()
+{
+	_logger.info(L("Thingify::ResetConfiguration"));
+	Stop();
+	_settingsStorage.Clear();
+	SetState(ThingState::NotConfigured);
+}
 void Thingify::Loop()
 {
 	_loopWatchdog.Feed();
@@ -189,7 +193,7 @@ void Thingify::SetError(ThingError error, const char* errorStr)
 	{
 		_errorStr = errorStr;
 	}
-	_logger.err(F("Set error: %s"), _errorStr.c_str());
+	_logger.err(F("SetError: %s"), _errorStr.c_str());
 
 	_errorType = error;
 }
@@ -248,7 +252,7 @@ void Thingify::Authenticate()
 
 	auto thingSessionCreatePacket = new ThingSessionCreatePacket;
 	thingSessionCreatePacket->LoginToken = requestId;
-	thingSessionCreatePacket->ClientId = _deviceId;
+	thingSessionCreatePacket->ClientId = _settings.Token;
 	thingSessionCreatePacket->DeviceName = _deviceName;
 	thingSessionCreatePacket->FirmwareVersion = "1.0.0";
 	thingSessionCreatePacket->Nodes = GetWorkingNodes();
@@ -302,11 +306,20 @@ void Thingify::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 void Thingify::ConnectToServer()
 {
 	_logger.debug(L("Last will: %s"), _lastWill.c_str());
+
+	_lastWill.clear();
+	_lastWill.appendFormat("%s%s", ThingifyConstants::LastWillTopicPrefix, _settings.Token.c_str());
+
+	_mqtt.
+		setKeepAlive(ThingifyConstants::MqttKeepAliveInSeconds).
+		setCredentials( _settings.Token.c_str(), "").
+		setClientId( _settings.Token.c_str());
+
 	_mqtt.setWill(_lastWill.c_str(), 2, false, "lw", 2);
+	_mqtt.setServer(_settings.ServerName.c_str(), _settings.ServerPort);
 
 	SetState(ThingState::ConnectingToMqtt);
-	_logger.info(LogComponent::Network, L("Call mqtt.connect()"));
-
+	_logger.info(LogComponent::Network, L("Connecting to MQTT server: %s:%d"), _settings.ServerName.c_str(), _settings.ServerPort);
 	_mqtt.connect();	
 }
 
@@ -412,7 +425,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 					{
 						NodeId idFromMatchingNode;
 						idFromMatchingNode.NodeName = matchingNode->name();
-						idFromMatchingNode.DeviceId = _deviceId;
+						idFromMatchingNode.DeviceId = _settings.Token;
 						updateResult.nodeId = idFromMatchingNode;
 						existing = true;
 						_logger.info(L("Update result for node '%s' is already queued"), matchingNode->name());
@@ -557,7 +570,7 @@ ThingState Thingify::GetCurrentState() const
 
 const char* Thingify::GetServerName() const
 {
-	return _serverName;
+	return _settings.ServerName.c_str();
 }
 
 int Thingify::GetReconnectCount() const
@@ -750,7 +763,7 @@ void Thingify::SendNodeValues()
 	for (auto& node : updatedNodes)
 	{
 		NodeId nodeId;
-		nodeId.DeviceId = _deviceId;
+		nodeId.DeviceId = _settings.Token;
 		nodeId.NodeName = node->name();
 
 		ValueUpdateItem updateItem(nodeId, node->Value);

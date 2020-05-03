@@ -31,7 +31,7 @@ public:
 #ifdef ESP8266
 	static const char* WlDisconnectReasonToString(WiFiDisconnectReason reason);
 #endif
-	static const __FlashStringHelper* ThingErrorToStr(ThingError error);
+	static const char* ThingErrorToStr(ThingError error);
 
 	static void WriteRestartReason(FixedStringBase& errorStr);
 	static void ReadRestartReason(FixedStringBase& errorStr);
