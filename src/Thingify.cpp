@@ -1,8 +1,8 @@
 #include "Thingify.h"
 #include <functional>
 #include "Helpers/StringHelper.h"
-#include "DiagnosticsModule.h"
-#include "StatusLedModule.h"
+#include "Modules/DiagnosticsModule.h"
+#include "Modules/StatusLedModule.h"
 #include "ThingifyConstants.h"
 #include "Api/HeartbeatPacket.h"
 #include "Api/DeviceNodeUpdateResult.h"
