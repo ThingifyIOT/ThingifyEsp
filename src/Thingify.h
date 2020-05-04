@@ -169,6 +169,7 @@ public:
 
 	void AddModule(IModule *module);
 	void AddDiagnostics(int updateInteval = 10000);
+	void AddStatusLed(int ledPin);
 
 	virtual ~Thingify() = default;
 };

@@ -2,6 +2,7 @@
 #include <functional>
 #include "Helpers/StringHelper.h"
 #include "DiagnosticsModule.h"
+#include "StatusLedModule.h"
 #include "ThingifyConstants.h"
 #include "Api/HeartbeatPacket.h"
 #include "Api/DeviceNodeUpdateResult.h"
@@ -593,6 +594,12 @@ void Thingify::AddDiagnostics(int updateInteval)
 	auto diagnostics = new DiagnosticsModule(*this);
 	diagnostics->UpdateIntervalInMs = updateInteval;
 	AddModule(diagnostics);
+}
+
+void Thingify::AddStatusLed(int ledPin)
+{
+	auto statusLedModule = new StatusLedModule(*this, ledPin);
+	AddModule(statusLedModule);
 }
 
 Node* Thingify::AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit)
