@@ -39,9 +39,15 @@ bool SettingsStorage::Get(ThingSettings &settings)
     uint16_t dataLength = *(uint16_t*)&dataLengthBytes;
     uint16_t dataCrc = *(uint16_t*)&dataCrcBytes;
 
+    if(dataLength == 0 && dataCrc == 0)
+    {
+        _logger.err(L("Settings are empty"));
+        return false;
+    }
+
     if(dataLength < 5 || dataLength > MaxSettingsSize)
     {
-        _logger.err(L("Incorrect data length: %d\n"), dataLength);
+        _logger.err(L("Incorrect data length: %d"), dataLength);
         return false;
     }
     FixedString1024 data;
@@ -84,6 +90,7 @@ bool SettingsStorage::EepromReadArray(int address, char* data, int length)
     {
         data[i] = EEPROM.read(address+i);
     }
+    return true;
 }
 bool SettingsStorage::EepromWriteArray(int address, const char* data, int length)
 {
@@ -91,6 +98,7 @@ bool SettingsStorage::EepromWriteArray(int address, const char* data, int length
     {
         EEPROM.write(address+i, data[i]);
     }
+    return true;
 }
 
 uint16_t SettingsStorage::Crc16(const char* data_p, unsigned char length)

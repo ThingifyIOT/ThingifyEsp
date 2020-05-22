@@ -17,10 +17,11 @@
 #include "Helpers/LoopWatchdog.h"
 #include "PacketSender.h"
 #include "FirmwareUpdateService.h"
+#include "Node/NodeCollection.h"
 
 class IModule;
 
-class Thingify
+class Thingify : public NodeCollection
 {
 private:
 	AsyncMqttClient _mqtt;
@@ -33,24 +34,18 @@ private:
 	
 	void SubscribeToEvents();
 	void ConnectToServer();
-	void LogNodes();
 	void SetState(ThingState newState);
 	bool HasTerminalState(const __FlashStringHelper* eventType);
 	void RestartNetwork();
-	std::vector<Node*> GetWorkingNodes();
-	std::vector<Node*> GetUpdatedNodes();
 
-	std::vector<Node*> _nodes;
 	std::vector<IModule*> _modules;
 	FixedString32 _networkName;
 
 	FixedString64 _inTopic;
 	FixedString64 _lastWill;
 	ElapsedTimer _lastPacketReceivedTimer;
-	SettingsStorage _settingsStorage;
 	ThingSettings _settings;
 
-	void LogUpdatedNodes(std::vector<Node*> updatedNodes) const;
 	void SendNodeValues();
 	bool SendAndDeletePacket(PacketBase *packet);
 	void HandleWatchdog();
@@ -58,7 +53,6 @@ private:
 	ThingState _currentState;
 	int _reconnectCount;
 	uint16_t _incomingPackets;
-	uint16_t _lastNodeId;
 	int _publishedNodeCount;
 	int _outgoingPacketId;
 	uint64_t _disconnectedTimer;
@@ -89,10 +83,14 @@ protected:
 	virtual bool IsNetworkConnected() = 0;
 	virtual void StopNetwork() = 0;
 	virtual void StartNetwork() = 0;
+	virtual void StartZeroConfiguration() = 0;
+	virtual bool IsZeroConfigurationReady() = 0;
 	Logger& _logger;
 	const char* _deviceName;	
 	FirmwareUpdateService _firmwareUpdateService;
+	SettingsStorage _settingsStorage;
 	virtual uint64_t WatchdogTimeoutInMs() = 0;
+	void StartInternal();
 public:
 	Thingify(const char *deviceName, IAsyncClient& client);
 	virtual void Start();
@@ -138,27 +136,8 @@ public:
 	{
 		return _firmwareUpdateService;
 	}
-
-
 	ThingState GetCurrentState() const;
 	std::function<void(ThingState state)> OnStateChanged;
-
-	Node* operator[](const char* node);
-	Node* FindNode(const char *nodeName);
-	bool RemoveNode(const char *nodeName);	
-	Node* AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddBoolean(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddString(const char* nodeName, const char *value, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddString(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddRange(const char* nodeName, int min, int max, int step = 1, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddFunction(const char * nodeName, FunctionExecutionCallback callback, void* context = nullptr);
-	Node* AddInt(const char * nodeName, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddInt(const char* nodeName, int value, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddFloat(const char* nodeName, float value, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddFloat(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);
-	Node* AddColor(const char* nodeName);
-	Node* AddTimeSpan(const char* name);
-
 	const char* GetServerName() const;
 	int GetReconnectCount() const;
 	uint64_t GetMillisecondsSinceConnect();
@@ -166,7 +145,6 @@ public:
 	{
 		return _networkName;
 	}
-
 	void AddModule(IModule *module);
 	void AddDiagnostics(int updateInteval = 10000);
 	void AddStatusLed(int ledPin);

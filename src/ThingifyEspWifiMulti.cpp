@@ -19,12 +19,23 @@ void ThingifyEspWiFiMulti::run()
 {    
     wl_status_t status = WiFi.status();
 
+	if(_state != WifiMultiState::Connected)
+	{
+		if(status == WL_CONNECTED)
+		{
+			FixedString32 ssid = WiFi.SSID().c_str();
+			ChangeState(WifiMultiState::Connected, ssid);
+			return;
+		}
+	}
+
 	if (_state == WifiMultiState::Connecting)
 	{	
 		if (millis() - _stateChangeTime > 7000)
 		{
 			PrintConnectResult(status);
 			_logger.err(L("Connecting to network timed out, changing state to Searching"));
+			
 			FixedString16 emptySsid("");
 			ChangeState(WifiMultiState::Searching, emptySsid);
 

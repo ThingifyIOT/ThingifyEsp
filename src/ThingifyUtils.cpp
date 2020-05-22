@@ -125,6 +125,24 @@ const char* ThingifyUtils::NodeTypeToStr(NodeType nodeType)
 	}
 }
 
+void ThingifyUtils::LogSettings(Logger& logger, ThingSettings& settings)
+{
+	logger.info(F("Settings: api = %s:%d, token = %s, %d wifi networks"), 
+		settings.ApiServer.c_str(),
+		settings.ApiPort,
+		settings.Token.c_str(), 
+		settings.WifiNetworks.size());
+
+	for(int i=0; i < settings.WifiNetworks.size(); i++)
+	{
+		logger.info(F(" Network%d: %s, %s"),
+		 	i+1, 
+			settings.WifiNetworks[i]->Name.c_str(), 
+			settings.WifiNetworks[i]->Password.c_str());
+	}
+}
+
+
 const char* ThingifyUtils::ThingErrorToStr(ThingError error)
 {
 	switch (error)

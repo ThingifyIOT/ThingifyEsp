@@ -31,15 +31,15 @@ bool SettingsSerializer::Serialize(ThingSettings& settings, FixedStringBase& str
 {
     cmp_ctx_t cmp;
 	cmp_init(&cmp, &stream, 0, SerializationHelpers::FileWriter);
-    if(!cmp_write_map(&cmp, 4))
+    if(!cmp_write_map(&cmp, 5))
     {
         return false;
     }
-    if(!WriteMapPair(cmp, "a", settings.ServerName))
+    if(!WriteMapPair(cmp, "a", settings.ApiServer))
     {
         return false;
     }
-	if(!WriteMapPair(cmp, "p", settings.ServerPort))
+	if(!WriteMapPair(cmp, "p", settings.ApiPort))
 	{
 		return false;
 	}
@@ -61,7 +61,10 @@ bool SettingsSerializer::Serialize(ThingSettings& settings, FixedStringBase& str
     }
     for(int i=0; i < settings.WifiNetworks.size(); i++)
     {
-        if(!WriteWifiNetwork(cmp, settings.WifiNetworks[i]));
+        if(!WriteWifiNetwork(cmp, settings.WifiNetworks[i]))
+		{
+			return false;
+		}
     }
     return true;
 }
@@ -101,16 +104,17 @@ bool SettingsSerializer::Deserialize(FixedStringBase& stream, ThingSettings& set
 		{
 			return false;
 		}
+		
 		if(key.equals("a"))
 		{
-			if(!SerializationHelpers::ReadCmpString(cmp, settings.ServerName))
+			if(!SerializationHelpers::ReadCmpString(cmp, settings.ApiServer))
 			{
 				return false;
 			}
 		}
 		if(key.equals("p"))
 		{
-			if(!cmp_read_int(&cmp, &settings.ServerPort))
+			if(!cmp_read_int(&cmp, &settings.ApiPort))
 			{
 				return false;
 			}
@@ -133,15 +137,14 @@ bool SettingsSerializer::Deserialize(FixedStringBase& stream, ThingSettings& set
 		{
 			uint32_t wifiArraySize;
 			cmp_read_array(&cmp, &wifiArraySize);
+
 			while (wifiArraySize-- > 0)
 			{
-				auto wifiNetwork = new WifiNetwork();
-				if(!ReadWifiNetwork(cmp, *wifiNetwork))
-				{
-					delete wifiNetwork;
-					return false;
+				auto wifiNetwork = ReadWifiNetwork(cmp);
+				if(wifiNetwork != nullptr)
+				{				
+					settings.WifiNetworks.push_back(wifiNetwork);
 				}
-				settings.WifiNetworks.push_back(wifiNetwork);
 			}			
 		}
 	}
@@ -149,13 +152,15 @@ bool SettingsSerializer::Deserialize(FixedStringBase& stream, ThingSettings& set
 }
 
 
-bool SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetwork& wifiNetwork)
+WifiNetwork* SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp)
 {
 	uint32_t mapSize;
 	if(!cmp_read_map(&cmp, &mapSize))
 	{
 		return false;
 	}
+	FixedString32 name;
+	FixedString64 password;
 	for(uint32_t i =0; i < mapSize; i++)
 	{
 		FixedString32 key;
@@ -165,18 +170,18 @@ bool SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetwork& wifiNetwor
 		}
 		if(key.equals("n"))
 		{
-			if(!SerializationHelpers::ReadCmpString(cmp, wifiNetwork.Name))
+			if(!SerializationHelpers::ReadCmpString(cmp, name))
             {
                 return false;
             }
 		}
 		else if(key.equals("p"))
 		{
-			if(!SerializationHelpers::ReadCmpString(cmp, wifiNetwork.Password))
+			if(!SerializationHelpers::ReadCmpString(cmp, password))
             {
                 return false;
             }
 		}
 	}
-	return true;
+	return new WifiNetwork(name, password);
 }

@@ -31,6 +31,10 @@ const NodeKind Node::kind() const
 {
 	return _kind;
 }
+const bool Node::isNull() const
+{
+	return Value.Type == ValueType::Null;
+}
 void Node::HandleUpdate()
 {
 	_wasUpdated = true;

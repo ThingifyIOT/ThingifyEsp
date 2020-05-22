@@ -10,7 +10,7 @@ class SettingsSerializer
     bool WriteMapPair(cmp_ctx_t& cmp, const char* key, FixedStringBase& value);
     bool WriteMapPair(cmp_ctx_t& cmp, const char* key, int value);
     bool WriteWifiNetwork(cmp_ctx_t& cmp,  WifiNetwork *network);
-    bool ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetwork& wifiNetwork);
+    WifiNetwork* ReadWifiNetwork(cmp_ctx_t& cmp);
 public:
     bool Serialize(ThingSettings& settings, FixedStringBase& stream);
     bool Deserialize(FixedStringBase& stream, ThingSettings& settings);

@@ -17,15 +17,21 @@ SmartConfigServer::SmartConfigServer() : _server(8888), _logger(LoggerInstance)
 void SmartConfigServer::Start()
 {
     _server.begin();
-    Serial.println("Started smart config server");
+
+    _logger.info(F("Started smart config server"));
+}
+void SmartConfigServer::Stop()
+{
+    _server.stop();
+    _logger.info(F("Stopped smart config server"));
 }
 
-void SmartConfigServer::Loop()
+ZeroConfigurationPacket* SmartConfigServer::Loop()
 {
     WiFiClient client = _server.available();
     if (!client) 
     {    
-        return;  
+        return nullptr;  
     }
     _logger.info(F("Got remote connection from: %s"), client.remoteIP().toString().c_str());
     
@@ -35,7 +41,7 @@ void SmartConfigServer::Loop()
         if(millis() - start > 2000)
         {
             _logger.err(F("Timout waiting for header"));
-            return;
+            return nullptr;  
         }
         delay(10);
     }
@@ -43,7 +49,7 @@ void SmartConfigServer::Loop()
     char packetLengthBuffer[2];
     if(client.readBytes(packetLengthBuffer, 2) != 2)
     {
-        return;
+        return nullptr;  
     }
 
     uint16_t packetLength = ntohs(*(uint16_t*)packetLengthBuffer);
@@ -52,7 +58,7 @@ void SmartConfigServer::Loop()
         if(millis() - start > 2000)
         {
             _logger.err(F("Timout waiting for packet body"));
-            return;
+            return nullptr;  
         }
         delay(10);
     }
@@ -60,7 +66,7 @@ void SmartConfigServer::Loop()
     if(client.readBytes(packetBodyBytes, packetLength) != packetLength)
     {
         _logger.err(F("Failed to read packet body"));
-        return;
+        return nullptr;  
     }
     auto payload = new FixedString1024;
 	payload->append(packetBodyBytes, packetLength);
@@ -68,39 +74,35 @@ void SmartConfigServer::Loop()
     if(packet == nullptr)
     {
         _logger.err(F("Failed to deserialize packet"));
-        return;
+        return nullptr;  
     }
     if(packet->PacketType() != ThingifyPacketType::ZeroConfigurationPacket)
     {
         _logger.err(F("Wrong packet type"));
-        return;
+        return nullptr;  
     }
     auto zeroConfiguration = static_cast<ZeroConfigurationPacket*>(packet);  
-
-    _logger.info(F("Got smart config: api = %s, token = %s"), zeroConfiguration->ApiAddress.c_str(), zeroConfiguration->Token.c_str());
-
-    for(int i=0; i < zeroConfiguration->WifiNetworks.size(); i++)
-    {
-        _logger.info(F(" Network%d: %s, %s"), i+1, zeroConfiguration->WifiNetworks[i]->Name.c_str(), zeroConfiguration->WifiNetworks[i]->Password.c_str());
-    }
-
+   
     auto zeroConfigurationResponsePacket = new ZeroConfigurationResponsePacket();
     FixedString128 responseBytes;
     if(!Serializer::SerializePacket(zeroConfigurationResponsePacket, responseBytes))
     {
         _logger.err(F("Failed to serialize zero config response packet"));
-        return;
+        return nullptr;  
     }
+    delete zeroConfigurationResponsePacket;
     char lengthHeader[2];
     *((int16_t*)lengthHeader) = htons(responseBytes.length());
     if(client.write(lengthHeader, 2) != 2)
     {
         _logger.err(F("Failed to write length header"));
-        return;
+        return nullptr;  
+
     }
     if(client.write(responseBytes.c_str(), responseBytes.length()) != responseBytes.length())
     {
         _logger.err(F("Failed to write response packet"));
-        return;
+        return nullptr;
     }
+    return zeroConfiguration;
 }

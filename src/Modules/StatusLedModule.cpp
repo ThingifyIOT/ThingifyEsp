@@ -25,9 +25,11 @@ bool StatusLedModule::Tick()
 
     if(_previousState != _thing.GetCurrentState())
     {
+        Serial.println("State changed");
         n = -1;
-        _previousState = _thing.GetCurrentState();
+        _nextLedChangeTime = 0;
     }
+    _previousState = _thing.GetCurrentState();
 
     std::vector<int> empty;
     std::vector<int>& pattern = empty;

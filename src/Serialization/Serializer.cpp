@@ -211,6 +211,7 @@ PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
 		return nullptr;
 	}
 	auto packet = new ZeroConfigurationPacket();
+	int knownKeyCount = 0;
 	for(uint32_t i =0; i < mapSize; i++)
 	{
 		FixedString32 key;
@@ -219,13 +220,27 @@ PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
 			delete packet;
 			return nullptr;
 		}
+
 		if(key.equals("token"))
 		{
 			SerializationHelpers::ReadCmpString(cmp, packet->Token);
+			knownKeyCount++;
 		}
-		else if(key.equals("api_address"))
+		else if(key.equals("api_server"))
 		{
-			SerializationHelpers::ReadCmpString(cmp, packet->ApiAddress);
+			SerializationHelpers::ReadCmpString(cmp, packet->ApiServer);
+			knownKeyCount++;
+		}
+		else if(key.equals("api_port"))
+		{
+			int port = 0;
+			if(!cmp_read_int(&cmp, &port))
+			{
+				delete packet;
+				return nullptr; 
+			}
+			packet->ApiPort = port;
+			knownKeyCount++;
 		}
 		else if(key.equals("wifi_networks"))
 		{
@@ -240,8 +255,15 @@ PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
 					return nullptr;
 				}
 				packet->WifiNetworks.push_back(wifiNetwork);
-			}			
+			}	
+			knownKeyCount++;		
 		}
+	}
+
+	if(knownKeyCount < 4)
+	{
+		delete packet;
+		return nullptr;
 	}
 	return packet;
 }

@@ -22,11 +22,8 @@ _logger(LoggerInstance),
 _deviceName(deviceName), 
 _firmwareUpdateService(_packetSender)
 {
-	_nodes.reserve(32);
 	_modules.reserve(16);
-	_publishedNodeCount = 0;
-	_lastNodeId = 0;
-	
+	_publishedNodeCount = 0;	
 
 	SubscribeToEvents();	
 	_outgoingPacketId = 0;
@@ -60,15 +57,21 @@ void Thingify::Start()
 			_logger.err(L("Failed to initialize module '%s': %s"), module->GetName(), module->GetError());
 		}
 	}
+	LogNodes();
+	StartInternal();	
+}
 
-	if(!_settingsStorage.Get(_settings))
+void Thingify::StartInternal()
+{
+    if(!_settingsStorage.Get(_settings))
 	{
 		_logger.info(F("Failed to read configuration"));
 		SetState(ThingState::NotConfigured);
 		return;
 	}
 	_logger.info(F("Configuration read successfull"));
-
+	ThingifyUtils::LogSettings(_logger, _settings);
+	
 	if (IsNetworkConnected())
 	{
 		_logger.debug(L("Call ConnectToServer from Thingify::Start"));
@@ -79,8 +82,6 @@ void Thingify::Start()
 		_logger.info(LogComponent::Network, L("wlan not connected, waiting for network"));
 		SetState(ThingState::SearchingForNetwork);
 	}
-
-	LogNodes();
 }
 
 void Thingify::Stop()
@@ -95,7 +96,8 @@ void Thingify::ResetConfiguration()
 	_logger.info(L("Thingify::ResetConfiguration"));
 	Stop();
 	_settingsStorage.Clear();
-	SetState(ThingState::NotConfigured);
+	SetState(ThingState::Configuring);
+	StartZeroConfiguration();
 }
 void Thingify::Loop()
 {
@@ -107,6 +109,15 @@ void Thingify::Loop()
 
 	CheckErrors();
 	HandleWatchdog();
+
+	if(_currentState == ThingState::Configuring)
+	{
+		if(IsZeroConfigurationReady())
+		{
+			StartInternal();
+		}
+	}
+
 	if (_currentState == ThingState::DisconnectedFromMqtt)
 	{
 		if ((millis() - _disconnectedTimer) > 3000)
@@ -134,7 +145,6 @@ void Thingify::Loop()
 			Authenticate();
 		}
 	}
-
 
 	if (!_mqtt.connected())
 	{
@@ -317,10 +327,10 @@ void Thingify::ConnectToServer()
 		setClientId( _settings.Token.c_str());
 
 	_mqtt.setWill(_lastWill.c_str(), 2, false, "lw", 2);
-	_mqtt.setServer(_settings.ServerName.c_str(), _settings.ServerPort);
+	_mqtt.setServer(_settings.ApiServer.c_str(), _settings.ApiPort);
 
 	SetState(ThingState::ConnectingToMqtt);
-	_logger.info(LogComponent::Network, L("Connecting to MQTT server: %s:%d"), _settings.ServerName.c_str(), _settings.ServerPort);
+	_logger.info(LogComponent::Network, L("Connecting to MQTT server: %s:%d"), _settings.ApiServer.c_str(), _settings.ApiPort);
 	_mqtt.connect();	
 }
 
@@ -335,14 +345,7 @@ void Thingify::DisconnectMqtt()
 	_mqtt.disconnect();
 }
 
-void Thingify::LogNodes()
-{
-	_logger.debug(LogComponent::Node, L("Node list: "));
-	for(auto& node: _nodes)
-	{
-		_logger.debug(LogComponent::Node, L(" %s read_only: %d"), node->name(), node->isReadOnly());
-	}
-}
+
 
 void Thingify::onMqttSubscribe(uint16_t packetId)
 {
@@ -401,7 +404,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 		{
 			auto matchingNode = FindNode(update.nodeId.NodeName.c_str());
 		
-			if (matchingNode == nullptr)
+			if (matchingNode->isNull())
 			{
 				_logger.warn(L("Failed to find node '%s'"), update.nodeId.NodeName.c_str());
 				continue;
@@ -449,7 +452,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 			auto & functionExecutionRequest = updateNodesPacket->FunctionExecutionRequests[i];
 			auto matchingNode = FindNode(functionExecutionRequest.nodeId.NodeName.c_str());
 
-			if (matchingNode == nullptr)
+			if (matchingNode->isNull())
 			{
 				_logger.warn(L("Failed to find node '%s'"), functionExecutionRequest.nodeId.NodeName.c_str());
 				continue;
@@ -571,7 +574,7 @@ ThingState Thingify::GetCurrentState() const
 
 const char* Thingify::GetServerName() const
 {
-	return _settings.ServerName.c_str();
+	return _settings.ApiServer.c_str();
 }
 
 int Thingify::GetReconnectCount() const
@@ -600,153 +603,6 @@ void Thingify::AddStatusLed(int ledPin)
 {
 	auto statusLedModule = new StatusLedModule(*this, ledPin);
 	AddModule(statusLedModule);
-}
-
-Node* Thingify::AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit)
-{
-	auto existingNode = FindNode(nodeName);
-	if (existingNode != nullptr)
-	{
-		SetError(F("Attempted to add node with same name"));
-		return nullptr;
-	}
-	const auto node = new Node(type, valueType, nodeName, _lastNodeId, unit);
-	_lastNodeId++;
-	_nodes.push_back(node);
-	return node;
-}
-
-Node* Thingify::AddBoolean(const char* nodeName, ThingifyUnit unit)
-{
-	return AddNode(nodeName, NodeType::BasicValue, ValueType::Bool, unit);
-}
-Node* Thingify::AddString(const char* nodeName, const char *value, ThingifyUnit unit)
-{
-	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::String, unit);
-	node->SetValue(NodeValue::String(value));
-	return node;
-}
-Node* Thingify::AddString(const char * nodeName, ThingifyUnit unit)
-{
-	return AddString(nodeName, "", unit);
-}
-Node* Thingify::AddInt(const char* nodeName, ThingifyUnit unit)
-{
-	return AddNode(nodeName, NodeType::BasicValue, ValueType::Int, unit);
-}
-Node* Thingify::AddInt(const char* nodeName, int value, ThingifyUnit unit)
-{	
-	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Int, unit);
-	node->SetValue(NodeValue::Int(value));
-	return node;
-}
-Node* Thingify::AddFloat(const char* nodeName, float value, ThingifyUnit unit)
-{
-	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Float, unit);
-	node->SetValue(NodeValue::Float(value));
-	return node;
-}
-Node* Thingify::AddFloat(const char* nodeName, ThingifyUnit unit)
-{
-	return AddFloat(nodeName, 0.0f, unit);
-}
-Node* Thingify::AddColor(const char * nodeName)
-{
-	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Float, ThingifyUnit::None);
-	node->SetValue(NodeValue::NullColor());
-	return node;
-}
-Node * Thingify::AddTimeSpan(const char *name)
-{
-	auto node = AddNode(name, NodeType::BasicValue, ValueType::TimeSpan, ThingifyUnit::None);
-	node->SetValue(NodeValue::NullColor());
-	return node;
-}
-Node* Thingify::AddRange(const char * nodeName, int min, int max, int step, ThingifyUnit unit)
-{
-	auto node = AddNode(nodeName, NodeType::Range, ValueType::Int, unit);
-	node->SetValue(NodeValue::Int(min));
-	node->SetRangeAttributes(min, max, step);
-	return node;
-}
-
-Node* Thingify::AddFunction(const char * nodeName, FunctionExecutionCallback callback, void* context)
-{
-	auto node = AddNode(nodeName, NodeType::Function, ValueType::Bool, ThingifyUnit::None);
-	node->_context = context;
-	node->ExecutionCallback = callback;
-	return node;
-}
-
-Node * Thingify::operator[](const char * nodeName)
-{
-	return FindNode(nodeName);
-}
-
-Node* Thingify::FindNode(const char* nodeName)
-{
-	for (auto i = 0; i < _nodes.size(); i++)
-	{
-		auto node = _nodes[i];
-		if (strcmp(node->name(), nodeName) == 0)
-		{
-			return node;
-		}
-	}
-	return nullptr;
-}
-bool Thingify::RemoveNode(const char *nodeName)
-{
-	for (auto i = 0; i < _nodes.size(); i++)
-	{
-		auto node = _nodes[i];
-		if (strcmp(node->name(), nodeName) == 0)
-		{
-			_nodes.erase(_nodes.begin() + i);
-			delete node;
-			return true;
-		}
-	}
-	return false;
-}
-std::vector<Node*> Thingify::GetWorkingNodes()
-{
-	std::vector<Node*> workingNodes;
-	workingNodes.reserve(_nodes.size());
-	for (auto & node : _nodes)
-	{
-		if (!node->IsHidden)
-		{
-			workingNodes.push_back(node);
-		}
-	}
-	return workingNodes;
-}
-
-std::vector<Node*> Thingify::GetUpdatedNodes()
-{
-	std::vector<Node*> updatedNodes;
-	updatedNodes.reserve(_nodes.size());
-	for (auto & node : _nodes)
-	{
-		if (node->_wasUpdated && !node->IsHidden)
-		{
-			updatedNodes.push_back(node);
-		}
-	}
-	return updatedNodes;
-}
-
-void Thingify::LogUpdatedNodes(std::vector<Node*> updatedNodes) const
-{
-	FixedString64 updateNodesString;
-
-	for (Node* updated_node : updatedNodes)
-	{
-		updateNodesString.appendFormat("'%s', ", updated_node->name());		
-	}
-
-	_logger.debug(L("nodes: [%s] changed value, send updates"), updateNodesString.c_str());
 }
 
 void Thingify::SendNodeValues()

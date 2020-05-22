@@ -10,7 +10,8 @@ AsyncClient wifiTcpClient;
 
 
 ThingifyEsp::ThingifyEsp(const char *deviceName):
-Thingify(deviceName, wifiTcpClient)
+Thingify(deviceName, wifiTcpClient),
+_espZeroConfiguration(Thingify::_settingsStorage)
 {
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
@@ -24,7 +25,6 @@ Thingify(deviceName, wifiTcpClient)
 void ThingifyEsp::Start()
 {
 	Thingify::Start();
-	_smartConfigServer.Start();
 }
 
 void ThingifyEsp::Loop()
@@ -47,7 +47,7 @@ void ThingifyEsp::Loop()
 	}
 
 	Thingify::Loop();
-	_smartConfigServer.Loop();
+	_espZeroConfiguration.Loop();
 }
 
 void ThingifyEsp::StopNetwork()
@@ -66,6 +66,14 @@ void ThingifyEsp::StartNetwork()
 {
 	_logger.info(F("StartNetwork"));
 	WiFi.mode(WIFI_STA);
+}
+void ThingifyEsp::StartZeroConfiguration()
+{
+	_espZeroConfiguration.Start();
+}
+bool ThingifyEsp::IsZeroConfigurationReady()
+{
+	return _espZeroConfiguration.IsReady();
 }
 void ThingifyEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName)
 {

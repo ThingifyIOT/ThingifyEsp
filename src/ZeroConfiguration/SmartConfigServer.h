@@ -3,6 +3,7 @@
 
 #include <WiFiServer.h>
 #include "Logging/Logger.h"
+#include "Api/ZeroConfigurationPacket.h"
 class SmartConfigServer
 {
     private:
@@ -11,7 +12,8 @@ class SmartConfigServer
     public:
         SmartConfigServer();
         void Start();
-        void Loop();
+        void Stop();
+        ZeroConfigurationPacket* Loop();
 };
 
 #endif

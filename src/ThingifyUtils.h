@@ -6,7 +6,8 @@
 #include "ThingError.h"
 #include <FixedString.h>
 #include <ThingifyConstants.h>
-
+#include "Settings/ThingSettings.h"
+#include "Logging/Logger.h"
 #include <Wire.h>
 
 #ifdef ESP8266
@@ -28,6 +29,7 @@ public:
 
 	static FixedString32 TimeToShortStr(ulong timeInSeconds);
 	static const char * NodeTypeToStr(NodeType nodeType);
+	static void LogSettings(Logger& logger, ThingSettings& settings);
 #ifdef ESP8266
 	static const char* WlDisconnectReasonToString(WiFiDisconnectReason reason);
 #endif

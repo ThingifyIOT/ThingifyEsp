@@ -6,11 +6,11 @@
 class WifiNetwork
 {    
 public:
-    WifiNetwork()
-    {
-        
-    }
     WifiNetwork(const char* name, const char* password) :Name(name), Password(password)
+    {
+
+    }
+    WifiNetwork(FixedString32 name, FixedString64 password) :Name(name), Password(password)
     {
 
     }
@@ -22,10 +22,18 @@ class ThingSettings
 {
 public:
 	FixedString32 Token;
-    FixedString32 ServerName;
-    int ServerPort;
+    FixedString32 ApiServer;
+    int ApiPort;
     FixedString32 ThingName;
 	std::vector<WifiNetwork*> WifiNetworks;
+
+    ~ThingSettings()
+	{
+		for(int i=0; i < WifiNetworks.size(); i++)
+		{
+			delete WifiNetworks[i];
+		}
+	}
 };
 
 #endif

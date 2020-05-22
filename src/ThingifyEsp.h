@@ -3,7 +3,7 @@
 
 #include "Thingify.h"
 #include "ThingifyEspWifiMulti.h"
-#include "SmartConfigServer.h"
+#include "ZeroConfiguration/EspZeroConfiguration.h"
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #else
@@ -14,7 +14,7 @@ class ThingifyEsp : public Thingify
 {
 private:
 	ThingifyEspWiFiMulti _wifi_multi;
-	SmartConfigServer _smartConfigServer;
+	EspZeroConfiguration _espZeroConfiguration;
 	volatile bool _wlConnectOccured;
 	volatile bool _wlDisconnectOccured;
 	wl_status_t _previousWlanStatus = WL_NO_SHIELD;
@@ -26,6 +26,8 @@ public:
 
 	void Start() override;
 	void Loop() override;
+	void StartZeroConfiguration() override;
+	bool IsZeroConfigurationReady() override;
 	void OnWifiStateChanged(WifiMultiState state, FixedStringBase& networkName);
 	void AddAp(const char* ssid, const char* password = nullptr);
 	void AddApList(char* accessPoints[][2]);	
