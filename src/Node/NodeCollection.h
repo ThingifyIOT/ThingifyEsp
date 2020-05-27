@@ -34,6 +34,7 @@ public:
 
     Node * operator[](const char * nodeName);
     Node* FindNode(const char* nodeName);
+    bool NodeExists(const char* nodeName);
     bool RemoveNode(const char *nodeName);  
 };
 

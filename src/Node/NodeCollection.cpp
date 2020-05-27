@@ -11,8 +11,7 @@ NodeCollection::NodeCollection():
 
 Node* NodeCollection::AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit)
 {
-	auto existingNode = FindNode(nodeName);
-	if (!existingNode->isNull())
+	if (NodeExists(nodeName))
 	{
 		_logger.err(L("Node %s already exists, returning null node"), nodeName);
 		return &_nullNode;
@@ -59,14 +58,14 @@ Node* NodeCollection::AddFloat(const char* nodeName, ThingifyUnit unit)
 }
 Node* NodeCollection::AddColor(const char * nodeName)
 {
-	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Float, ThingifyUnit::None);
+	auto node = AddNode(nodeName, NodeType::BasicValue, ValueType::Color, ThingifyUnit::None);
 	node->SetValue(NodeValue::NullColor());
 	return node;
 }
 Node * NodeCollection::AddTimeSpan(const char *name)
 {
 	auto node = AddNode(name, NodeType::BasicValue, ValueType::TimeSpan, ThingifyUnit::None);
-	node->SetValue(NodeValue::NullColor());
+	node->SetValue(NodeValue::NullTimeSpan());
 	return node;
 }
 Node* NodeCollection::AddRange(const char * nodeName, int min, int max, int step, ThingifyUnit unit)
@@ -102,6 +101,18 @@ Node* NodeCollection::FindNode(const char* nodeName)
 	}
 	_logger.err(L("Failed to find %s node, returning null node"), nodeName);
 	return &_nullNode;
+}
+bool NodeCollection::NodeExists(const char* nodeName)
+{
+	for (auto i = 0; i < _nodes.size(); i++)
+	{
+		auto node = _nodes[i];
+		if (strcmp(node->name(), nodeName) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 bool NodeCollection::RemoveNode(const char *nodeName)
 {

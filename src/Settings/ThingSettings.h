@@ -3,20 +3,8 @@
 
 #include <FixedString.h>
 
-class WifiNetwork
-{    
-public:
-    WifiNetwork(const char* name, const char* password) :Name(name), Password(password)
-    {
 
-    }
-    WifiNetwork(FixedString32 name, FixedString64 password) :Name(name), Password(password)
-    {
-
-    }
-    FixedString32 Name;
-    FixedString64 Password;
-};
+#include "WifiCredential.h"
 
 class ThingSettings
 {
@@ -25,7 +13,7 @@ public:
     FixedString32 ApiServer;
     int ApiPort;
     FixedString32 ThingName;
-	std::vector<WifiNetwork*> WifiNetworks;
+	std::vector<WifiCredential*> WifiNetworks;
 
     ~ThingSettings()
 	{

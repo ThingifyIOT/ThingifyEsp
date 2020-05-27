@@ -69,7 +69,7 @@ bool SettingsSerializer::Serialize(ThingSettings& settings, FixedStringBase& str
     return true;
 }
 
-bool SettingsSerializer::WriteWifiNetwork(cmp_ctx_t& cmp, WifiNetwork *network)
+bool SettingsSerializer::WriteWifiNetwork(cmp_ctx_t& cmp, WifiCredential *network)
 {
     if(!cmp_write_map(&cmp, 2))
     {
@@ -152,7 +152,7 @@ bool SettingsSerializer::Deserialize(FixedStringBase& stream, ThingSettings& set
 }
 
 
-WifiNetwork* SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp)
+WifiCredential* SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp)
 {
 	uint32_t mapSize;
 	if(!cmp_read_map(&cmp, &mapSize))
@@ -183,5 +183,5 @@ WifiNetwork* SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp)
             }
 		}
 	}
-	return new WifiNetwork(name, password);
+	return new WifiCredential(name, password);
 }

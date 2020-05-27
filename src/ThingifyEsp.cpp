@@ -13,14 +13,45 @@ ThingifyEsp::ThingifyEsp(const char *deviceName):
 Thingify(deviceName, wifiTcpClient),
 _espZeroConfiguration(Thingify::_settingsStorage)
 {
-	WiFi.setAutoConnect(false);
-	WiFi.setAutoReconnect(false);
-	WiFi.persistent(false);
+
 	StartNetwork();
 
-	_wifi_multi.OnStateChanged = std::bind(&ThingifyEsp::OnWifiStateChanged, this, _1, _2);
+	_wifiMulti.OnStateChanged = std::bind(&ThingifyEsp::OnWifiStateChanged, this, _1, _2);
 }
 
+void ThingifyEsp::SetNetworkState(NetworkState state)
+{
+	if(state == _networkState)
+	{
+		return;
+	}
+	auto prevState = _networkState;
+	_networkState = state;
+	switch (_networkState)
+	{
+		case NetworkState::Disabled:
+			_logger.info(L("Network state changed to Disabled"));
+			if(prevState != NetworkState::Disconnected)
+			{
+				Thingify::OnNetworkDisconnected();
+			}
+		case NetworkState::Disconnected:		
+			_logger.info(L("Network state changed to Disconnected"));
+			if(prevState != NetworkState::Disabled)
+			{
+				Thingify::OnNetworkDisconnected();
+			}
+			break;
+		case NetworkState::Connected:
+			_logger.info(L("Network state changed to Connected"));
+			Thingify::OnNetworkConnected();
+			break;
+		case NetworkState::Connecting:
+			_logger.info(L("Network state changed to Connecting"));
+			Thingify::OnNetworkConnecting();
+			break;
+	}
+}
 
 void ThingifyEsp::Start()
 {
@@ -34,7 +65,7 @@ void ThingifyEsp::Loop()
 	   currentState != ThingState::NotConfigured && 
 	   currentState != ThingState::Configuring)
 	{
-		_wifi_multi.run();
+		_wifiMulti.run();
 	}
 
 	const wl_status_t wl_status = WiFi.status();
@@ -50,9 +81,21 @@ void ThingifyEsp::Loop()
 	_espZeroConfiguration.Loop();
 }
 
+void ThingifyEsp::StartNetwork()
+{
+	_logger.info(F("StartNetwork"));
+	WiFi.setAutoConnect(false);
+	WiFi.setAutoReconnect(false);
+	WiFi.persistent(false);
+	WiFi.mode(WIFI_STA);
+
+	SetNetworkState(NetworkState::Disconnected);	
+}
+
 void ThingifyEsp::StopNetwork()
 {
 	_logger.info(F("StopNetwork"));
+	SetNetworkState(NetworkState::Disabled);
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
 	WiFi.persistent(false);
@@ -62,11 +105,18 @@ void ThingifyEsp::StopNetwork()
 	WiFi.mode(WIFI_OFF);
 #endif
 }
-void ThingifyEsp::StartNetwork()
+
+FixedStringBase& ThingifyEsp::GetNetworkName()
 {
-	_logger.info(F("StartNetwork"));
-	WiFi.mode(WIFI_STA);
+	return _networkName;
 }
+
+void ThingifyEsp::OnConfigurationLoaded()
+{
+	_logger.info(L("OnConfigurationLoaded"));
+	_wifiMulti.SetAdditionalWifiCredentialList(&(_settings.WifiNetworks));
+}
+
 void ThingifyEsp::StartZeroConfiguration()
 {
 	_espZeroConfiguration.Start();
@@ -79,18 +129,21 @@ void ThingifyEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& netw
 {
 	if (state == WifiMultiState::Connecting)
 	{
+		_networkName = networkName;
 		_logger.info(L("Wifi state changed to Connecting"));
-		Thingify::OnNetworkConnecting(networkName);
+		SetNetworkState(NetworkState::Connecting);
+
 	}
 	if (state == WifiMultiState::Searching)
 	{
 		_logger.info(L("Wifi state changed to Searching"));
-		Thingify::OnNetworkDisconnected();
+		SetNetworkState(NetworkState::Disconnected);
 	}
 	if (state == WifiMultiState::Connected)
 	{
+		_networkName = networkName;
 		_logger.info(L("Wifi state changed to Connected"));
-		Thingify::OnNetworkConnected();
+		SetNetworkState(NetworkState::Connected);
 	}
 }
 bool ThingifyEsp::IsNetworkConnected()
@@ -100,7 +153,7 @@ bool ThingifyEsp::IsNetworkConnected()
 
 void ThingifyEsp::AddAp(const char* ssid, const char* password)
 {
-	_wifi_multi.addAP(ssid, password);
+	_wifiMulti.AddWifiCredential(ssid, password);
 }
 
 void ThingifyEsp::AddApList(char* accessPoints[][2])
@@ -113,7 +166,7 @@ void ThingifyEsp::AddApList(char* accessPoints[][2])
 		{
 			return;
 		}
-		_wifi_multi.addAP(ssid, password);
+		_wifiMulti.AddWifiCredential(ssid, password);
 	}
 }
 

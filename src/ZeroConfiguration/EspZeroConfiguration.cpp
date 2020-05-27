@@ -80,9 +80,9 @@ void EspZeroConfiguration::ZeroConfigurationPacketToSettings(ZeroConfigurationPa
 
     for(int i=0; i < packet->WifiNetworks.size(); i++)
     {
-        auto network = new WifiNetwork(
-            packet->WifiNetworks[i]->Name.c_str(), 
-            packet->WifiNetworks[i]->Password.c_str()
+        auto network = new WifiCredential(
+            packet->WifiNetworks[i]->Name, 
+            packet->WifiNetworks[i]->Password
         );
         settings.WifiNetworks.push_back(network);
     }

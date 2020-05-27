@@ -25,7 +25,6 @@ bool StatusLedModule::Tick()
 
     if(_previousState != _thing.GetCurrentState())
     {
-        Serial.println("State changed");
         n = -1;
         _nextLedChangeTime = 0;
     }

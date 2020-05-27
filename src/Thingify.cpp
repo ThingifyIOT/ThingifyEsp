@@ -34,6 +34,13 @@ _firmwareUpdateService(_packetSender)
 	_logger.info(L("Sizeof UpdateNodesFromClientPacket: %d"), sizeof(UpdateNodesFromClientPacket));
 	_logger.info(L("Size of function execution buffer: %d"), sizeof(FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests>));
 }
+void Thingify::SetToken(const char* token)
+{
+	_settings.Token = token;
+	_settings.ApiPort = 1883;
+	_settings.ApiServer = "conti.ml";
+	_isUsingManualConfiguration = true;
+}
 
 void Thingify::Start()
 {
@@ -63,15 +70,29 @@ void Thingify::Start()
 
 void Thingify::StartInternal()
 {
-    if(!_settingsStorage.Get(_settings))
-	{
-		_logger.info(F("Failed to read configuration"));
-		SetState(ThingState::NotConfigured);
-		return;
-	}
-	_logger.info(F("Configuration read successfull"));
-	ThingifyUtils::LogSettings(_logger, _settings);
 	
+	if(!_settingsStorage.Get(_settings))
+	{
+		if(_isUsingManualConfiguration)
+		{
+			_logger.info(F("Using manual configuration"));
+		}
+		else
+		{
+			_logger.info(F("Failed to read configuration"));
+			SetState(ThingState::NotConfigured);
+			return;	
+		}
+	}
+	else
+	{
+		_logger.info(F("Configuration read successfull"));
+	}
+	
+	
+   
+	ThingifyUtils::LogSettings(_logger, _settings);
+	OnConfigurationLoaded();
 	if (IsNetworkConnected())
 	{
 		_logger.debug(L("Call ConnectToServer from Thingify::Start"));
@@ -98,6 +119,11 @@ void Thingify::ResetConfiguration()
 	_settingsStorage.Clear();
 	SetState(ThingState::Configuring);
 	StartZeroConfiguration();
+}
+
+void Thingify::OnConfigurationLoaded()
+{
+
 }
 void Thingify::Loop()
 {
@@ -191,9 +217,7 @@ void Thingify::SetError(ThingError error, const char* errorStr)
 	SetState(ThingState::Error);
 
 	if (_currentState == ThingState::Online)
-	{
-		_mqtt.publish(_lastWill.c_str(), 2, false, "lw", 2);
-		delay(150);
+	{		
 		DisconnectMqtt();
 	}
 	if (error != ThingError::Other)
@@ -209,10 +233,9 @@ void Thingify::SetError(ThingError error, const char* errorStr)
 	_errorType = error;
 }
 
-void Thingify::OnNetworkConnecting(FixedStringBase& networkName)
+void Thingify::OnNetworkConnecting()
 {
-	_networkName = networkName;
-	_logger.info(LogComponent::Network, L("Thingify::OnNetworkConnecting: '%s'"), _networkName.c_str());
+	_logger.info(LogComponent::Network, L("Thingify::OnNetworkConnecting: '%s'"), GetNetworkName().c_str());
 	if (HasTerminalState(F("OnNetworkConnecting")))
 	{
 		return;
@@ -316,26 +339,29 @@ void Thingify::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 
 void Thingify::ConnectToServer()
 {
-	_logger.debug(L("Last will: %s"), _lastWill.c_str());
-
-	_lastWill.clear();
-	_lastWill.appendFormat("%s%s", ThingifyConstants::LastWillTopicPrefix, _settings.Token.c_str());
+	_lastWillTopic.clear();
+	_lastWillTopic.appendFormat("%s%s", ThingifyConstants::LastWillTopicPrefix, _settings.Token.c_str());
 
 	_mqtt.
 		setKeepAlive(ThingifyConstants::MqttKeepAliveInSeconds).
 		setCredentials( _settings.Token.c_str(), "").
 		setClientId( _settings.Token.c_str());
 
-	_mqtt.setWill(_lastWill.c_str(), 2, false, "lw", 2);
+	_mqtt.setWill(_lastWillTopic.c_str(), 2, false, "lw", 2);
 	_mqtt.setServer(_settings.ApiServer.c_str(), _settings.ApiPort);
 
 	SetState(ThingState::ConnectingToMqtt);
 	_logger.info(LogComponent::Network, L("Connecting to MQTT server: %s:%d"), _settings.ApiServer.c_str(), _settings.ApiPort);
+	_logger.info(L("Last will: %s"), _lastWillTopic.c_str());
 	_mqtt.connect();	
 }
 
 void Thingify::DisconnectMqtt()
 {
+	_logger.info(L("DisconnectMqtt"));
+	_logger.info(L("Sending last will to %s"), _lastWillTopic.c_str());
+	_mqtt.publish(_lastWillTopic.c_str(), 2, false, "lw", 2);
+	delay(200);
 	if (!_mqtt.connected())
 	{
 		_logger.info(L("DisconnectMqtt: mqtt already disconnected"));
@@ -420,8 +446,6 @@ void Thingify::HandlePacket(PacketBase *packet)
 			}
 			else
 			{
-				_logger.info(L("Added item to update_results"));
-
 				bool existing = false;
 				for (auto& updateResult : _updateResults)
 				{
@@ -670,6 +694,7 @@ void Thingify::OnNodeValueChanedByExternal(Node & node)
 void Thingify::RestartNetwork()
 {
 	_logger.warn(L("RestartNetwork"));
+	DisconnectMqtt();
 	SetState(ThingState::Disabled);
 	StopNetwork();
 	StartNetwork();
@@ -722,9 +747,9 @@ void Thingify::HandleWatchdog()
 
 	if (_currentState == ThingState::Online)
 	{
-		if (_lastPacketReceivedTimer.ElapsedSeconds() > 120)
+		if (_lastPacketReceivedTimer.ElapsedSeconds() > 180)
 		{
-			_logger.err(L("Thing didn't receive any data for 120s"));
+			_logger.err(L("Thing didn't receive any data for 180s"));
 			_lastPacketReceivedTimer.Start(); // hack
 			RestartNetwork();
 			return;

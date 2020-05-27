@@ -685,7 +685,6 @@ void Serializer::SerializeNode(cmp_ctx_t& cmp, Node* node)
 	SerializeNodeAttributes(cmp, node);
 
 	cmp_write_bool(&cmp, node->isReadOnly());
-
 	SerializeNodeValue(cmp, node->Value);
 	cmp_write_u8(&cmp, static_cast<uint8_t>(node->kind()));
 }
@@ -721,7 +720,6 @@ bool Serializer::SerializeNodeValue(cmp_ctx_t& cmp, NodeValue &nodeValue)
 		cmp_write_array(&cmp, 0);
 		return true;
 	}
-
 	switch (nodeValue.Type)
 	{
 	case ValueType::Bool:

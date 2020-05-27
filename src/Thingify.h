@@ -39,12 +39,10 @@ private:
 	void RestartNetwork();
 
 	std::vector<IModule*> _modules;
-	FixedString32 _networkName;
 
 	FixedString64 _inTopic;
-	FixedString64 _lastWill;
+	FixedString64 _lastWillTopic;
 	ElapsedTimer _lastPacketReceivedTimer;
-	ThingSettings _settings;
 
 	void SendNodeValues();
 	bool SendAndDeletePacket(PacketBase *packet);
@@ -73,7 +71,7 @@ protected:
 	void SetError(const __FlashStringHelper* errorStr);
 	void SetError(ThingError error, const char* errorStr = nullptr);
 
-	void OnNetworkConnecting(FixedStringBase& networkName);
+	void OnNetworkConnecting();
 	void OnNetworkConnected();
 	void OnNetworkDisconnected();
 	void Authenticate();
@@ -83,8 +81,12 @@ protected:
 	virtual bool IsNetworkConnected() = 0;
 	virtual void StopNetwork() = 0;
 	virtual void StartNetwork() = 0;
+	virtual FixedStringBase& GetNetworkName() = 0;
 	virtual void StartZeroConfiguration() = 0;
 	virtual bool IsZeroConfigurationReady() = 0;
+	virtual void OnConfigurationLoaded();
+	ThingSettings _settings;
+	bool _isUsingManualConfiguration = false;
 	Logger& _logger;
 	const char* _deviceName;	
 	FirmwareUpdateService _firmwareUpdateService;
@@ -93,11 +95,11 @@ protected:
 	void StartInternal();
 public:
 	Thingify(const char *deviceName, IAsyncClient& client);
+	void SetToken(const char* token);
 	virtual void Start();
 	void Stop();
-	void ResetConfiguration();
+	void ResetConfiguration();	
 	virtual void Loop();
-
 	bool WatchdogEnabled;
 
 	uint16_t GetConnectTime()
@@ -127,10 +129,15 @@ public:
 	{
 		return _restartReason.c_str();
 	}
+	const char* GetServerName() const;
+	int GetReconnectCount() const;
+	uint64_t GetMillisecondsSinceConnect();
+
 	void SetValueSendInterval(uint16_t value)
 	{
 		_valueSendInterval = value;
 	}
+
 
 	FirmwareUpdateService& UpdateService() 
 	{
@@ -138,13 +145,7 @@ public:
 	}
 	ThingState GetCurrentState() const;
 	std::function<void(ThingState state)> OnStateChanged;
-	const char* GetServerName() const;
-	int GetReconnectCount() const;
-	uint64_t GetMillisecondsSinceConnect();
-	FixedString32 GetNetworkName()
-	{
-		return _networkName;
-	}
+	
 	void AddModule(IModule *module);
 	void AddDiagnostics(int updateInteval = 10000);
 	void AddStatusLed(int ledPin);
