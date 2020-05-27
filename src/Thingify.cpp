@@ -80,7 +80,8 @@ void Thingify::StartInternal()
 		else
 		{
 			_logger.info(F("Failed to read configuration"));
-			SetState(ThingState::NotConfigured);
+			SetState(ThingState::Configuring);
+			StartZeroConfiguration();
 			return;	
 		}
 	}
