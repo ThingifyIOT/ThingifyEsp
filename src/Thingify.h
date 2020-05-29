@@ -148,7 +148,7 @@ public:
 	
 	void AddModule(IModule *module);
 	void AddDiagnostics(int updateInteval = 10000);
-	void AddStatusLed(int ledPin);
+	void AddStatusLed(int ledPin, bool isLedInverted = false);
 
 	virtual ~Thingify() = default;
 };

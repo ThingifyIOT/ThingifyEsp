@@ -8,6 +8,7 @@ class StatusLedModule: public IModule
 {
 	Thingify& _thing;
     int _ledPin;
+	uint64_t _nextLedChangeTime = 0;
 	ThingState _previousState = ThingState::Disabled;
 	std::vector<std::vector<int>> ledPatterns = 
     {
@@ -23,9 +24,10 @@ class StatusLedModule: public IModule
 		{(int)ThingState::ServiceUnavailable, 2000, 2000},
 		{(int)ThingState::Error, 2000, 300}
     };
+	bool _isLedInverted;
 public:
-	uint64_t _nextLedChangeTime = 0;
-	StatusLedModule(Thingify& thing, int pin);	
+	StatusLedModule(Thingify& thing, int pin, bool isLedInverted);	
+
 	const char* GetName() override;
 	bool Init() override;
 	bool Tick() override;

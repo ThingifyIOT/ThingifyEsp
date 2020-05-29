@@ -624,9 +624,9 @@ void Thingify::AddDiagnostics(int updateInteval)
 	AddModule(diagnostics);
 }
 
-void Thingify::AddStatusLed(int ledPin)
+void Thingify::AddStatusLed(int ledPin, bool isLedInverted)
 {
-	auto statusLedModule = new StatusLedModule(*this, ledPin);
+	auto statusLedModule = new StatusLedModule(*this, ledPin, isLedInverted);
 	AddModule(statusLedModule);
 }
 
