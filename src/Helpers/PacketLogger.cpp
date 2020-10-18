@@ -91,7 +91,7 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 
 			if (updateNodesPacket->UpdatedNodes.size())
 			{
-				_logger.add(L("[ updates: %d ] "), updateNodesPacket->UpdatedNodes.size());
+				_logger.add(L("[ updates: %d] "), updateNodesPacket->UpdatedNodes.size());
 			}
 
 			if (updateNodesPacket->UpdateResults.size())
@@ -101,6 +101,10 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 			if (updateNodesPacket->FunctionExecutionResponses.size())
 			{
 				_logger.add(L("[ function responses: %d ] "), updateNodesPacket->FunctionExecutionResponses.size());
+			}
+			if(updateNodesPacket->RemovedNodes.size())
+			{
+				_logger.add(L("[ removedNodes: %d] "), updateNodesPacket->RemovedNodes.size());
 			}
 
 			_logger.end();

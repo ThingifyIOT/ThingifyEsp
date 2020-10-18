@@ -1,7 +1,8 @@
 #include "NodeCollection.h"
 #include "Logging/Logger.h"
 
-NodeCollection::NodeCollection():
+NodeCollection::NodeCollection(ThingSettings* settings):
+ _settings(settings),
  _logger(LoggerInstance),
  _nullNode(NodeType::BasicValue, ValueType::Null, "null",0 , ThingifyUnit::None)
 {
@@ -122,6 +123,10 @@ bool NodeCollection::RemoveNode(const char *nodeName)
 		if (strcmp(node->name(), nodeName) == 0)
 		{
 			_nodes.erase(_nodes.begin() + i);
+			NodeId nodeId;
+			nodeId.NodeName = node->name();
+			nodeId.DeviceId = _settings->Token;
+			_removedNodes.push_back(nodeId);
 			delete node;
 			return true;
 		}

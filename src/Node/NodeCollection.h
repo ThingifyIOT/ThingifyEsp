@@ -3,6 +3,8 @@
 
 #include <vector>
 #include "Node.h"
+#include "Settings/ThingSettings.h"
+#include "Node/NodeId.h"
 
 class NodeCollection
 {
@@ -10,14 +12,16 @@ private:
     uint16_t _lastNodeId;
     std::vector<Node*> _nodes;
     Logger& _logger;
+    ThingSettings* _settings;
 protected:
     std::vector<Node*> GetWorkingNodes();
     std::vector<Node*> GetUpdatedNodes();
     void LogUpdatedNodes(std::vector<Node*> updatedNodes) const;
     void LogNodes();
     Node _nullNode;
+    std::vector<NodeId> _removedNodes;
 public:
-    NodeCollection();
+    NodeCollection(ThingSettings* settings);
 
     Node* AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit = ThingifyUnit::None);
     Node* AddBoolean(const char* nodeName, ThingifyUnit unit = ThingifyUnit::None);

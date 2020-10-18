@@ -20,7 +20,8 @@ _errorType(ThingError::NoError),
 _packetSender(_mqtt),
 _logger(LoggerInstance),
 _deviceName(deviceName), 
-_firmwareUpdateService(_packetSender)
+_firmwareUpdateService(_packetSender),
+NodeCollection(&_settings)
 {
 	_modules.reserve(16);
 	_publishedNodeCount = 0;	
@@ -69,8 +70,7 @@ void Thingify::Start()
 }
 
 void Thingify::StartInternal()
-{
-	
+{	
 	if(!_settingsStorage.Get(_settings))
 	{
 		if(_isUsingManualConfiguration)
@@ -665,12 +665,18 @@ void Thingify::SendNodeValues()
 		updateNodesPacket->UpdatedNodes.add(updateItem);
 	}
 
+	for(auto& removedNodeId: _removedNodes)
+	{
+		updateNodesPacket->RemovedNodes.add(removedNodeId);
+	}
+
 	for (auto & node : updatedNodes)
 	{
 		node->_wasUpdated = false;
 	}
 	_updateResults.clear();
 	_functionExecutionResults.clear();
+	_removedNodes.clear();
 
 	SendAndDeletePacket(updateNodesPacket);
 }
