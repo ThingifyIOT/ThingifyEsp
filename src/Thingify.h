@@ -81,7 +81,6 @@ protected:
 	virtual bool IsNetworkConnected() = 0;
 	virtual void StopNetwork() = 0;
 	virtual void StartNetwork() = 0;
-	virtual FixedStringBase& GetNetworkName() = 0;
 	virtual void StartZeroConfiguration() = 0;
 	virtual bool IsZeroConfigurationReady() = 0;
 	virtual void OnConfigurationLoaded();
@@ -101,6 +100,7 @@ public:
 	void ResetConfiguration();	
 	virtual void Loop();
 	bool WatchdogEnabled;
+	virtual FixedStringBase& GetNetworkName() = 0;
 
 	uint16_t GetConnectTime()
 	{
