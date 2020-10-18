@@ -1,9 +1,10 @@
 #include "StatusLedModule.h"
 
 
-StatusLedModule::StatusLedModule(Thingify& thing, int ledPin): 
+StatusLedModule::StatusLedModule(Thingify& thing, int ledPin, bool isLedInverted): 
 _thing(thing),
-_ledPin(ledPin)
+_ledPin(ledPin),
+_isLedInverted(isLedInverted)
 {
 
 }
@@ -60,7 +61,8 @@ bool StatusLedModule::Tick()
         ledState = !ledState;
     }
     _nextLedChangeTime = millis() + pattern[n];
-    digitalWrite(_ledPin, ledState);
+
+    digitalWrite(_ledPin, _isLedInverted ? !ledState: ledState);
       
 	return true;
 }
