@@ -34,7 +34,7 @@ public:
 	FixedList<NodeUpdateResultItem, ThingifyConstants::MaxUpdateResults> UpdateResults;
 	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> FunctionExecutionResponses;
 	FixedList<ValueUpdateItem, ThingifyConstants::MaxOutgoingUpdatesCount> UpdatedNodes;
-
+	FixedList<NodeId, ThingifyConstants::MaxUpdateResults> RemovedNodes;
 	ThingifyPacketType PacketType() override
 	{
 		return ThingifyPacketType::UpdateNodes;

@@ -380,9 +380,17 @@ bool Serializer::SerializeUpdateNodesPacket(UpdateNodesPacket* updateNodesPacket
 		return false;
 	}
 	// 2 - removed nodes array
-	if (!cmp_write_array(&cmp, 0))
+	if (!cmp_write_array(&cmp, updateNodesPacket->RemovedNodes.size()))
 	{
 		return false;
+	}
+
+	for(auto removedNodeId: updateNodesPacket->RemovedNodes)
+	{
+		if (!SerializeNodeId(cmp, removedNodeId))
+		{
+			return false;
+		}
 	}
 
 	// 3 - updated nodes array
