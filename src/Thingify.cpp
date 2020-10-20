@@ -20,7 +20,7 @@ _errorType(ThingError::NoError),
 _packetSender(_mqtt),
 _logger(LoggerInstance),
 _deviceName(deviceName), 
-_firmwareUpdateService(_packetSender)
+_firmwareUpdateService(_packetSender, _settingsStorage)
 {
 	_modules.reserve(16);
 	_publishedNodeCount = 0;	
