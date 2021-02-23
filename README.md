@@ -8,9 +8,6 @@ How to setup IOT project for ESP32/ESP8266:
      git submodule add git@github.com:ThingifyIOT/ThingifyEsp.git
      git submodule add git@github.com:ThingifyIOT/ThingifyEspModules.git
      git submodule add git@github.com:toomasz/FixedString.git
-     
-     
-     
   - In src/main.cpp paste:
    ```c++
    #include <Arduino.h>
