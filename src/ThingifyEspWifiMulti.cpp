@@ -135,7 +135,7 @@ void ThingifyEspWiFiMulti::run()
 #ifdef ESP8266
 					if(sec_scan == ENC_TYPE_NONE || entry->Password.length() > 0) 
 #else
-					if (sec_scan == WIFI_AUTH_OPEN || entry.passphrase)
+					if (sec_scan == WIFI_AUTH_OPEN || entry->Password.length() > 0)
 #endif 
 					{ // check for passphrase if not open wlan
 						bestNetworkDb = rssi_scan;
