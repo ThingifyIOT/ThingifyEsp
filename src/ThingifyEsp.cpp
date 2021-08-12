@@ -1,8 +1,7 @@
 #include "ThingifyEsp.h"
 #include <Arduino.h>
 #include <functional>
-
-
+#include "Modules/DiagnosticsModule.h"
 
 using namespace std::placeholders;
 
@@ -109,4 +108,11 @@ void ThingifyEsp::AddApList(char* accessPoints[][2])
 uint64_t ThingifyEsp::WatchdogTimeoutInMs()
 {
 	return 3000;
+}
+
+void ThingifyEsp::AddDiagnostics(int updateInteval)
+{
+	auto diagnostics = new DiagnosticsModule(*this);
+	diagnostics->UpdateIntervalInMs = updateInteval;
+	AddModule(diagnostics);
 }

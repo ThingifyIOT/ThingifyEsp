@@ -23,6 +23,7 @@ private:
 	void StartNetwork() override;
 public:
 	ThingifyEsp(const char* deviceId, const char* deviceName);
+    void AddDiagnostics(int updateInteval = 10000);
 
 	void Start() override;
 	void Loop() override;

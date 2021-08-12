@@ -1,7 +1,6 @@
 #include "Thingify.h"
 #include <functional>
 #include "Helpers/StringHelper.h"
-#include "DiagnosticsModule.h"
 #include "ThingifyConstants.h"
 #include "Api/HeartbeatPacket.h"
 #include "Api/DeviceNodeUpdateResult.h"
@@ -573,13 +572,6 @@ uint64_t Thingify::GetMillisecondsSinceConnect()
 void Thingify::AddModule(IModule * module)
 {
 	_modules.push_back(module);
-}
-
-void Thingify::AddDiagnostics(int updateInteval)
-{
-	auto diagnostics = new DiagnosticsModule(*this);
-	diagnostics->UpdateIntervalInMs = updateInteval;
-	AddModule(diagnostics);
 }
 
 Node* Thingify::AddNode(const char* nodeName, NodeType type, ValueType valueType, ThingifyUnit unit)

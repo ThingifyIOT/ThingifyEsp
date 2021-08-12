@@ -3,6 +3,7 @@
 
 #ifdef GSM
 
+#include "Modules/GsmDiagnosticsModule.h"
 using namespace std::placeholders;
 
 
@@ -145,5 +146,11 @@ uint64_t ThingifyGsm::WatchdogTimeoutInMs()
 	return 30000;
 }
 
+void ThingifyGsm::AddDiagnostics(int updateInteval)
+{
+	auto diagnostics = new GsmDiagnosticsModule(*this);
+	diagnostics->UpdateIntervalInMs = updateInteval;
+	AddModule(diagnostics);
+}
 #endif
 

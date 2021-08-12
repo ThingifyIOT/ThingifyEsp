@@ -19,7 +19,9 @@ struct ThingifyGsmP
 		_gsm(simcomAtCommands),
 		_gsmClient(_gsm, mux)
 	{
-		_gsm.ApnName = "virgin-internet";
+		_gsm.ApnName = "internet";
+		_gsm.ApnUser = "internet";
+		_gsm.ApnPassword = "internet";
 		_gsm.BaudRate = 460800;
 	}
 };
@@ -44,6 +46,7 @@ public:
 
 	void Start() override;
 	void Loop() override;
+    void AddDiagnostics(int updateInteval = 10000);
 
 	bool PowerSavingEnabled = false;
 	int PowerSavingWakeupInterval = 2000;
