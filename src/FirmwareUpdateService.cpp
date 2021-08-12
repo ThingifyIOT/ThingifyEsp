@@ -8,13 +8,14 @@
 #endif // ESP32
 
 
-FirmwareUpdateService::FirmwareUpdateService(PacketSender& packetSender) :
+FirmwareUpdateService::FirmwareUpdateService(PacketSender& packetSender, SettingsStorage& settingsStorage) :
 	_lastFirmwareCorrelationId(0),
 	_packetSender(packetSender),
 	_logger(LoggerInstance),
 	_maxFirmwareChunkSize(50*1024),
 	_isUpdatingFirmware(false),
-	_updateProgress(0)
+	_updateProgress(0),
+	_settingsStorage(settingsStorage)
 {
 #ifdef ESP32
 	_maxFirmwareChunkSize = 150 * 1024;
@@ -42,6 +43,13 @@ void FirmwareUpdateService::HandleUpdateFirmwareBegin(UpdateFirmwareBeginToThing
 	_errorString = "";
 	_isSuccess = true;
 	_updateProgress = 0;
+
+	_settingsBackup = new ThingSettings();
+	if(!_settingsStorage.Get(*_settingsBackup))
+	{
+		delete _settingsBackup;
+	}
+
 	_logger.info(L("Update firmware begin: md5 = %s, size = %lld"), packet->FirmwareMd5.c_str(), packet->FirmwareSize);
 	if (!Begin(packet->FirmwareSize))
 	{
@@ -113,6 +121,15 @@ void FirmwareUpdateService::HandleFirmwareCommitPacket(UpdateFirmwareCommitToThi
 		_lastFirmwareCorrelationId = packet->CorrelationId;
 		return;
 	}
+
+	_logger.info(L("Restoring settings..."));
+	if(_settingsBackup != nullptr)
+	{
+		_settingsStorage.Set(*_settingsBackup);
+		delete _settingsBackup;
+		_settingsBackup = nullptr;
+	}
+
 	_lastFirmwareCorrelationId = packet->CorrelationId;
 	_logger.info(L("Firmware commit success!"));
 	_restartRequestedTimer.Start();

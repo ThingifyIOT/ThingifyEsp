@@ -42,11 +42,14 @@ private:
 	void StopNetwork() override;
 	void StartNetwork() override;
 public:
-	ThingifyGsm(const char* deviceId, const char* deviceName, SimcomAtCommands& atCommands);
+	ThingifyGsm(const char* deviceName, SimcomAtCommands& atCommands);
 
 	void Start() override;
 	void Loop() override;
     void AddDiagnostics(int updateInteval = 10000);
+    FixedStringBase& GetNetworkName();
+    void StartZeroConfiguration();
+    bool IsZeroConfigurationReady();
 
 	bool PowerSavingEnabled = false;
 	int PowerSavingWakeupInterval = 2000;

@@ -78,7 +78,13 @@ enum class ThingifyUnit
 
 	/* Power */
 	mW,
-	W
+	W,
+	kW,
+	MW,
+	GW,
+	kWh,
+	MWh,
+	GWh
 
 };
 

@@ -24,8 +24,9 @@ extern int ValueinstanceCount;
 
 class Node
 {
-	friend class Thingify;
 	friend class Serializer;
+	friend class Thingify;
+	friend class NodeCollection;
 	void *_context;
 	FixedString<ThingifyConstants::MaxDeviceNameLength> _name;
 	uint16_t _integerId;
@@ -47,6 +48,7 @@ public:
 	const char* name() const;
 	const ThingifyUnit unit() const;
 	const NodeKind kind() const;
+	const bool isNull() const;
 	uint16_t integerId() const;
 	bool isReadOnly() const;
 

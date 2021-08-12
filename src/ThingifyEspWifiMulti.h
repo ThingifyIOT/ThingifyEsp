@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Logging/Logger.h>
 #include <FixedString.h>
+#include <Settings/WifiCredential.h>
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -15,12 +16,6 @@
 #undef max
 #include <vector>
 
-typedef struct 
-{
-        char * ssid;
-        char * passphrase;
-} WifiAPlist_t;
-
 enum class WifiMultiState
 {
 	Connecting, Searching, Connected
@@ -30,16 +25,20 @@ class ThingifyEspWiFiMulti
 {
 private:
 	WifiMultiState _state;
-	std::vector<WifiAPlist_t> APlist;
-	bool APlistAdd(const char* ssid, const char *passphrase = nullptr);
-	void APlistClean(void);
+	uint64_t _stateChangeTime = 0;
+
+	std::vector<WifiCredential*>* _additionalWifiCredentials;
+	std::vector<WifiCredential*> _wifiCredentials;
+
 	void ChangeState(WifiMultiState state, FixedStringBase& ssid);
-	uint64_t _stateChangeTime;
+	void PrintConnectResult(wl_status_t status);
+
 public:
 	ThingifyEspWiFiMulti();
-    bool addAP(const char* ssid, const char *passphrase = nullptr);
+
+	bool AddWifiCredential(const char* ssid, const char *passphrase = nullptr);
+	void SetAdditionalWifiCredentialList(std::vector<WifiCredential*>* credentialList);
     void run();
-	void PrintConnectResult(wl_status_t status);
 	std::function<void(WifiMultiState, FixedStringBase&)> OnStateChanged;
 	Logger& _logger;
 };

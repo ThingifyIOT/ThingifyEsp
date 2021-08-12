@@ -19,7 +19,8 @@ enum class ValueType : unsigned char
 	Location = 4,
 	DateTime = 5,
 	TimeSpan = 6,
-	Color = 7
+	Color = 7,
+	Null = 100
 };
 
 #endif

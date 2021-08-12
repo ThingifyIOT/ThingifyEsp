@@ -1,6 +1,7 @@
 #include "SerializationHelpers.h"
 
 Logger& SerializationHelpers::_logger = LoggerInstance;
+#include "BufferReader.h"
 
 const char* SerializationHelpers::cmpTypeToStr(uint8_t cmpType)
 {
@@ -129,4 +130,28 @@ bool SerializationHelpers::ReadCmpBin(cmp_ctx_t& cmp, FixedStringBase &str)
 		}
 	}
 	return true;
+}
+
+bool SerializationHelpers::FileReader(cmp_ctx_t *ctx, void *data, size_t count)
+{
+	BufferReader *bufferReader = reinterpret_cast<BufferReader*>(ctx->buf);
+
+	const char* readBytes = bufferReader->ReadBuffer(count);
+	if (readBytes == nullptr)
+	{
+		_logger.err(L("Read bytes returned null"));
+		return false;
+	}
+
+	memcpy(data, readBytes, count);
+
+	return true;
+}
+
+
+size_t SerializationHelpers::FileWriter(cmp_ctx_t *ctx, const void *data, size_t count)
+{
+	FixedStringBase *str = reinterpret_cast<FixedStringBase*>(ctx->buf);
+	str->append(reinterpret_cast<const char*>(data), count);
+	return count;
 }

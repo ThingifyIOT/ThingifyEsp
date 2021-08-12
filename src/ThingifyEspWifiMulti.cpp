@@ -10,14 +10,20 @@ _logger(LoggerInstance)
 	_state = WifiMultiState::Searching;
 }
 
-bool ThingifyEspWiFiMulti::addAP(const char* ssid, const char *passphrase)
-{
-    return APlistAdd(ssid, passphrase);
-}
 
 void ThingifyEspWiFiMulti::run()
 {    
     wl_status_t status = WiFi.status();
+
+	if(_state != WifiMultiState::Connected)
+	{
+		if(status == WL_CONNECTED)
+		{
+			FixedString32 ssid = WiFi.SSID().c_str();
+			ChangeState(WifiMultiState::Connected, ssid);
+			return;
+		}
+	}
 
 	if (_state == WifiMultiState::Connecting)
 	{	
@@ -25,6 +31,7 @@ void ThingifyEspWiFiMulti::run()
 		{
 			PrintConnectResult(status);
 			_logger.err(L("Connecting to network timed out, changing state to Searching"));
+			
 			FixedString16 emptySsid("");
 			ChangeState(WifiMultiState::Searching, emptySsid);
 
@@ -70,7 +77,7 @@ void ThingifyEspWiFiMulti::run()
 	delay(0);
 
 	// scan done analyze
-	WifiAPlist_t bestNetwork{ nullptr, nullptr };
+	WifiCredential* bestNetwork = nullptr;
 	int bestNetworkDb = INT_MIN;
 	uint8_t bestBSSID[6];
 	int32_t bestChannel;
@@ -99,12 +106,26 @@ void ThingifyEspWiFiMulti::run()
 		WiFi.getNetworkInfo(i, ssid_scan, sec_scan, rssi_scan, BSSID_scan, chan_scan);
 #endif
 
-		bool known = false;
-		for(uint32_t x = 0; x < APlist.size(); x++) 
+		std::vector<WifiCredential*> credentials;
+		credentials.reserve(_wifiCredentials.size() + (_additionalWifiCredentials == nullptr ? 0: _additionalWifiCredentials->size()));
+		for(int i=0; i < _wifiCredentials.size(); i++)
 		{
-			WifiAPlist_t entry = APlist[x];
+			credentials.push_back(_wifiCredentials[i]);
+		}
+		if(_additionalWifiCredentials != nullptr)
+		{
+			for(int i=0; i < _additionalWifiCredentials->size() ; i++)
+			{
+				credentials.push_back((*_additionalWifiCredentials)[i]);
+			}
+		}
+	
+		bool known = false;
+		for(uint32_t x = 0; x < credentials.size(); x++) 
+		{
+			WifiCredential* entry = credentials[x];
 
-			if(ssid_scan == entry.ssid) 
+			if(entry->Name.equals(ssid_scan.c_str()))
 			{ // SSID match
 				known = true;
 				if(rssi_scan > bestNetworkDb) 
@@ -112,14 +133,14 @@ void ThingifyEspWiFiMulti::run()
 
 
 #ifdef ESP8266
-					if(sec_scan == ENC_TYPE_NONE || entry.passphrase) 
+					if(sec_scan == ENC_TYPE_NONE || entry->Password.length() > 0) 
 #else
-					if (sec_scan == WIFI_AUTH_OPEN || entry.passphrase)
+					if (sec_scan == WIFI_AUTH_OPEN || entry->Password.length() > 0)
 #endif 
 					{ // check for passphrase if not open wlan
 						bestNetworkDb = rssi_scan;
 						bestChannel = chan_scan;
-						memcpy((void*) &bestNetwork, (void*) &entry, sizeof(bestNetwork));
+						bestNetwork = entry;
 						memcpy((void*) &bestBSSID, (void*) BSSID_scan, sizeof(bestBSSID));
 					}
 				}
@@ -151,23 +172,27 @@ void ThingifyEspWiFiMulti::run()
 	delay(0);
 
 	
-	if(!bestNetwork.ssid) 
+	if(bestNetwork == nullptr) 
 	{
 		_logger.debug(LogComponent::Wifi, L("no matching wifi found!"));
 		return;
 	}
 
 	//_logger.debug(LogComponent::Wifi, L("Connecting BSSID: %02X:%02X:%02X:%02X:%02X:%02X SSID: %s Channal: %d (%d)"), bestBSSID[0], bestBSSID[1], bestBSSID[2], bestBSSID[3], bestBSSID[4], bestBSSID[5], bestNetwork.ssid, bestChannel, bestNetworkDb);
-	FixedString32 bestNetworkSsid = bestNetwork.ssid;
-	ChangeState(WifiMultiState::Connecting, bestNetworkSsid);
+	ChangeState(WifiMultiState::Connecting, bestNetwork->Name);
 
-	_logger.info(L("Connecting to '%s' network..."), bestNetworkSsid.c_str());
+	_logger.info(L("Connecting to '%s' network..."), bestNetwork->Name.c_str());
 
-	status = WiFi.begin(bestNetwork.ssid, bestNetwork.passphrase, bestChannel, bestBSSID);
+	status = WiFi.begin(bestNetwork->Name.c_str(), bestNetwork->Password.c_str(), bestChannel, bestBSSID);
 	return;
 }
 
 // ##################################################################################
+void ThingifyEspWiFiMulti::SetAdditionalWifiCredentialList(std::vector<WifiCredential*>* credentialList)
+{
+	_additionalWifiCredentials = credentialList;
+
+}
 
 void ThingifyEspWiFiMulti::PrintConnectResult(wl_status_t status)
 {
@@ -195,58 +220,12 @@ void ThingifyEspWiFiMulti::PrintConnectResult(wl_status_t status)
 }
 
 
-bool ThingifyEspWiFiMulti::APlistAdd(const char* ssid, const char *passphrase) {
-
-    WifiAPlist_t newAP;
-
-    if(!ssid || *ssid == 0x00 || strlen(ssid) > 31) 
-	{
-        // fail SSID to long or missing!
-		_logger.debug(LogComponent::Wifi, L("no ssid or ssid to long"));
-        return false;
-    }
-
-    if(passphrase && strlen(passphrase) > 63) 
-	{
-        // fail passphrase to long!
-		_logger.debug(LogComponent::Wifi, L("passphrase too long"));
-        return false;
-    }
-
-    newAP.ssid = strdup(ssid);
-
-    if(!newAP.ssid) {
-		_logger.debug(LogComponent::Wifi, L("fail newAP.ssid == 0"));
-        return false;
-    }
-
-    if(passphrase && *passphrase != 0x00) 
-	{
-        newAP.passphrase = strdup(passphrase);
-        if(!newAP.passphrase) {
-			_logger.debug(LogComponent::Wifi, L("fail newAP.passphrase == 0"));
-            free(newAP.ssid);
-            return false;
-        }
-    }
-
-    APlist.push_back(newAP);   
+bool ThingifyEspWiFiMulti::AddWifiCredential(const char* ssid, const char *passphrase) 
+{
+	_wifiCredentials.push_back(new WifiCredential(ssid, passphrase));    
     return true;
 }
 
-void ThingifyEspWiFiMulti::APlistClean(void) {
-    for(uint32_t i = 0; i < APlist.size(); i++) 
-	{
-        WifiAPlist_t entry = APlist[i];
-        if(entry.ssid) {
-            free(entry.ssid);
-        }
-        if(entry.passphrase) {
-            free(entry.passphrase);
-        }
-    }
-    APlist.clear();
-}
 
 void ThingifyEspWiFiMulti::ChangeState(WifiMultiState state, FixedStringBase& ssid)
 {

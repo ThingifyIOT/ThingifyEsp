@@ -21,38 +21,11 @@
 class UpdateFirmwareDataAck;
 class FixedStringBase;
 
-class BufferReader
-{
-	const char* _buffer;
-	int _length;
-	int _postion;
-public:
-	BufferReader(const char *buffer, int length)
-	{
-		this->_buffer = buffer;
-		this->_length = length;
-		this->_postion = 0;
-	}
-
-	const char *ReadBuffer(int length)
-	{
-		if (_postion + length > _length)
-		{
-			return nullptr;
-		}
-		const char* ret = _buffer + _postion;
-		_postion += length;
-		return ret;
-	}
-
-};
 
 class Serializer
 {
 public:
 	static Logger& _logger;
-	static size_t FileWriter(cmp_ctx_t *ctx, const void *data, size_t count);
-	static bool FileReader(cmp_ctx_t *ctx, void *data, size_t count);
 	static bool WritePacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType);
 	static bool WriteArrayPacketHeader(cmp_ctx_t &cmp, ThingifyPacketType packetType, int arraySize);
 

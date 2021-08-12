@@ -7,9 +7,9 @@
 using namespace std::placeholders;
 
 
-ThingifyGsm::ThingifyGsm(const char* deviceId, const char *deviceName, SimcomAtCommands &atCommands):
+ThingifyGsm::ThingifyGsm(const char *deviceName, SimcomAtCommands &atCommands):
 	ThingifyGsmP(0, atCommands),
-	Thingify(deviceId, deviceName, _gsmClient)
+	Thingify(deviceName, _gsmClient)
 {
 	_previousGsmState = _gsm.GetState();
 
@@ -60,7 +60,7 @@ void ThingifyGsm::Loop()
 	{
 		if (gsmState == GsmState::ConnectingToGprs)
 		{
-			OnNetworkConnecting(_gsm.operatorName);
+			OnNetworkConnecting();
 		}
 		else if (gsmState == GsmState::ConnectedToGprs)
 		{
@@ -144,6 +144,19 @@ void ThingifyGsm::StartNetwork()
 uint64_t ThingifyGsm::WatchdogTimeoutInMs()
 {
 	return 30000;
+}
+
+FixedStringBase& ThingifyGsm::GetNetworkName()
+{
+    return _gsm.operatorName;
+}
+
+void ThingifyGsm::StartZeroConfiguration()
+{
+}
+bool ThingifyGsm::IsZeroConfigurationReady()
+{
+	return false;
 }
 
 void ThingifyGsm::AddDiagnostics(int updateInteval)

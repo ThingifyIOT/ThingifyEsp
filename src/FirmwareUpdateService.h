@@ -8,6 +8,9 @@
 #include "Logging/Logger.h"
 #include "ThingifyUtils.h"
 #include <stdint.h>
+#include <Settings/SettingsStorage.h>
+#include <Settings/ThingSettings.h>
+
 
 class FirmwareUpdateService
 {
@@ -28,8 +31,10 @@ private:
 	ElapsedTimer _restartRequestedTimer;
 	ElapsedTimer _dataTimeoutTimer;
 	uint8_t _updateProgress;
+	ThingSettings* _settingsBackup = nullptr;
+	SettingsStorage& _settingsStorage;
 public:
-	FirmwareUpdateService(PacketSender& packetSender);
+	FirmwareUpdateService(PacketSender& packetSender, SettingsStorage& settingsStorage);
 	void SetMaxChunkSize(uint32_t maxChunkSize);
 	bool IsUpdating();
 	uint8_t UpdateProgress();
