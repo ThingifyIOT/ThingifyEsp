@@ -71,26 +71,24 @@ void Thingify::Start()
 
 void Thingify::StartInternal()
 {
-	
-	if(!_settingsStorage.Get(_settings))
+	if(_isUsingManualConfiguration)
 	{
-		if(_isUsingManualConfiguration)
-		{
-			_logger.info(F("Using manual configuration"));
-		}
-		else
-		{
-			_logger.info(F("Failed to read configuration"));
-			SetState(ThingState::Configuring);
-			StartZeroConfiguration();
-			return;	
-		}
+		_logger.info(F("Using manual configuration"));
 	}
 	else
 	{
-		_logger.info(F("Configuration read successfull"));
-	}
-	
+        if(!_settingsStorage.Get(_settings))
+        {          
+            _logger.info(F("Failed to read configuration"));
+            SetState(ThingState::Configuring);
+            StartZeroConfiguration();
+            return;	            
+        }
+        else
+        {
+            _logger.info(F("Configuration read successfull"));
+        }
+    }
 	
    
 	ThingifyUtils::LogSettings(_logger, _settings);
@@ -112,6 +110,22 @@ void Thingify::Stop()
 	_logger.info(L("Thing::Stop"));
 	SetState(ThingState::Disabled);
 	DisconnectMqtt();
+}
+
+void Thingify::SetConfiguration(ThingSettings &settings)
+{
+    _settings.ApiPort = settings.ApiPort;
+    _settings.ApiServer = settings.ApiServer;
+    _settings.ThingName = settings.ThingName;
+    _settings.Token = settings.Token;
+    for (auto wifi : settings.WifiNetworks)
+    {
+        _settings.WifiNetworks.push_back(wifi);
+    }
+    _isUsingManualConfiguration = true;
+    _logger.info(L("Setting set"));
+
+    ThingifyUtils::LogSettings(_logger,_settings);
 }
 
 void Thingify::ResetConfiguration()

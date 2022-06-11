@@ -97,7 +97,8 @@ public:
 	void SetToken(const char* token);
 	virtual void Start();
 	void Stop();
-	void ResetConfiguration();	
+	void ResetConfiguration();
+    void SetConfiguration(ThingSettings &settings);
 	virtual void Loop();
 	bool WatchdogEnabled;
 	virtual FixedStringBase& GetNetworkName() = 0;
