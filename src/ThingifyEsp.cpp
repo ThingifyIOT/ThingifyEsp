@@ -8,7 +8,7 @@ using namespace std::placeholders;
 AsyncClient wifiTcpClient;
 
 
-ThingifyEsp::ThingifyEsp(const char* deviceId, const char* deviceName):
+ThingifyEsp::ThingifyEsp(const char* deviceName):
 Thingify(deviceName, wifiTcpClient),
 _espZeroConfiguration(Thingify::_settingsStorage)
 {

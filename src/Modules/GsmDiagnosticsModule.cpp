@@ -1,3 +1,4 @@
+#ifdef THINGIFY_GSM
 #include "GsmDiagnosticsModule.h"
 
 
@@ -150,3 +151,5 @@ bool GsmDiagnosticsModule::Tick()
 #endif
 	return true;
 }
+
+#endif

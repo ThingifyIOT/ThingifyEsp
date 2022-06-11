@@ -1,3 +1,5 @@
+#ifdef THINGIFY_GSM
+
 #include <Thingify.h>    
 #include <IModule.h>
 #include <ThingifyUtils.h>
@@ -48,3 +50,4 @@ public:
 	bool Tick() override;
 };
 
+#endif

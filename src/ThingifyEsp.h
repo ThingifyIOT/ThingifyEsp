@@ -34,7 +34,7 @@ private:
 	void SetNetworkState(NetworkState state);
 	FixedString32 _networkName;
 public:
-	ThingifyEsp(const char* deviceId, const char* deviceName);
+	ThingifyEsp(const char* deviceName);
     void AddDiagnostics(int updateInteval = 10000);
 
 	void Start() override;
