@@ -9,15 +9,19 @@ void IRAM_ATTR resetModule()
 	FixedString32 restartReason;
 	
 	restartReason.append(F("WdtReset"));
-	ThingifyUtils::WriteRestartReason(restartReason);
-	Serial.println("WatchdogReset");
+    if(LoopWatchdog::_settingsStorage != nullptr)
+    {
+        LoopWatchdog::_settingsStorage->WriteRestartReason(restartReason);
+    }
+	Serial.println("Thingify::WatchdogReset");
 	esp_restart();
 }
 #endif
 
 
-void LoopWatchdog::Start(uint64_t wdtTimeoutInMs)
+void LoopWatchdog::Start(SettingsStorage* settingsStorage, uint64_t wdtTimeoutInMs)
 {
+     _settingsStorage = settingsStorage;
 #ifdef ESP32
 	timer = timerBegin(0, 80, true);                  //timer 0, div 80
 	timerAttachInterrupt(timer, &resetModule, true);  //attach callback
@@ -32,3 +36,5 @@ void LoopWatchdog::Feed()
 #endif
 
 }
+
+SettingsStorage* LoopWatchdog::_settingsStorage = nullptr;

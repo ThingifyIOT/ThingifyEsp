@@ -2,6 +2,7 @@
 
 #ifdef ESP32
 #include <WiFi.h>
+#include <esp_wifi.h>
 #else
 #include <ESP8266WiFi.h>
 #endif
@@ -39,15 +40,20 @@ bool EspSmartConfig::Stop()
 
 SmartConfigState EspSmartConfig::Loop()
 {
-    #ifdef ESP8266
 
     if(_state == SmartConfigState::WaitingForSmartConfigCredentials)
     {
         if(WiFi.smartConfigDone())
         {
+            #ifdef ESP8266
             struct station_config conf;
             wifi_station_get_config(&conf);
             _logger.info(L("Smart config received wifi details - SSID: %s Password: %s"), conf.ssid, conf.password);
+            #elif ESP32
+            wifi_config_t wifi_config= {0};
+            esp_wifi_get_config(WIFI_IF_STA, &wifi_config);
+            _logger.info(L("Smart config received wifi details - SSID: %s Password: %s"), wifi_config.sta.ssid, wifi_config.sta.password);
+            #endif
 
             _state = SmartConfigState::ConnectingToWifi;
         }
@@ -57,14 +63,10 @@ SmartConfigState EspSmartConfig::Loop()
     {
         if(WiFi.status() == WL_CONNECTED)
         {
-            struct station_config conf;
-            wifi_station_get_config(&conf);
             _logger.info(L("connected to WiFi, IP: %s"), WiFi.localIP().toString().c_str());
             _state = SmartConfigState::Success;
         }
     }
-
-    #endif
 
     return _state;
 }

@@ -47,14 +47,13 @@ void Thingify::Start()
 {
 	_logger.info(L("Thing::Start"));
 	_errorType = ThingError::NoError;
-	EEPROM.begin(100);
-	ThingifyUtils::ReadRestartReason(_restartReason);
-	_loopWatchdog.Start(WatchdogTimeoutInMs());
+    _settingsStorage.ReadRestartReason(_restartReason);
+	_loopWatchdog.Start(&_settingsStorage, WatchdogTimeoutInMs());
 	if (_restartReason.length() > 0)
 	{
 		_logger.err(L("Restart reason: %s"), _restartReason.c_str());
 	}
-	ThingifyUtils::ClearRestartReason();
+    _settingsStorage.ClearRestartReason();
 
 	_logger.info(L("Module count: %d"), _modules.size());
 	for (auto module : _modules)
@@ -776,7 +775,7 @@ void Thingify::HandleWatchdog()
 	{
 		if (_stateChangeTimer.ElapsedSeconds() > 5)
 		{
-			ThingifyUtils::WriteRestartReason(_errorStr);
+            _settingsStorage.WriteRestartReason(_errorStr);
 			ThingifyUtils::RestartDevice();
 		}
 	}

@@ -203,7 +203,7 @@ void FirmwareUpdateService::Loop()
 		_logger.info(L("Restarting thing..."));
 
 		FixedString32 restartReason = "FirmwareUpdate";
-		ThingifyUtils::WriteRestartReason(restartReason);
+        _settingsStorage.WriteRestartReason(restartReason);
 		delay(100);
 		ThingifyUtils::RestartDevice();
 	}

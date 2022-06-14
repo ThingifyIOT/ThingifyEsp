@@ -197,45 +197,6 @@ const char* ThingifyUtils::WlDisconnectReasonToString(WiFiDisconnectReason reaso
 }
 #endif
 
-void ThingifyUtils::WriteRestartReason(FixedStringBase& errorStr)
-{
-	auto maxLength = ThingifyConstants::MaxErrorStringLength;
-	auto lengthToWrite = errorStr.length() > (maxLength-1) ? (maxLength-1) : errorStr.length();
-
-	for (int i = 0; i < lengthToWrite; i++)
-	{
-		EEPROM.write(i, errorStr[i]);
-	}
-	EEPROM.write(lengthToWrite, 0);
-	EEPROM.commit();
-}
-
-
-void ThingifyUtils::ReadRestartReason(FixedStringBase& errorStr)
-{
-	auto maxLength = ThingifyConstants::MaxErrorStringLength;
-	errorStr.clear();
-
-	for (int i = 0; i < maxLength; i++)
-	{
-		char c = EEPROM.read(i);
-		if (c == 0)
-		{
-			break;
-		}
-		errorStr.append(c);
-	}
-}
-void ThingifyUtils::ClearRestartReason()
-{
-	auto maxLength = ThingifyConstants::MaxErrorStringLength;
-
-	for (int i = 0; i < maxLength; i++)
-	{
-		EEPROM.write(i, 0);
-	}
-	EEPROM.commit();
-}
 
 void ThingifyUtils::RestartDevice()
 {

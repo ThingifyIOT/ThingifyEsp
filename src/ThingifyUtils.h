@@ -35,9 +35,6 @@ public:
 #endif
 	static const char* ThingErrorToStr(ThingError error);
 
-	static void WriteRestartReason(FixedStringBase& errorStr);
-	static void ReadRestartReason(FixedStringBase& errorStr);
-	static void ClearRestartReason();
 	static void RestartDevice();
 };
 
