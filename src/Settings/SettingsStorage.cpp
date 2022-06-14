@@ -13,11 +13,18 @@ void SettingsStorage::EnsureInitialized()
     {
         return;
     }
+    #ifdef ESP32
     if(!EEPROM.begin(SettingsAddressEnd))
     {
         _logger.err(L("EEPROM.begin failed SettingsStorage::SettingsStorage"));
         return;
     }
+    #elif ESP8266
+    EEPROM.begin(SettingsAddressEnd);
+    #else
+    #error Unknown environment
+    #endif
+
     _wasEepromInitialized = true;
     _logger.info(L("EEPROM initialized"));
 }
@@ -126,7 +133,7 @@ void SettingsStorage::Clear()
     EnsureInitialized();
     for(int i=0; i <= SettingsAddressEnd; i++)
     {
-        EEPROM.writeByte(i, 0);
+        EEPROM.write(i, 0);
     }
     EEPROM.commit();
 }

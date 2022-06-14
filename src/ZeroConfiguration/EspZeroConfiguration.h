@@ -20,7 +20,7 @@ class EspZeroConfiguration
 {
     private:
         const int WifiConfigurationTimeout = 40000;
-        const int ServerConfigurationTimeout = 10000;
+        const int ServerConfigurationTimeout = 30000;
         EspSmartConfig _espSmartConfig;
         SmartConfigServer _smartConfigServer;
         SettingsStorage& _settingsStorage;
