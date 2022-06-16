@@ -20,8 +20,9 @@ _errorType(ThingError::NoError),
 _packetSender(_mqtt),
 _logger(LoggerInstance),
 _deviceName(deviceName), 
-_firmwareUpdateService(_packetSender, _settingsStorage)
-,NodeCollection(&_settings)
+_firmwareUpdateService(_packetSender, _settingsStorage),
+_resetSequenceDetector(5, _settingsStorage),
+NodeCollection(&_settings)
 {
 	_modules.reserve(16);
 	_publishedNodeCount = 0;	
@@ -35,6 +36,13 @@ _firmwareUpdateService(_packetSender, _settingsStorage)
 	_logger.info(L("Sizeof UpdateNodesFromClientPacket: %d"), sizeof(UpdateNodesFromClientPacket));
 	_logger.info(L("Size of function execution buffer: %d"), sizeof(FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests>));
 }
+
+void Thingify::Initialize()
+{
+    _settingsStorage.Initialize();
+    _isInitialized = true;
+}
+
 void Thingify::SetToken(const char* token)
 {
 	_settings.Token = token;
@@ -46,7 +54,19 @@ void Thingify::SetToken(const char* token)
 void Thingify::Start()
 {
 	_logger.info(L("Thing::Start"));
+    if(!_isInitialized)
+    {
+        _logger.err(L("Attempted to call Thing::Start without calling Thing::Initialize"));
+        return;
+    }
 	_errorType = ThingError::NoError;
+
+     if (_resetSequenceDetector.IsResetSequenceDetected()) 
+     {
+        _logger.info(L("[CONFIG] reset sequence detected"));
+        ResetConfiguration();
+     }
+
     _settingsStorage.ReadRestartReason(_restartReason);
 	_loopWatchdog.Start(&_settingsStorage, WatchdogTimeoutInMs());
 	if (_restartReason.length() > 0)
@@ -65,7 +85,7 @@ void Thingify::Start()
 		}
 	}
 	LogNodes();
-	StartInternal();	
+	StartInternal();
 }
 
 void Thingify::StartInternal()
@@ -147,6 +167,8 @@ void Thingify::Loop()
 	{
 		module->Tick();
 	}
+
+    _resetSequenceDetector.Loop();
 
 	CheckErrors();
 	HandleWatchdog();

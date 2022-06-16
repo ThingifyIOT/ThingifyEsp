@@ -60,9 +60,10 @@ public:
 	Node* OnChanged(void *context, ValueChangeHandler handler);
 	Node* OnChanged(ValueChangeHandler handler);
 	ValueChangeHandler ValueChanged;
-	void SetValue(uint32_t value);
-	void SetValue(int value);
-	void SetValue(NodeValue newValue);
+    Node* Set(bool value);
+	Node* Set(int value);
+    Node* Set(float value);
+	Node* SetValue(NodeValue newValue);
 	void SetValueFromServer(NodeValue& newValue);
 	Node* SetKind(NodeKind kind);
 	FunctionExecutionCallback ExecutionCallback;

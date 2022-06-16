@@ -12,17 +12,20 @@ class SettingsStorage
     uint16_t Crc16(const char* data_p, unsigned char length);
     bool EepromReadArray(int address, char* data, int length);
     bool EepromWriteArray(int address, const char* data, int length);
-    // 0-63 addresses are for restart reason string
+    // 0 -3 double reset flag
+    // 4-63 addresses are for restart reason string
     // 64-512 addresses are settings storage
     const int SettingsAddressStart = 64;
     const int SettingsAddressEnd = 512;
     
     void print_data(const char* desc, const char* data_p, unsigned char dataLength);
     static bool _wasEepromInitialized;
-    void EnsureInitialized();
 public:
     SettingsStorage();
+    void Initialize();
     bool BreakStorage();
+    uint32_t GetDoubleResetFlag();
+    void SetDoubleResetFlag(uint32_t doubleResetFlag);
     bool Set(ThingSettings &settings);
     bool Get(ThingSettings &settings);
     void Clear();

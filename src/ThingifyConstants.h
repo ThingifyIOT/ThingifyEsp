@@ -23,7 +23,7 @@ public:
 	static const int MaxDeviceNameLength = 64;
 	static const int MaxNodeNameLength = 64;
 
-	static const int MaxErrorStringLength = 64;
+	static const int MaxErrorStringLength = 60;
 	static constexpr int DefaultSerialBaudrate = 115200;
 	static constexpr int MqttKeepAliveInSeconds = 60;
 

@@ -18,7 +18,7 @@
 #include "PacketSender.h"
 #include "FirmwareUpdateService.h"
 #include "Node/NodeCollection.h"
-
+#include "ResetSequenceDetector.h"
 class IModule;
 
 class Thingify : public NodeCollection
@@ -53,6 +53,7 @@ private:
 	uint16_t _incomingPackets;
 	int _publishedNodeCount;
 	int _outgoingPacketId;
+    bool _isInitialized = false;
 	uint64_t _disconnectedTimer;
 	ElapsedTimer _stateChangeTimer;
 	uint64_t _connectTime = 0;
@@ -65,7 +66,8 @@ private:
 	LoopWatchdog _loopWatchdog;
 	LoopStateDetector _stateLoopDetector;
 	PacketSender _packetSender;
-	void CheckErrors();	
+    ResetSequenceDetector _resetSequenceDetector;
+	void CheckErrors();
 protected:
 	void SetError(const char* errorStr);
 	void SetError(const __FlashStringHelper* errorStr);
@@ -94,6 +96,7 @@ protected:
 	void StartInternal();
 public:
 	Thingify(const char *deviceName, IAsyncClient& client);
+    void Initialize();
 	void SetToken(const char* token);
 	virtual void Start();
 	void Stop();

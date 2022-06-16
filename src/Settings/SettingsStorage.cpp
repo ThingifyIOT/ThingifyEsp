@@ -5,14 +5,11 @@
 SettingsStorage::SettingsStorage()
 {
 }
-bool SettingsStorage::_wasEepromInitialized = false;
 
-void SettingsStorage::EnsureInitialized()
+void SettingsStorage::Initialize()
 {
-    if(_wasEepromInitialized)
-    {
-        return;
-    }
+    Serial.printf(" EEPROM.begin %d\n", SettingsAddressEnd);
+
     #ifdef ESP32
     if(!EEPROM.begin(SettingsAddressEnd))
     {
@@ -24,13 +21,10 @@ void SettingsStorage::EnsureInitialized()
     #else
     #error Unknown environment
     #endif
-
-    _wasEepromInitialized = true;
-    _logger.info(L("EEPROM initialized"));
+    _logger.info(L("EEPROM initialized successfully with size = %d"), SettingsAddressEnd);
 }
 bool SettingsStorage::Set(ThingSettings &settings)
 {
-    EnsureInitialized();
     FixedString1024 data;
     if(!_serializer.Serialize(settings, data))
     {
@@ -66,9 +60,20 @@ bool SettingsStorage::Set(ThingSettings &settings)
     return true;
 }
 
+uint32_t SettingsStorage::GetDoubleResetFlag()
+{
+    uint32_t doubleResetFlag;
+    EEPROM.get(0, doubleResetFlag);
+    return doubleResetFlag;
+}
+void SettingsStorage::SetDoubleResetFlag(uint32_t doubleResetFlag)
+{    
+    EEPROM.put(0, doubleResetFlag);
+    EEPROM.commit();
+}
+
 bool SettingsStorage::Get(ThingSettings &settings)
 {
-    EnsureInitialized();
     char dataLengthBytes[2];
     char dataCrcBytes[2];
 
@@ -123,14 +128,12 @@ bool SettingsStorage::Get(ThingSettings &settings)
 }
 bool SettingsStorage::BreakStorage()
 {
-    EnsureInitialized();
     EEPROM.begin(SettingsAddressEnd);
     EEPROM.write(SettingsAddressStart+4+5, 'x');
     EEPROM.commit();
 }
 void SettingsStorage::Clear()
 {
-    EnsureInitialized();
     for(int i=0; i <= SettingsAddressEnd; i++)
     {
         EEPROM.write(i, 0);
@@ -139,7 +142,6 @@ void SettingsStorage::Clear()
 }
 bool SettingsStorage::EepromReadArray(int address, char* data, int length)
 {
-    EnsureInitialized();
     if(address + length > SettingsAddressEnd)
     {
         return false;
@@ -193,11 +195,10 @@ uint16_t SettingsStorage::Crc16(const char* data_p, unsigned char length)
 }
 void SettingsStorage::WriteRestartReason(FixedStringBase& errorStr)
 {
-    EnsureInitialized();
 	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 	auto lengthToWrite = errorStr.length() > (maxLength-1) ? (maxLength-1) : errorStr.length();
 
-	for (int i = 0; i < lengthToWrite; i++)
+	for (int i = 4; i < lengthToWrite; i++)
 	{
 		EEPROM.write(i, errorStr[i]);
 	}
@@ -208,11 +209,10 @@ void SettingsStorage::WriteRestartReason(FixedStringBase& errorStr)
 
 void SettingsStorage::ReadRestartReason(FixedStringBase& errorStr)
 {
-    EnsureInitialized();
 	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 	errorStr.clear();
 
-	for (int i = 0; i < maxLength; i++)
+	for (int i = 4; i < maxLength; i++)
 	{
 		char c = EEPROM.read(i);
 		if (c == 0)
@@ -224,10 +224,9 @@ void SettingsStorage::ReadRestartReason(FixedStringBase& errorStr)
 }
 void SettingsStorage::ClearRestartReason()
 {
-    EnsureInitialized();
 	auto maxLength = ThingifyConstants::MaxErrorStringLength;
 
-	for (int i = 0; i < maxLength; i++)
+	for (int i = 4; i < maxLength; i++)
 	{
 		EEPROM.write(i, 0);
 	}

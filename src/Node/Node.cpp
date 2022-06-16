@@ -65,26 +65,36 @@ Node* Node::OnChanged(ValueChangeHandler handler)
 	return OnChanged(nullptr, handler);
 }
 
-void Node::SetValue(uint32_t value)
+Node* Node::Set(bool value)
 {
-	SetValue(NodeValue::Int(value));
+    return SetValue(NodeValue::Boolean(value)); 
 }
 
-void Node::SetValue(int value)
+Node* Node::Set(int value)
 {
-	SetValue(NodeValue::Int(value));
+	return SetValue(NodeValue::Int(value));
 }
 
-void Node::SetValue(NodeValue newValue)
+Node* Node::Set(float value)
 {
+	return SetValue(NodeValue::Float(value));
+}
+Node* Node::SetValue(NodeValue newValue)
+{
+    if(Value.Type != newValue.Type)
+    {
+        _logger.warn(L("Attempted to set value type %d to node of type %d [ node name = %s]"), newValue.Type, Value.Type, name());
+        return this;
+    }
 	if (Value.IsSameAs(newValue))
 	{
-		return;
+		return this;
 	}
 
 	Value = newValue;
 	_wasUpdated = true;
 	HandleUpdate();
+    return this;
 }
 
 void Node::SetValueFromServer(NodeValue& newValue)
