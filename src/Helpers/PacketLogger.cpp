@@ -113,9 +113,10 @@ void PacketLogger::LogPacket(const char* prefix, PacketBase* packet)
 		case ThingifyPacketType::ThingSessionCreate:
 		{
 			const auto thingSessionCreate = static_cast<ThingSessionCreatePacket*>(packet);
-			_logger.info(LogComponent::Packet, L("%s ThingSessionCreate token = '%s', clientId = '%s', nodes = %d"), 
+			_logger.info(LogComponent::Packet, L("%s ThingSessionCreate token = '%s', name = '%s', clientId = '%s', nodes = %d"), 
 				prefix,
 				thingSessionCreate->LoginToken.c_str(),
+                thingSessionCreate->DeviceName.c_str(),
 				thingSessionCreate->ClientId.c_str(),
 				thingSessionCreate->Nodes.size());
 			break;
