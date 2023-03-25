@@ -157,7 +157,7 @@ WifiCredential* SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp)
 	uint32_t mapSize;
 	if(!cmp_read_map(&cmp, &mapSize))
 	{
-		return false;
+		return nullptr;
 	}
 	FixedString32 name;
 	FixedString64 password;
@@ -166,20 +166,20 @@ WifiCredential* SettingsSerializer::ReadWifiNetwork(cmp_ctx_t& cmp)
 		FixedString32 key;
 		if(!SerializationHelpers::ReadCmpString(cmp, key))
 		{
-			return false;
+			return nullptr;
 		}
 		if(key.equals("n"))
 		{
 			if(!SerializationHelpers::ReadCmpString(cmp, name))
             {
-                return false;
+                return nullptr;
             }
 		}
 		else if(key.equals("p"))
 		{
 			if(!SerializationHelpers::ReadCmpString(cmp, password))
             {
-                return false;
+                return nullptr;
             }
 		}
 	}

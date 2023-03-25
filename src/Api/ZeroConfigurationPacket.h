@@ -3,7 +3,7 @@
 
 #include <FixedString.h>
 #include "PacketBase.h"
-
+#include <vector>
 
 class WifiNetworkPacket
 {

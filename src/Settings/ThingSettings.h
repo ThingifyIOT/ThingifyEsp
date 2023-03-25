@@ -2,6 +2,7 @@
 #define _THING_SETTINGS_H
 
 #include <FixedString.h>
+#include <vector>
 
 
 #include "WifiCredential.h"
