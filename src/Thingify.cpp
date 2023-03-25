@@ -61,7 +61,7 @@ void Thingify::Start()
     }
 	_errorType = ThingError::NoError;
 
-     if (_resetSequenceDetector.IsResetSequenceDetected()) 
+     if (ResetSequenceEnabled && _resetSequenceDetector.IsResetSequenceDetected()) 
      {
         _logger.info(L("[CONFIG] reset sequence detected"));
         ResetConfiguration();

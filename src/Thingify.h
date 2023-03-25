@@ -101,6 +101,7 @@ public:
 	virtual void Start();
 	void Stop();
 	void ResetConfiguration();
+    bool ResetSequenceEnabled = true;
     void SetConfiguration(ThingSettings &settings);
 	virtual void Loop();
 	bool WatchdogEnabled;
