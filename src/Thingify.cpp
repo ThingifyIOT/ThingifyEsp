@@ -61,9 +61,17 @@ void Thingify::Start()
     }
 	_errorType = ThingError::NoError;
 
+    auto storageMagicNumber = _settingsStorage.GetInternalStatsMagicNumber();
+     if(storageMagicNumber != SettingsStorage::InternalStatsStorageOkMagicNumber)
+     {
+        _logger.info(L("Storage number is not ok, resetting stats"));
+        _settingsStorage.SetResetSettingsCount(10);
+        _settingsStorage.SetInternalStatsMagicNumber(SettingsStorage::InternalStatsStorageOkMagicNumber);
+     }
      if (ResetSequenceEnabled && _resetSequenceDetector.IsResetSequenceDetected()) 
      {
         _logger.info(L("[CONFIG] reset sequence detected"));
+     
         ResetConfiguration();
      }
 
@@ -149,9 +157,12 @@ void Thingify::SetConfiguration(ThingSettings &settings)
 
 void Thingify::ResetConfiguration()
 {
-	_logger.info(L("Thingify::ResetConfiguration"));
+	_logger.info(L("Thingify::ResetConfiguration  !!! CONFIGURATION HAS BEEN RESET TO EMPTY !!!"));
 	Stop();
 	_settingsStorage.Clear();
+    auto resetConfigCount = _settingsStorage.GetResetSettingsCount();
+    resetConfigCount++;
+    _settingsStorage.SetResetSettingsCount(resetConfigCount);
 	SetState(ThingState::Configuring);
 	StartZeroConfiguration();
 }

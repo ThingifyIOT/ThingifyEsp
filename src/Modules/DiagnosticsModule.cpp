@@ -37,7 +37,7 @@ _dev(dev)
 
 const char* DiagnosticsModule::GetName()
 {
-	return "Debug nodes";
+	return "Diagnostic nodes";
 }
 
 bool DiagnosticsModule::Init()
@@ -89,6 +89,9 @@ bool DiagnosticsModule::Init()
 	}
 	restartReasonNode = _dev.AddString("restart_reason")->SetKind(NodeKind::Statistics);
 	restartReasonNode->SetValue(NodeValue::String(_dev.GetRestartReason()));
+    resetSettingsCountNode = _dev.AddInt("settings_reset_cnt")->SetKind(NodeKind::Statistics);
+    resetSettingsCountNode->SetValue(NodeValue::Int((int)_dev.GetResetSettingsCount()));
+
 
 #if ESP8266
 	if (ShowFreeStack)

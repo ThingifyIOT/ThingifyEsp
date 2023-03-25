@@ -24,6 +24,7 @@ private:
         {
             return true;
         }
+        return false;
         #elif ESP8266
         return true;
         #else
@@ -58,7 +59,8 @@ public:
             _logger.info(L("[CONFIG] third reset detected"));
             _settingsStorage.SetDoubleResetFlag(RESET_SEQUENCE_CLEAR);
             return IsPowerOnReset();
-        }       
+        }
+        return false;    
     };
    
     void Loop()
@@ -67,7 +69,7 @@ public:
         {
             _waitingForNextSequence = false;
             _settingsStorage.SetDoubleResetFlag(RESET_SEQUENCE_CLEAR);
-            _logger.info(L("[CONFIG] clear config reset sequence"));
+            _logger.info(L("[CONFIG] Cleared config reset sequence"));
         }
     };
 };

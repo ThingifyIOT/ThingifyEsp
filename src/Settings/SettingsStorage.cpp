@@ -6,22 +6,24 @@ SettingsStorage::SettingsStorage()
 {
 }
 
+uint32_t SettingsStorage::InternalStatsStorageOkMagicNumber = 0x3463F7D6;
+
 void SettingsStorage::Initialize()
 {
     Serial.printf(" EEPROM.begin %d\n", SettingsAddressEnd);
 
     #ifdef ESP32
-    if(!EEPROM.begin(SettingsAddressEnd))
+    if(!EEPROM.begin(EEpromStorageEnd))
     {
         _logger.err(L("EEPROM.begin failed SettingsStorage::SettingsStorage"));
         return;
     }
     #elif ESP8266
-    EEPROM.begin(SettingsAddressEnd);
+    EEPROM.begin(EEpromStorageEnd);
     #else
     #error Unknown environment
     #endif
-    _logger.info(L("EEPROM initialized successfully with size = %d"), SettingsAddressEnd);
+    _logger.info(L("EEPROM initialized successfully with size = %d"), EEpromStorageEnd);
 }
 bool SettingsStorage::Set(ThingSettings &settings)
 {
@@ -71,7 +73,28 @@ void SettingsStorage::SetDoubleResetFlag(uint32_t doubleResetFlag)
     EEPROM.put(0, doubleResetFlag);
     EEPROM.commit();
 }
-
+void SettingsStorage::SetInternalStatsMagicNumber(uint32_t magicNumber)
+{
+    EEPROM.put(InternalStatsMagicNumberAddress, magicNumber);
+    EEPROM.commit();
+}
+uint32_t SettingsStorage::GetInternalStatsMagicNumber()
+{
+    uint32_t magicNumber;
+    EEPROM.get(InternalStatsMagicNumberAddress, magicNumber);
+    return magicNumber;
+}
+void SettingsStorage::SetResetSettingsCount(uint32_t resetSettingsCount)
+{
+    EEPROM.put(ResetSettingsCountAddress, resetSettingsCount);
+    EEPROM.commit();
+}
+uint32_t SettingsStorage::GetResetSettingsCount()
+{
+    uint32_t resetSettingsCount;
+    EEPROM.get(ResetSettingsCountAddress, resetSettingsCount);
+    return resetSettingsCount;
+}
 bool SettingsStorage::Get(ThingSettings &settings)
 {
     char dataLengthBytes[2];

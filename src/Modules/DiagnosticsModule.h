@@ -17,7 +17,8 @@ class DiagnosticsModule: public IModule
 		*crashNode,
 		*reconnectCountNode,
 		*connectionDurationNode,
-		*restartReasonNode;
+		*restartReasonNode,
+        *resetSettingsCountNode;
 
 	Thingify& _dev;
 	int DbmToPercent(int dBm);

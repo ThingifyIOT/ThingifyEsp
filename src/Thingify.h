@@ -130,6 +130,10 @@ public:
 	{
 		return _errorStr.c_str();
 	}
+    uint32_t GetResetSettingsCount()
+    {
+        return _settingsStorage.GetResetSettingsCount();
+    }
 	const char* GetRestartReason()
 	{
 		return _restartReason.c_str();
@@ -142,7 +146,6 @@ public:
 	{
 		_valueSendInterval = value;
 	}
-
 
 	FirmwareUpdateService& UpdateService() 
 	{
