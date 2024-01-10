@@ -138,7 +138,9 @@ public:
 	{
 		return _restartReason.c_str();
 	}
-	const char* GetServerName() const;
+	const char* GetServerName() const;	
+	const int GetServerPort() const;
+
 	int GetReconnectCount() const;
 	uint64_t GetMillisecondsSinceConnect();
 

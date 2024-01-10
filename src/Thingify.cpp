@@ -649,6 +649,11 @@ const char* Thingify::GetServerName() const
 	return _settings.ApiServer.c_str();
 }
 
+const int Thingify::GetServerPort() const
+{
+	return _settings.ApiPort;
+}
+
 int Thingify::GetReconnectCount() const
 {
 	return _reconnectCount;

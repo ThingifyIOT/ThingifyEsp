@@ -18,8 +18,8 @@ class DiagnosticsModule: public IModule
 		*reconnectCountNode,
 		*connectionDurationNode,
 		*restartReasonNode,
-        *resetSettingsCountNode;
-
+        *resetSettingsCountNode,
+		*serverAddressNode;
 	Thingify& _dev;
 	int DbmToPercent(int dBm);
 public:
