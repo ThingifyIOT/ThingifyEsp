@@ -6,7 +6,7 @@ SettingsStorage::SettingsStorage()
 {
 }
 
-uint32_t SettingsStorage::InternalStatsStorageOkMagicNumber = 0x3463F7D6;
+uint32_t SettingsStorage::InternalStatsStorageOkMagicNumber = 0x3463A7D6;
 
 void SettingsStorage::Initialize()
 {
@@ -94,6 +94,33 @@ uint32_t SettingsStorage::GetResetSettingsCount()
     uint32_t resetSettingsCount;
     EEPROM.get(ResetSettingsCountAddress, resetSettingsCount);
     return resetSettingsCount;
+}
+uint8_t SettingsStorage::GetUserConfigCount()
+{
+    return UserConfigCount;
+}
+void SettingsStorage::ResetUserConfig()
+{
+    for(int i=0; i < UserConfigCount; i++)
+    {
+        EEPROM.put(UserSettingsAddress + i*4, 0);
+    }
+    EEPROM.commit();
+}
+void SettingsStorage::SetUserConfigValue(uint8_t index, uint32_t value)
+{
+    if(index >= UserConfigCount)
+    {
+        return;
+    }
+    EEPROM.put(UserSettingsAddress  + index*4, value);
+    EEPROM.commit();
+}
+uint32_t SettingsStorage::GetUserConfigValue(uint8_t index)
+{
+    uint32_t value;
+    EEPROM.get(UserSettingsAddress + index*4, value);
+    return value;
 }
 bool SettingsStorage::Get(ThingSettings &settings)
 {

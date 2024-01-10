@@ -18,8 +18,8 @@ class DebounceButton
         int _buttonMode;
     public:
         DebounceButton(int pin, int buttonMode = INPUT_PULLUP, int debounceTime = 50);
-
         void Init();
         ButtonEvent Loop();
+        ButtonEvent Loop(bool inputState);
         bool IsPressed();
 };

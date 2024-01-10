@@ -134,6 +134,14 @@ public:
     {
         return _settingsStorage.GetResetSettingsCount();
     }
+	void SetUserConfigValue(uint8_t index, uint32_t value)
+    {
+        return _settingsStorage.SetUserConfigValue(index, value);
+    }
+	uint32_t GetUserConfigValue(uint8_t index)
+	{
+		return _settingsStorage.GetUserConfigValue(index);
+	}
 	const char* GetRestartReason()
 	{
 		return _restartReason.c_str();

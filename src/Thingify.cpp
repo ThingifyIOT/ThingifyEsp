@@ -65,7 +65,8 @@ void Thingify::Start()
      if(storageMagicNumber != SettingsStorage::InternalStatsStorageOkMagicNumber)
      {
         _logger.info(L("Storage number is not ok, resetting stats"));
-        _settingsStorage.SetResetSettingsCount(10);
+        _settingsStorage.SetResetSettingsCount(0);
+		_settingsStorage.ResetUserConfig();		
         _settingsStorage.SetInternalStatsMagicNumber(SettingsStorage::InternalStatsStorageOkMagicNumber);
      }
      if (ResetSequenceEnabled && _resetSequenceDetector.IsResetSequenceDetected()) 

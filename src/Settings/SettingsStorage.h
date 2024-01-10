@@ -16,16 +16,20 @@ class SettingsStorage
     // 0 - 3 double reset flag
     // 4-63 addresses are for restart reason string
     // 64-511 addresses are settings storage
-    // 640-643 - double reset count
+    // 640-643 - magic number storage, if wrong - settings are reset to 0
+    // 644-647 - double reset count
+    // 648-687 - user configs (10*4 bytes)
 
     const int SettingsAddressStart = 64;
     const int SettingsAddressEnd = 512;    
 
     const int InternalStatsMagicNumberAddress = 640;
     const int ResetSettingsCountAddress = 644;
+    const int UserSettingsAddress = 648;
 
     const int EEpromStorageEnd = 1024;
 
+    const int UserConfigCount = 10;
 
     void print_data(const char* desc, const char* data_p, unsigned char dataLength);
     static bool _wasEepromInitialized;
@@ -42,6 +46,12 @@ public:
     void SetResetSettingsCount(uint32_t doubleResetCount);
     uint32_t GetResetSettingsCount();
 
+
+    // user settings
+    uint8_t GetUserConfigCount();
+    void ResetUserConfig();
+    void SetUserConfigValue(uint8_t index, uint32_t value);
+    uint32_t GetUserConfigValue(uint8_t index);
 
     bool Set(ThingSettings &settings);
     bool Get(ThingSettings &settings);

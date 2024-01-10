@@ -7,27 +7,30 @@ DebounceButton::DebounceButton(int pin, int buttonMode, int debounceTime)
     _debounceTime = debounceTime;
     _buttonMode = buttonMode;
 }
+
 void DebounceButton::Init()
 {
-    pinMode(_pin, _buttonMode);
+    if(_pin != -1)
+    {
+        pinMode(_pin, _buttonMode);
+    }
 }
 
-ButtonEvent DebounceButton::Loop()
+ButtonEvent DebounceButton::Loop(bool inputState)
 {
-    bool currentState = digitalRead(_pin);
     ButtonEvent event = ButtonEvent::None;
 
-    if (currentState != _lastFlickerableState) 
+    if (inputState != _lastFlickerableState) 
     {
         _lastDebounceTime = millis();
     }
-    _lastFlickerableState = currentState;
+    _lastFlickerableState = inputState;
 
     if ((millis() - _lastDebounceTime) > _debounceTime) 
     {
-        if(_lastSteadyState != currentState)
+        if(_lastSteadyState != inputState)
         {
-            if(currentState)
+            if(inputState)
             {
                 event = ButtonEvent::Pressed;
             }
@@ -36,9 +39,15 @@ ButtonEvent DebounceButton::Loop()
                 event = ButtonEvent::Released;
             }
         }
-        _lastSteadyState = currentState;
+        _lastSteadyState = inputState;
     }
     return event;
+}
+
+ButtonEvent DebounceButton::Loop()
+{
+    bool currentState = digitalRead(_pin);    
+    return Loop(currentState);
 }
 
 bool DebounceButton::IsPressed()
