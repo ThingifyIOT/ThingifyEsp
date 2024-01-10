@@ -47,7 +47,7 @@ void Thingify::SetToken(const char* token)
 {
 	_settings.Token = token;
 	_settings.ApiPort = 1883;
-	_settings.ApiServer = "thingify.it";
+	_settings.ApiServer = "api.thingify.it";
 	_isUsingManualConfiguration = true;
 }
 
