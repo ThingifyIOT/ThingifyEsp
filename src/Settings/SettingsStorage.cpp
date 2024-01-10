@@ -181,6 +181,7 @@ bool SettingsStorage::BreakStorage()
     EEPROM.begin(SettingsAddressEnd);
     EEPROM.write(SettingsAddressStart+4+5, 'x');
     EEPROM.commit();
+    return true;
 }
 void SettingsStorage::Clear()
 {

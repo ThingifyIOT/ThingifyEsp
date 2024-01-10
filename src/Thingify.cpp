@@ -47,7 +47,7 @@ void Thingify::SetToken(const char* token)
 {
 	_settings.Token = token;
 	_settings.ApiPort = 1883;
-	_settings.ApiServer = "conti.ml";
+	_settings.ApiServer = "api.thingify.it";
 	_isUsingManualConfiguration = true;
 }
 
@@ -114,6 +114,10 @@ void Thingify::StartInternal()
         }
         else
         {
+			// to remove - make suure new address is used
+			_settings.ApiServer = "api.thingify.it";
+			_settingsStorage.Set(_settings);
+			// end to remove
             _logger.info(F("Configuration read successfull"));
         }
     }
@@ -648,6 +652,11 @@ ThingState Thingify::GetCurrentState() const
 const char* Thingify::GetServerName() const
 {
 	return _settings.ApiServer.c_str();
+}
+
+const int Thingify::GetServerPort() const
+{
+	return _settings.ApiPort;
 }
 
 int Thingify::GetReconnectCount() const

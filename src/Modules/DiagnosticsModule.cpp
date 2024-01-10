@@ -33,6 +33,7 @@ _dev(dev)
 	freeHeapNode = nullptr;
 	uptimeNode = nullptr;
 	crashNode = nullptr;
+	serverAddressNode = nullptr;
 }
 
 const char* DiagnosticsModule::GetName()
@@ -91,7 +92,7 @@ bool DiagnosticsModule::Init()
 	restartReasonNode->SetValue(NodeValue::String(_dev.GetRestartReason()));
     resetSettingsCountNode = _dev.AddInt("settings_reset_cnt")->SetKind(NodeKind::Statistics);
     resetSettingsCountNode->SetValue(NodeValue::Int((int)_dev.GetResetSettingsCount()));
-
+	serverAddressNode = _dev.AddString("server")->SetKind(NodeKind::Statistics);
 
 #if ESP8266
 	if (ShowFreeStack)
@@ -154,6 +155,11 @@ bool DiagnosticsModule::Tick()
 	{
 		connectionDurationNode->SetValue(NodeValue::TimeSpan(_dev.GetMillisecondsSinceConnect()));
 	}
+
+	char serverName[255];
+	memset(serverName, 0, 255);
+	snprintf(serverName, 255, "%s:%d", _dev.GetServerName(), _dev.GetServerPort());
+	serverAddressNode->SetValue(NodeValue::String(serverName));
 #if ESP8266
 	if (ShowFreeStack)
 	{
