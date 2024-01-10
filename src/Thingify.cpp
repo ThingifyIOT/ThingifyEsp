@@ -113,6 +113,10 @@ void Thingify::StartInternal()
         }
         else
         {
+			// to remove - make suure new address is used
+			_settings.ApiServer = "api.thingify.it";
+			_settingsStorage.Set(_settings);
+			// end to remove
             _logger.info(F("Configuration read successfull"));
         }
     }
