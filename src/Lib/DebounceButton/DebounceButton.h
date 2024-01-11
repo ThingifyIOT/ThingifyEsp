@@ -11,10 +11,10 @@ class DebounceButton
 {
     private:
         int _pin;
-        uint64_t _lastDebounceTime = 0;
-        bool _lastSteadyState = false;       
-        bool _lastFlickerableState = false;
-        int _debounceTime = 50;
+        uint64_t _lastChangeStateTime = 0;
+        bool _isPressed = false;       
+        bool _previousInputState = false;
+        int _debounceInterval = 50;
         int _buttonMode;
     public:
         DebounceButton(int pin, int buttonMode = INPUT_PULLUP, int debounceTime = 50);

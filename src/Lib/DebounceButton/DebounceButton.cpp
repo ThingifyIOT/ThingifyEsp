@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "DebounceButton.h"
 
-DebounceButton::DebounceButton(int pin, int buttonMode, int debounceTime)
+DebounceButton::DebounceButton(int pin, int buttonMode, int debounceInterval)
 {
     _pin = pin;
-    _debounceTime = debounceTime;
+    _debounceInterval = debounceInterval;
     _buttonMode = buttonMode;
 }
 
@@ -20,27 +20,35 @@ ButtonEvent DebounceButton::Loop(bool inputState)
 {
     ButtonEvent event = ButtonEvent::None;
 
-    if (inputState != _lastFlickerableState) 
+    if (inputState != _previousInputState) 
     {
-        _lastDebounceTime = millis();
+        _lastChangeStateTime = millis();
+        _previousInputState = inputState;
     }
-    _lastFlickerableState = inputState;
 
-    if ((millis() - _lastDebounceTime) > _debounceTime) 
+    if(_lastChangeStateTime == 0)
     {
-        if(_lastSteadyState != inputState)
-        {
-            if(inputState)
-            {
-                event = ButtonEvent::Pressed;
-            }
-            else 
-            {
-                event = ButtonEvent::Released;
-            }
-        }
-        _lastSteadyState = inputState;
+        return ButtonEvent::None;
+    }   
+    
+    if(millis() - _lastChangeStateTime < _debounceInterval)
+    {
+        return ButtonEvent::None;
     }
+
+    if(_isPressed != inputState)
+    {
+        if(inputState)
+        {
+            event = ButtonEvent::Pressed;
+        }
+        else 
+        {
+            event = ButtonEvent::Released;
+        }
+    }
+    _isPressed = inputState;
+    _lastChangeStateTime = 0;
     return event;
 }
 
@@ -52,5 +60,5 @@ ButtonEvent DebounceButton::Loop()
 
 bool DebounceButton::IsPressed()
 {
-    return _lastSteadyState;
+    return _isPressed;
 }
