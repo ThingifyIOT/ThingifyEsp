@@ -43,14 +43,6 @@ void Thingify::Initialize()
     _isInitialized = true;
 }
 
-void Thingify::SetToken(const char* token)
-{
-	_settings.Token = token;
-	_settings.ApiPort = 1883;
-	_settings.ApiServer = "api.thingify.it";
-	_isUsingManualConfiguration = true;
-}
-
 void Thingify::Start()
 {
 	_logger.info(L("Thing::Start"));
@@ -150,9 +142,21 @@ void Thingify::SetConfiguration(ThingSettings &settings)
     _settings.ApiServer = settings.ApiServer;
     _settings.ThingName = settings.ThingName;
     _settings.Token = settings.Token;
+	if(_settings.ApiServer.length() == 0)
+	{
+		_settings.ApiServer = "api.thingify.it";
+	}
+	if(_settings.ApiPort == 0)
+	{
+		_settings.ApiPort = 1883;
+	}
+	if(_settings.ThingName.length() == 0)
+	{
+		_settings.ThingName = _deviceName;
+	}
     for (auto wifi : settings.WifiNetworks)
     {
-        _settings.WifiNetworks.push_back(wifi);
+        _settings.WifiNetworks.push_back(new WifiCredential(wifi->Name, wifi->Password));
     }
     _isUsingManualConfiguration = true;
     _logger.info(L("Setting set"));

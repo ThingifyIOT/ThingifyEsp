@@ -7,7 +7,6 @@ enum class LogComponent
 	Mqtt = 1,
 	Packet = 2,
 	Network = 4,
-	Wifi = 8,
 	Node = 16,
 	Sensor = 32,
 	Other = 64

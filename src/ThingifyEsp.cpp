@@ -70,7 +70,7 @@ void ThingifyEsp::Loop()
 	const wl_status_t wl_status = WiFi.status();
 	if (_previousWlanStatus != wl_status)
 	{
-		_logger.info(LogComponent::Wifi, L("Status changed %s -> %s"),
+		_logger.info(L("[WiFi] Status changed %s -> %s"),
 			ThingifyUtils::WlStatusToStr(_previousWlanStatus),
 			ThingifyUtils::WlStatusToStr(wl_status));
 		_previousWlanStatus = wl_status;
@@ -113,7 +113,10 @@ FixedStringBase& ThingifyEsp::GetNetworkName()
 void ThingifyEsp::OnConfigurationLoaded()
 {
 	_logger.info(L("OnConfigurationLoaded"));
-	_wifiMulti.SetAdditionalWifiCredentialList(&(_settings.WifiNetworks));
+
+	
+
+	_wifiMulti.SetWifiCredentialList(&_settings.WifiNetworks);
 }
 
 void ThingifyEsp::StartZeroConfiguration()
@@ -133,9 +136,14 @@ void ThingifyEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& netw
 		SetNetworkState(NetworkState::Connecting);
 
 	}
-	if (state == WifiMultiState::Searching)
+	if (state == WifiMultiState::NotConnected)
 	{
 		_logger.info(L("Wifi state changed to Searching"));
+		SetNetworkState(NetworkState::Disconnected);
+	}
+	if (state == WifiMultiState::Scanning)
+	{
+		_logger.info(L("Wifi state changed to Scanning"));
 		SetNetworkState(NetworkState::Disconnected);
 	}
 	if (state == WifiMultiState::Connected)
@@ -148,25 +156,6 @@ void ThingifyEsp::OnWifiStateChanged(WifiMultiState state, FixedStringBase& netw
 bool ThingifyEsp::IsNetworkConnected()
 {
 	return WiFi.status() == WL_CONNECTED;
-}
-
-void ThingifyEsp::AddAp(const char* ssid, const char* password)
-{
-	_wifiMulti.AddWifiCredential(ssid, password);
-}
-
-void ThingifyEsp::AddApList(char* accessPoints[][2])
-{
-	for (int i = 0; accessPoints[i] != nullptr; i++)
-	{
-		const auto ssid = accessPoints[i][0];
-		const auto password = accessPoints[i][1];
-		if (ssid == nullptr)
-		{
-			return;
-		}
-		_wifiMulti.AddWifiCredential(ssid, password);
-	}
 }
 
 uint64_t ThingifyEsp::WatchdogTimeoutInMs()

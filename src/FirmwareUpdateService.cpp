@@ -48,6 +48,7 @@ void FirmwareUpdateService::HandleUpdateFirmwareBegin(UpdateFirmwareBeginToThing
 	if(!_settingsStorage.Get(*_settingsBackup))
 	{
 		delete _settingsBackup;
+		_settingsBackup = nullptr;
 	}
 
 	_logger.info(L("Update firmware begin: md5 = %s, size = %lld"), packet->FirmwareMd5.c_str(), packet->FirmwareSize);
@@ -122,12 +123,16 @@ void FirmwareUpdateService::HandleFirmwareCommitPacket(UpdateFirmwareCommitToThi
 		return;
 	}
 
-	_logger.info(L("Restoring settings..."));
 	if(_settingsBackup != nullptr)
-	{
+	{	
+		_logger.info(L("Restoring settings..."));
 		_settingsStorage.Set(*_settingsBackup);
 		delete _settingsBackup;
 		_settingsBackup = nullptr;
+	}
+	else
+	{
+		_logger.info(L("Skip restore settings as they are not available"));
 	}
 
 	_lastFirmwareCorrelationId = packet->CorrelationId;
@@ -200,7 +205,7 @@ void FirmwareUpdateService::Loop()
 
 	if (_restartRequestedTimer.IsStarted() && _restartRequestedTimer.ElapsedMs() > 1000)
 	{
-		_logger.info(L("Restarting thing..."));
+		_logger.info(L("Restarting thing after firmware update..."));
 
 		FixedString32 restartReason = "FirmwareUpdate";
         _settingsStorage.WriteRestartReason(restartReason);

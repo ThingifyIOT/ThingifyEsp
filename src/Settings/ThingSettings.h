@@ -23,6 +23,11 @@ public:
 			delete WifiNetworks[i];
 		}
 	}
+
+	void AddAp(char *ssid, char* password)
+	{
+		WifiNetworks.push_back(new WifiCredential(ssid, password));
+	}
 };
 
 #endif

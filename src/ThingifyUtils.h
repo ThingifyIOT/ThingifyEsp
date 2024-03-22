@@ -75,7 +75,7 @@ public:
 
 	ElapsedTimer():_time(0)
 	{
-		
+		_isStarted = false;
 	}
 	bool IsStarted()
 	{

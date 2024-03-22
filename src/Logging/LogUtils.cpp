@@ -19,7 +19,6 @@ const char* LogUtils::ComponentToString(LogComponent component)
 		case LogComponent::Mqtt: return "Mqtt";
 		case LogComponent::Packet: return "Packet";
 		case LogComponent::Network: return "Network";
-		case LogComponent::Wifi: return "WiFi";
 		case LogComponent::Node: return "Node";
 		case LogComponent::Sensor: return "Sensor";
 

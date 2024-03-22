@@ -18,7 +18,7 @@
 
 enum class WifiMultiState
 {
-	Connecting, Searching, Connected
+	Connecting, NotConnected, Connected, Scanning
 };
 
 class ThingifyEspWiFiMulti 
@@ -26,18 +26,17 @@ class ThingifyEspWiFiMulti
 private:
 	WifiMultiState _state;
 	uint64_t _stateChangeTime = 0;
+	FixedString16 _emptySsid;
 
-	std::vector<WifiCredential*>* _additionalWifiCredentials;
-	std::vector<WifiCredential*> _wifiCredentials;
+	std::vector<WifiCredential*>* _wifiCredentials = nullptr;
 
 	void ChangeState(WifiMultiState state, FixedStringBase& ssid);
-	void PrintConnectResult(wl_status_t status);
+	void PrintWifiError();
+	void PrintResultsAndFindBestNetwork(int16_t scanResult, WifiCredential& bestNetwork);
 
 public:
 	ThingifyEspWiFiMulti();
-
-	bool AddWifiCredential(const char* ssid, const char *passphrase = nullptr);
-	void SetAdditionalWifiCredentialList(std::vector<WifiCredential*>* credentialList);
+	void SetWifiCredentialList(std::vector<WifiCredential*>* credentialList);
     void run();
 	std::function<void(WifiMultiState, FixedStringBase&)> OnStateChanged;
 	Logger& _logger;

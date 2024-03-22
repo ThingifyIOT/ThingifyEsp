@@ -97,7 +97,6 @@ protected:
 public:
 	Thingify(const char *deviceName, IAsyncClient& client);
     void Initialize();
-	void SetToken(const char* token);
 	virtual void Start();
 	void Stop();
 	void ResetConfiguration();
