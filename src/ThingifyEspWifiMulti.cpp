@@ -3,7 +3,10 @@
 #include <string.h>
 #include "ThingifyUtils.h"
 
+#ifdef ESP8266
+#else
 #include <esp_wifi.h>
+#endif
 
 ThingifyEspWiFiMulti::ThingifyEspWiFiMulti():
 _logger(LoggerInstance)
@@ -57,7 +60,7 @@ void ThingifyEspWiFiMulti::run()
 		// without this - first network scan times out
 		WiFi.disconnect(false, false);
 		// we set 5000 timeout per channel as not expecting to hit it - timeout handling is done in WifiMultiState::Scanning handler
-		WiFi.scanNetworks(true, false, false, 5000);
+		WiFi.scanNetworks(true, false);
 		ChangeState(WifiMultiState::Scanning, _emptySsid);
 	}
 
