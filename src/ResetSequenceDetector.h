@@ -4,9 +4,6 @@
 #include "Settings/SettingsStorage.h"
 #include "Logging/Logger.h"
 
-#define RESET_SEQUENCE_FIRST_RESET    0xD0D01234
-#define RESET_SEQUENCE_SECOND_RESET    0xD0D01235
-#define RESET_SEQUENCE_CLEAR  0xD0D04321
 
 class ResetSequenceDetector
 {
@@ -42,25 +39,25 @@ public:
     bool IsResetSequenceDetected()
     {
         auto doubleResetFlag = _settingsStorage.GetDoubleResetFlag();
-        if(doubleResetFlag == RESET_SEQUENCE_CLEAR)
+
+        switch (doubleResetFlag)
         {
-            _settingsStorage.SetDoubleResetFlag(RESET_SEQUENCE_FIRST_RESET);
+        case RESET_SEQUENCE_CLEAR:
+             _settingsStorage.SetDoubleResetFlag(RESET_SEQUENCE_FIRST_RESET);
             _logger.info(L("[CONFIG] first reset detected"));
             return false;
-        }
-        if(doubleResetFlag == RESET_SEQUENCE_FIRST_RESET)
-        {
+        case RESET_SEQUENCE_FIRST_RESET:
             _settingsStorage.SetDoubleResetFlag(RESET_SEQUENCE_SECOND_RESET);
             _logger.info(L("[CONFIG] second reset detected"));
             return false;
-        }
-        if(doubleResetFlag == RESET_SEQUENCE_SECOND_RESET)
-        {
+        case RESET_SEQUENCE_SECOND_RESET:
             _logger.info(L("[CONFIG] third reset detected"));
             _settingsStorage.SetDoubleResetFlag(RESET_SEQUENCE_CLEAR);
             return IsPowerOnReset();
+        default:
+            _logger.info(L("[CONFIG] unknown reset sequence flag"));
+            return false;
         }
-        return false;    
     };
    
     void Loop()

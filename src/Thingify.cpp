@@ -21,7 +21,7 @@ _packetSender(_mqtt),
 _logger(LoggerInstance),
 _deviceName(deviceName), 
 _firmwareUpdateService(_packetSender, _settingsStorage),
-_resetSequenceDetector(5, _settingsStorage),
+_resetSequenceDetector(1, _settingsStorage),
 NodeCollection(&_settings)
 {
 	_modules.reserve(16);
@@ -37,20 +37,12 @@ NodeCollection(&_settings)
 	_logger.info(L("Size of function execution buffer: %d"), sizeof(FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests>));
 }
 
-void Thingify::Initialize()
-{
-    _settingsStorage.Initialize();
-    _isInitialized = true;
-}
 
 void Thingify::Start()
 {
 	_logger.info(L("Thing::Start"));
-    if(!_isInitialized)
-    {
-        _logger.err(L("Attempted to call Thing::Start without calling Thing::Initialize"));
-        return;
-    }
+	_settingsStorage.Initialize();
+
 	_errorType = ThingError::NoError;
 
     auto storageMagicNumber = _settingsStorage.GetInternalStatsMagicNumber();

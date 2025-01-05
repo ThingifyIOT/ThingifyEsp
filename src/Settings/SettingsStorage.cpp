@@ -10,7 +10,6 @@ uint32_t SettingsStorage::InternalStatsStorageOkMagicNumber = 0x3463A7D6;
 
 void SettingsStorage::Initialize()
 {
-    Serial.printf(" EEPROM.begin %d\n", SettingsAddressEnd);
 
     #ifdef ESP32
     if(!EEPROM.begin(EEpromStorageEnd))
@@ -189,7 +188,8 @@ void SettingsStorage::Clear()
     {
         EEPROM.write(i, 0);
     }
-    EEPROM.commit();
+    SetDoubleResetFlag(RESET_SEQUENCE_CLEAR);
+    // EEPROM.commit(); - not needed - already called by SetDoubleResetFlag
 }
 bool SettingsStorage::EepromReadArray(int address, char* data, int length)
 {

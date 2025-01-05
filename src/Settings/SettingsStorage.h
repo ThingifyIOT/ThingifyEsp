@@ -5,6 +5,10 @@
 #include "SettingsSerializer.h"
 #include "Logging/Logger.h"
 
+#define RESET_SEQUENCE_FIRST_RESET    0xD0D01234
+#define RESET_SEQUENCE_SECOND_RESET    0xD0D01235
+#define RESET_SEQUENCE_CLEAR  0xD0D04321
+
 class SettingsStorage
 {
     SettingsSerializer _serializer;

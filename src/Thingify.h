@@ -53,7 +53,6 @@ private:
 	uint16_t _incomingPackets;
 	int _publishedNodeCount;
 	int _outgoingPacketId;
-    bool _isInitialized = false;
 	uint64_t _disconnectedTimer;
 	ElapsedTimer _stateChangeTimer;
 	uint64_t _connectTime = 0;
@@ -96,7 +95,6 @@ protected:
 	void StartInternal();
 public:
 	Thingify(const char *deviceName, IAsyncClient& client);
-    void Initialize();
 	virtual void Start();
 	void Stop();
 	void ResetConfiguration();
