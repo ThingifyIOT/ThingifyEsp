@@ -22,18 +22,15 @@ class ThingifyUtils
 {
 public:
 	static void PrintHex(const void* data, int count);
-	static const char* ThingStateToStr(ThingState thingState);
-	static const char* ThingStateToShortStr(ThingState thingState);
-	static const char* WlStatusToStr(wl_status_t wlStatus);
+	static const __FlashStringHelper* ThingStateToStr(ThingState thingState);
+	static const __FlashStringHelper* ThingStateToShortStr(ThingState thingState);
+	static const __FlashStringHelper* WlStatusToStr(wl_status_t wlStatus);
 	static void ScanI2C(TwoWire& wire);
 
 	static FixedString32 TimeToShortStr(ulong timeInSeconds);
-	static const char * NodeTypeToStr(NodeType nodeType);
+	static const __FlashStringHelper * NodeTypeToStr(NodeType nodeType);
 	static void LogSettings(Logger& logger, ThingSettings& settings);
-#ifdef ESP8266
-	static const char* WlDisconnectReasonToString(WiFiDisconnectReason reason);
-#endif
-	static const char* ThingErrorToStr(ThingError error);
+	static const __FlashStringHelper* ThingErrorToStr(ThingError error);
 
 	static void RestartDevice();
 };

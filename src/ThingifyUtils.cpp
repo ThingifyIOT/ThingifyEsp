@@ -12,60 +12,60 @@ void ThingifyUtils::PrintHex(const void* data, int count)
 	Serial.println();
 }
 
-const char* ThingifyUtils::ThingStateToStr(ThingState thingState)
+const __FlashStringHelper* ThingifyUtils::ThingStateToStr(ThingState thingState)
 {
 	switch (thingState)
 	{
-	case ThingState::NotConfigured: return "NotConfigured";
-	case ThingState::Configuring: return "Configuring";
-	case ThingState::Disabled: return "Disabled";
-	case ThingState::SearchingForNetwork: return "SearchingForNetwork";
-	case ThingState::ConnectingToNetwork: return "ConnectingToNetwork";
-	case ThingState::ConnectingToMqtt: return "ConnectingToMqtt";
-	case ThingState::Online: return "Online";
-	case ThingState::DisconnectedFromMqtt: return "DisconnectedFromMqtt";
-	case ThingState::Authenticating: return "Authenticating";
-	case ThingState::ServiceUnavailable: return "ServiceUnavailable";
-	case ThingState::Error: return "Error";
+	case ThingState::NotConfigured: return F("NotConfigured");
+	case ThingState::Configuring: return F("Configuring");
+	case ThingState::Disabled: return F("Disabled");
+	case ThingState::SearchingForNetwork: return F("SearchingForNetwork");
+	case ThingState::ConnectingToNetwork: return F("ConnectingToNetwork");
+	case ThingState::ConnectingToMqtt: return F("ConnectingToMqtt");
+	case ThingState::Online: return F("Online");
+	case ThingState::DisconnectedFromMqtt: return F("DisconnectedFromMqtt");
+	case ThingState::Authenticating: return F("Authenticating");
+	case ThingState::ServiceUnavailable: return F("ServiceUnavailable");
+	case ThingState::Error: return F("Error");
 
 	default:
-		return "Unknown";
+		return F("Unknown");
 	}
 }
 
-const char* ThingifyUtils::ThingStateToShortStr(ThingState thingState)
+const __FlashStringHelper* ThingifyUtils::ThingStateToShortStr(ThingState thingState)
 {
 	switch (thingState)
 	{
-	case ThingState::NotConfigured: return "NOT_CONF";
-	case ThingState::Configuring: return "CONF";
-	case ThingState::Disabled: return "DISABLED";
-	case ThingState::SearchingForNetwork: return "NET_SEARCH";
-	case ThingState::ConnectingToNetwork: return "WIFI_CONN";
-	case ThingState::ConnectingToMqtt: return "MQTT_CONN";
-	case ThingState::Online: return "ONLINE";
-	case ThingState::DisconnectedFromMqtt: return "DISC_MQTT";
-	case ThingState::Authenticating: return "AUTH";
-	case ThingState::ServiceUnavailable: return "SVC_UNAV";
-	case ThingState::Error: return "ERR";
+	case ThingState::NotConfigured: return F("NOT_CONF");
+	case ThingState::Configuring: return F("CONF");
+	case ThingState::Disabled: return F("DISABLED");
+	case ThingState::SearchingForNetwork: return F("NET_SEARCH");
+	case ThingState::ConnectingToNetwork: return F("WIFI_CONN");
+	case ThingState::ConnectingToMqtt: return F("MQTT_CONN");
+	case ThingState::Online: return F("ONLINE");
+	case ThingState::DisconnectedFromMqtt: return F("DISC_MQTT");
+	case ThingState::Authenticating: return F("AUTH");
+	case ThingState::ServiceUnavailable: return F("SVC_UNAV");
+	case ThingState::Error: return F("ERR");
 	default:
-		return "UNKNOWN";
+		return F("UNKNOWN");
 	}
 }
 
-const char* ThingifyUtils::WlStatusToStr(wl_status_t wlStatus)
+const __FlashStringHelper* ThingifyUtils::WlStatusToStr(wl_status_t wlStatus)
 {
 	switch (wlStatus)
 	{
-	case WL_NO_SHIELD: return "WL_NO_SHIELD";
-	case WL_IDLE_STATUS: return "WL_IDLE_STATUS";
-	case WL_NO_SSID_AVAIL: return "WL_NO_SSID_AVAIL";
-	case WL_SCAN_COMPLETED: return "WL_SCAN_COMPLETED";
-	case WL_CONNECTED: return "WL_CONNECTED";
-	case WL_CONNECT_FAILED: return "WL_CONNECT_FAILED";
-	case WL_CONNECTION_LOST: return "WL_CONNECTION_LOST";
-	case WL_DISCONNECTED: return "WL_DISCONNECTED";
-	default: return "Unknown";
+	case WL_NO_SHIELD: return F("WL_NO_SHIELD");
+	case WL_IDLE_STATUS: return F("WL_IDLE_STATUS");
+	case WL_NO_SSID_AVAIL: return F("WL_NO_SSID_AVAIL");
+	case WL_SCAN_COMPLETED: return F("WL_SCAN_COMPLETED");
+	case WL_CONNECTED: return F("WL_CONNECTED");
+	case WL_CONNECT_FAILED: return F("WL_CONNECT_FAILED");
+	case WL_CONNECTION_LOST: return F("WL_CONNECTION_LOST");
+	case WL_DISCONNECTED: return F("WL_DISCONNECTED");
+	default: return F("Unknown");
 	}
 }
 
@@ -113,15 +113,15 @@ FixedString32 ThingifyUtils::TimeToShortStr(ulong timeInSeconds)
 	return buffer;
 }
 
-const char* ThingifyUtils::NodeTypeToStr(NodeType nodeType)
+const __FlashStringHelper* ThingifyUtils::NodeTypeToStr(NodeType nodeType)
 {
 	switch (nodeType)
 	{
-		case NodeType::BasicValue: return "BasicValue";
-		case NodeType::Range: return "Range";
-		case NodeType::Enum: return "Enum";
-		case NodeType::Function: return "Function";
-		default: return  "[unknown]";
+		case NodeType::BasicValue: return F("BasicValue");
+		case NodeType::Range: return F("Range");
+		case NodeType::Enum: return F("Enum");
+		case NodeType::Function: return F("Function");
+		default: return  F("[unknown]");
 	}
 }
 
@@ -143,59 +143,22 @@ void ThingifyUtils::LogSettings(Logger& logger, ThingSettings& settings)
 }
 
 
-const char* ThingifyUtils::ThingErrorToStr(ThingError error)
+const __FlashStringHelper* ThingifyUtils::ThingErrorToStr(ThingError error)
 {
 	switch (error)
 	{
-	case ThingError::InvalidToken:		return "Invalid token";
-	case ThingError::ProtocolViolation: return "Protocol violation";
-	case ThingError::OtherLoginError:	return "Other login error";
-	case ThingError::StringOverflow:	return "String overflow";
-	case ThingError::ListOverflow:		return "List overflow";
-	case ThingError::LowFreeHeap:		return "Low free heap";
-	case ThingError::LowFreeStack:		return "Low free stack";
-	default: return "No error str";
+	case ThingError::InvalidToken:		return F("Invalid token");
+	case ThingError::ProtocolViolation: return F("Protocol violation");
+	case ThingError::OtherLoginError:	return F("Other login error");
+	case ThingError::StringOverflow:	return F("String overflow");
+	case ThingError::ListOverflow:		return F("List overflow");
+	case ThingError::LowFreeHeap:		return F("Low free heap");
+	case ThingError::LowFreeStack:		return F("Low free stack");
+	default: return F("No error str");
 	}
 
 }
 
-#ifdef ESP8266
-const char* ThingifyUtils::WlDisconnectReasonToString(WiFiDisconnectReason reason)
-{
-	switch (reason)
-	{
-	case WIFI_DISCONNECT_REASON_UNSPECIFIED: return "WIFI_DISCONNECT_REASON_UNSPECIFIED";
-	case WIFI_DISCONNECT_REASON_AUTH_EXPIRE: return "WIFI_DISCONNECT_REASON_AUTH_EXPIRE";
-	case WIFI_DISCONNECT_REASON_AUTH_LEAVE: return "WIFI_DISCONNECT_REASON_AUTH_LEAVE";
-	case WIFI_DISCONNECT_REASON_ASSOC_EXPIRE: return "WIFI_DISCONNECT_REASON_ASSOC_EXPIRE";
-	case WIFI_DISCONNECT_REASON_ASSOC_TOOMANY: return "WIFI_DISCONNECT_REASON_ASSOC_TOOMANY";
-	case WIFI_DISCONNECT_REASON_NOT_AUTHED: return "WIFI_DISCONNECT_REASON_NOT_AUTHED";
-	case WIFI_DISCONNECT_REASON_NOT_ASSOCED: return "WIFI_DISCONNECT_REASON_NOT_ASSOCED";
-	case WIFI_DISCONNECT_REASON_ASSOC_LEAVE: return "WIFI_DISCONNECT_REASON_ASSOC_LEAVE";
-	case WIFI_DISCONNECT_REASON_ASSOC_NOT_AUTHED: return "WIFI_DISCONNECT_REASON_ASSOC_NOT_AUTHED";
-	case WIFI_DISCONNECT_REASON_DISASSOC_PWRCAP_BAD: return "WIFI_DISCONNECT_REASON_DISASSOC_PWRCAP_BAD";
-	case WIFI_DISCONNECT_REASON_DISASSOC_SUPCHAN_BAD: return "WIFI_DISCONNECT_REASON_DISASSOC_SUPCHAN_BAD";
-	case WIFI_DISCONNECT_REASON_IE_INVALID: return "WIFI_DISCONNECT_REASON_IE_INVALID";
-	case WIFI_DISCONNECT_REASON_MIC_FAILURE: return "WIFI_DISCONNECT_REASON_MIC_FAILURE";
-	case WIFI_DISCONNECT_REASON_4WAY_HANDSHAKE_TIMEOUT: return "WIFI_DISCONNECT_REASON_4WAY_HANDSHAKE_TIMEOUT";
-	case WIFI_DISCONNECT_REASON_GROUP_KEY_UPDATE_TIMEOUT: return "WIFI_DISCONNECT_REASON_GROUP_KEY_UPDATE_TIMEOUT";
-	case WIFI_DISCONNECT_REASON_IE_IN_4WAY_DIFFERS: return "WIFI_DISCONNECT_REASON_IE_IN_4WAY_DIFFERS";
-	case WIFI_DISCONNECT_REASON_GROUP_CIPHER_INVALID: return "WIFI_DISCONNECT_REASON_GROUP_CIPHER_INVALID";
-	case WIFI_DISCONNECT_REASON_PAIRWISE_CIPHER_INVALID: return "WIFI_DISCONNECT_REASON_PAIRWISE_CIPHER_INVALID";
-	case WIFI_DISCONNECT_REASON_AKMP_INVALID: return "WIFI_DISCONNECT_REASON_AKMP_INVALID";
-	case WIFI_DISCONNECT_REASON_UNSUPP_RSN_IE_VERSION: return "WIFI_DISCONNECT_REASON_UNSUPP_RSN_IE_VERSION";
-	case WIFI_DISCONNECT_REASON_INVALID_RSN_IE_CAP: return "WIFI_DISCONNECT_REASON_INVALID_RSN_IE_CAP";
-	case WIFI_DISCONNECT_REASON_802_1X_AUTH_FAILED: return "WIFI_DISCONNECT_REASON_802_1X_AUTH_FAILED";
-	case WIFI_DISCONNECT_REASON_CIPHER_SUITE_REJECTED: return "WIFI_DISCONNECT_REASON_CIPHER_SUITE_REJECTED";
-	case WIFI_DISCONNECT_REASON_BEACON_TIMEOUT: return "WIFI_DISCONNECT_REASON_BEACON_TIMEOUT";
-	case WIFI_DISCONNECT_REASON_NO_AP_FOUND: return "WIFI_DISCONNECT_REASON_NO_AP_FOUND";
-	case WIFI_DISCONNECT_REASON_AUTH_FAIL: return "WIFI_DISCONNECT_REASON_AUTH_FAIL";
-	case WIFI_DISCONNECT_REASON_ASSOC_FAIL: return "WIFI_DISCONNECT_REASON_ASSOC_FAIL";
-	case WIFI_DISCONNECT_REASON_HANDSHAKE_TIMEOUT: return "WIFI_DISCONNECT_REASON_HANDSHAKE_TIMEOUT";
-	default: return "Unknown";
-	}
-}
-#endif
 
 
 void ThingifyUtils::RestartDevice()

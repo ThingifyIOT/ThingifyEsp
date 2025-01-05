@@ -12,7 +12,7 @@ class StatusLedModule: public IModule
 	ThingState _previousState = ThingState::Disabled;
 	std::vector<std::vector<int>> ledPatterns = 
     {
-		{(int)ThingState::Disabled, 50, 15000},
+		{(int)ThingState::Disabled, 50, 8000},
         {(int)ThingState::NotConfigured, 50, 300, 50, 300, 50, 300, 50, 2000},
 		{(int)ThingState::Configuring, 50, 150},
 		{(int)ThingState::SearchingForNetwork, 50, 300, 50, 2000},
