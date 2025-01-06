@@ -28,11 +28,6 @@ ZeroConfigurationState EspZeroConfiguration::Loop()
         {
             ChangeState(ZeroConfigurationState::Error);
         }
-        if(millis() - _stateChangeTime > WifiConfigurationTimeout)
-        {
-            _logger.err(F("Timout waiting for smart config details"));
-           ChangeState(ZeroConfigurationState::Error);
-        }
     }
     if(_state == ZeroConfigurationState::SmartConfigServer)
     {

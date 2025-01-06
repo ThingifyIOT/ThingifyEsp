@@ -24,6 +24,12 @@ bool StatusLedModule::Tick()
     static int n = -1;
     static bool ledState = true;
 
+    if(millis() - _thing.GetThingResetTime() < 2000 && _thing.GetThingResetTime() != 0)
+    {
+        digitalWrite(_ledPin, !_isLedInverted);
+        return true;
+    }
+
     if(_previousState != _thing.GetCurrentState())
     {
         n = -1;

@@ -56,6 +56,7 @@ private:
 	uint64_t _disconnectedTimer;
 	ElapsedTimer _stateChangeTimer;
 	uint64_t _connectTime = 0;
+	uint64_t _thingResetTime = 0;
 	FixedList<NodeUpdateResultItem, ThingifyConstants::MaxUpdateResults> _updateResults;
 	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> _functionExecutionResults;
 	uint16_t _valueSendInterval;
@@ -152,6 +153,11 @@ public:
 	void SetValueSendInterval(uint16_t value)
 	{
 		_valueSendInterval = value;
+	}
+
+	uint64_t GetThingResetTime()
+	{
+		return _thingResetTime;
 	}
 
 	FirmwareUpdateService& UpdateService() 

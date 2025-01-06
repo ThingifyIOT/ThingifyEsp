@@ -18,6 +18,7 @@ class EspSmartConfig
     uint64_t _smartConfigStartTime = 0;
     Logger& _logger = LoggerInstance;
     SmartConfigState _state;
+    uint8_t _currentWifiClientsCount = 0;
 public:
     bool Start();
     bool Stop();

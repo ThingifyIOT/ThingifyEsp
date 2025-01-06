@@ -166,6 +166,7 @@ void Thingify::ResetConfiguration()
     _settingsStorage.SetResetSettingsCount(resetConfigCount);
 	SetState(ThingState::Configuring);
 	StartZeroConfiguration();
+	_thingResetTime = millis();
 }
 
 void Thingify::OnConfigurationLoaded()
