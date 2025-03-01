@@ -19,7 +19,11 @@
 #include "FirmwareUpdateService.h"
 #include "Node/NodeCollection.h"
 #include "ResetSequenceDetector.h"
+#include "ThingProperties.h"
+
 class IModule;
+
+
 
 class Thingify : public NodeCollection
 {
@@ -55,8 +59,7 @@ private:
 	int _outgoingPacketId;
 	uint64_t _disconnectedTimer;
 	ElapsedTimer _stateChangeTimer;
-	uint64_t _connectTime = 0;
-	uint64_t _thingResetTime = 0;
+	
 	FixedList<NodeUpdateResultItem, ThingifyConstants::MaxUpdateResults> _updateResults;
 	FixedList<FunctionExecutionResponseItem, ThingifyConstants::MaxFunctionExecutionRequests> _functionExecutionResults;
 	uint16_t _valueSendInterval;
@@ -89,11 +92,11 @@ protected:
 	ThingSettings _settings;
 	bool _isUsingManualConfiguration = false;
 	Logger& _logger;
-	const char* _deviceName;	
 	FirmwareUpdateService _firmwareUpdateService;
 	SettingsStorage _settingsStorage;
 	virtual uint64_t WatchdogTimeoutInMs() = 0;
 	void StartInternal();
+	ThingProperties Properties;
 public:
 	Thingify(const char *deviceName, IAsyncClient& client);
 	virtual void Start();
@@ -107,7 +110,7 @@ public:
 
 	uint16_t GetConnectTime()
 	{
-		return _connectTime;
+		return Properties.ConnectTime;
 	}
 
 	uint16_t GetIncomingPackets()
@@ -157,7 +160,7 @@ public:
 
 	uint64_t GetThingResetTime()
 	{
-		return _thingResetTime;
+		return Properties.ResetTime;
 	}
 
 	FirmwareUpdateService& UpdateService() 

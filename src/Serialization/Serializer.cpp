@@ -11,6 +11,7 @@
 #include "Api/UpdateFirmwareCommitToThingPacket.h"
 #include "Api/UpdateFirmwareDataAck.h"
 #include "Api/ZeroConfigurationPacket.h"
+#include "Api/ZeroConfigurationDeviceInfoRequestPacket.h"
 #include "BufferReader.h"
 
 bool Serializer::SerializePacket(PacketBase* packet, FixedStringBase& outputBuffer)
@@ -41,6 +42,11 @@ bool Serializer::SerializePacket(PacketBase* packet, FixedStringBase& outputBuff
 		case ThingifyPacketType::ZeroConfigurationResponsePacket:
 		{
 			return SerializeZeroConfigurationResponse(outputBuffer);
+		}
+		case ThingifyPacketType::ZeroConfigurationDeviceInfoResponsePacket:
+		{			
+			auto zeroConfigDeviceInfo = static_cast<ZeroConfigurationDeviceInfoResponsePacket*>(packet);
+			return SerializeZeroConfigurationDeviceInfoResponse(zeroConfigDeviceInfo, outputBuffer);
 		}
 		default:
 			_logger.err(L("Failed to serialize, unknown packet type"));
@@ -104,6 +110,10 @@ PacketBase* Serializer::DeserializePacket(FixedStringBase& data)
 	if(packetType == ThingifyPacketType::ZeroConfigurationPacket)
 	{
 		return DeserializeZeroConfigurationPacket(cmp);
+	}
+	if(packetType == ThingifyPacketType::ZeroConfigurationDeviceInfoRequestPacket)
+	{
+		return DeserializeZeroConfigurationDeviceInfoRequestPacket(cmp);
 	}
 	return nullptr;
 }
@@ -220,7 +230,11 @@ PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
 			delete packet;
 			return nullptr;
 		}
-
+	    if(key.equals("thing_name"))
+		{
+			SerializationHelpers::ReadCmpString(cmp, packet->ThingName);
+			knownKeyCount++;
+		}
 		if(key.equals("token"))
 		{
 			SerializationHelpers::ReadCmpString(cmp, packet->Token);
@@ -260,14 +274,22 @@ PacketBase* Serializer::DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp)
 		}
 	}
 
-	if(knownKeyCount < 4)
+	if(knownKeyCount < 5)
 	{
 		delete packet;
 		return nullptr;
 	}
 	return packet;
 }
-
+PacketBase* Serializer::DeserializeZeroConfigurationDeviceInfoRequestPacket(cmp_ctx_t& cmp)
+{
+	uint32_t arraySize;
+	if (!cmp_read_array(&cmp, &arraySize))
+	{
+		return nullptr;
+	}
+	return new ZeroConfigurationDeviceInfoRequestPacket();
+}
 bool Serializer::ReadWifiNetwork(cmp_ctx_t& cmp, WifiNetworkPacket& wifiNetwork)
 {
 	uint32_t mapSize;
@@ -356,6 +378,18 @@ bool Serializer::SerializeZeroConfigurationResponse(FixedStringBase &data)
 	cmp_init(&cmp, &data, nullptr, SerializationHelpers::FileWriter);
 	WriteArrayPacketHeader(cmp, ThingifyPacketType::ZeroConfigurationResponsePacket, 0);
 	return cmp.error == 0;
+}
+
+bool Serializer::SerializeZeroConfigurationDeviceInfoResponse(ZeroConfigurationDeviceInfoResponsePacket* packet, FixedStringBase &data)
+{
+	cmp_ctx_t cmp;
+	cmp_init(&cmp, &data, nullptr, SerializationHelpers::FileWriter);
+	if (!WriteArrayPacketHeader(cmp, ThingifyPacketType::ZeroConfigurationDeviceInfoResponsePacket, 1))
+	{
+		return false;
+	}
+	WriteString(cmp, packet->DefaultName);
+	return true;
 }
 
 bool Serializer::SerializeUpdateNodesPacket(UpdateNodesPacket* updateNodesPacket, FixedStringBase& data)

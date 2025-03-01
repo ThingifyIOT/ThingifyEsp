@@ -4,6 +4,25 @@
 #include <WiFiServer.h>
 #include "Logging/Logger.h"
 #include "Api/ZeroConfigurationPacket.h"
+
+#ifdef ESP32
+#include <WiFi.h>
+#else
+#include <ESP8266WiFi.h>
+#endif 
+
+struct ClientRequestContext
+{
+    WiFiClient Client;
+    PacketBase* Packet;
+
+    ~ClientRequestContext()
+    {
+        delete Packet;
+    }
+};
+
+
 class SmartConfigServer
 {
     private:
@@ -13,7 +32,8 @@ class SmartConfigServer
         SmartConfigServer();
         void Start();
         void Stop();
-        ZeroConfigurationPacket* Loop();
+        ClientRequestContext* GetRequest();
+        void SendPacket(WiFiClient client, PacketBase *packet);
 };
 
 #endif

@@ -15,6 +15,7 @@ class WifiNetworkPacket
 class ZeroConfigurationPacket: public PacketBase
 {
 public:
+	FixedString64 ThingName;
 	FixedString32 Token;
     FixedString32 ApiServer;
 	int ApiPort;

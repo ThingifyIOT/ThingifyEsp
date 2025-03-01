@@ -127,10 +127,11 @@ const __FlashStringHelper* ThingifyUtils::NodeTypeToStr(NodeType nodeType)
 
 void ThingifyUtils::LogSettings(Logger& logger, ThingSettings& settings)
 {
-	logger.info(F("Settings: api = %s:%d, token = %s, %d wifi networks"), 
+	logger.info(F("Settings: api = %s:%d, token = %s, name = %s, %d wifi networks"), 
 		settings.ApiServer.c_str(),
 		settings.ApiPort,
-		settings.Token.c_str(), 
+		settings.Token.c_str(), 		
+		settings.ThingName.c_str(),
 		settings.WifiNetworks.size());
 
 	for(int i=0; i < settings.WifiNetworks.size(); i++)

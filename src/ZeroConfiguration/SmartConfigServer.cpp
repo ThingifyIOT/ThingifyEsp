@@ -26,7 +26,7 @@ void SmartConfigServer::Stop()
     _logger.info(F("Stopped smart config server"));
 }
 
-ZeroConfigurationPacket* SmartConfigServer::Loop()
+ClientRequestContext* SmartConfigServer::GetRequest()
 {
     WiFiClient client = _server.available();
     if (!client) 
@@ -76,33 +76,39 @@ ZeroConfigurationPacket* SmartConfigServer::Loop()
         _logger.err(F("Failed to deserialize packet"));
         return nullptr;  
     }
-    if(packet->PacketType() != ThingifyPacketType::ZeroConfigurationPacket)
+
+
+    if(packet->PacketType() != ThingifyPacketType::ZeroConfigurationPacket && packet->PacketType() != ThingifyPacketType::ZeroConfigurationDeviceInfoRequestPacket)
     {
         _logger.err(F("Wrong packet type"));
         return nullptr;  
     }
-    auto zeroConfiguration = static_cast<ZeroConfigurationPacket*>(packet);  
-   
-    auto zeroConfigurationResponsePacket = new ZeroConfigurationResponsePacket();
+
+    auto requestContext = new ClientRequestContext();
+    requestContext->Client = client;
+    requestContext->Packet = packet;
+    return requestContext;
+}
+
+void SmartConfigServer::SendPacket(WiFiClient client, PacketBase* packet)
+{
     FixedString128 responseBytes;
-    if(!Serializer::SerializePacket(zeroConfigurationResponsePacket, responseBytes))
+    if(!Serializer::SerializePacket(packet, responseBytes))
     {
         _logger.err(F("Failed to serialize zero config response packet"));
-        return nullptr;  
+        return;  
     }
-    delete zeroConfigurationResponsePacket;
     char lengthHeader[2];
     *((int16_t*)lengthHeader) = htons(responseBytes.length());
     if(client.write(lengthHeader, 2) != 2)
     {
         _logger.err(F("Failed to write length header"));
-        return nullptr;  
+        return;  
 
     }
     if(client.write(responseBytes.c_str(), responseBytes.length()) != responseBytes.length())
     {
         _logger.err(F("Failed to write response packet"));
-        return nullptr;
+        return;
     }
-    return zeroConfiguration;
 }

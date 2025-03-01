@@ -16,6 +16,7 @@
 #include "Api/UpdateFirmwareDataAck.h"
 #include "Logging/Logger.h"
 #include "Api/ZeroConfigurationPacket.h"
+#include "Api/ZeroConfigurationDeviceInfoResponsePacket.h"
 
 
 class UpdateFirmwareDataAck;
@@ -31,9 +32,10 @@ public:
 
 	static bool SerializeUpdateFirmwareDataAck(UpdateFirmwareDataAck* packet, FixedStringBase& data);
 	static bool SerializeZeroConfigurationResponse(FixedStringBase& data);
-	static bool SerializePacket(PacketBase *packet, FixedStringBase & data);
+    static bool SerializeZeroConfigurationDeviceInfoResponse(ZeroConfigurationDeviceInfoResponsePacket *packet, FixedStringBase &data);
+    static bool SerializePacket(PacketBase *packet, FixedStringBase &data);
 
-	static bool SerializeThingSessionCreate(ThingSessionCreatePacket *thingSessionCreate, FixedStringBase &outputBuffer);
+    static bool SerializeThingSessionCreate(ThingSessionCreatePacket *thingSessionCreate, FixedStringBase &outputBuffer);
 	static bool SerializeUpdateNodesPacket(UpdateNodesPacket* updateNodesPacket, FixedStringBase &data);
 
 	static void SerializeNodeList(cmp_ctx_t& cmp, std::vector<Node*>& nodeList);
@@ -53,8 +55,9 @@ public:
 	static PacketBase* DeserializeUpdateFirmwareCommitToThing(cmp_ctx_t& cmp);
 	static PacketBase* DeserializeUpdateFirmwareBeginToThing(cmp_ctx_t& cmp);
 	static PacketBase* DeserializeZeroConfigurationPacket(cmp_ctx_t& cmp);
+    static PacketBase *DeserializeZeroConfigurationDeviceInfoRequestPacket(cmp_ctx_t &cmp);
 
-	static PacketBase* DeserializePacket(FixedStringBase &data);
+    static PacketBase* DeserializePacket(FixedStringBase &data);
 	static HeartbeatPacket* DeserializeHeartbeat(cmp_ctx_t& cmp);
 	static AckToDevicePacket* DeserializeAckToDevice(cmp_ctx_t& cmp);
 	static UpdateNodesFromClientPacket* DeserializeUpdateNodesFromClient(cmp_ctx_t& cmp);

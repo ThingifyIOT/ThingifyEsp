@@ -51,7 +51,7 @@ bool SettingsStorage::Set(ThingSettings &settings)
         return false;
     }   
     
-     print_data("data written to EEPROM", data.c_str(), data.length());
+    // print_data("data written to EEPROM", data.c_str(), data.length());
 
     if(!EEPROM.commit())
     {
@@ -156,11 +156,11 @@ bool SettingsStorage::Get(ThingSettings &settings)
         uint8_t byteFromEeprom = EEPROM.read(SettingsAddressStart+4+i);
         if(!data.append(byteFromEeprom))
         {
-            Serial.println("Failed to move byte from eeprom to buffer");
+            _logger.err(L("Failed to move byte from eeprom to buffer"));
         }
     }
 
-    print_data("data from EEPROM", data.c_str(), data.length());
+    //print_data("data from EEPROM", data.c_str(), data.length());
     uint16_t dataCrcCalculated = Crc16(data.c_str(), data.length());
     if(dataCrcCalculated != dataCrc)
     {

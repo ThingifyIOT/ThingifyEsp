@@ -13,7 +13,7 @@ public:
 	FixedString32 Token;
     FixedString32 ApiServer;
     int ApiPort;
-    FixedString32 ThingName;
+    FixedString64 ThingName;
 	std::vector<WifiCredential*> WifiNetworks;
 
     ~ThingSettings()

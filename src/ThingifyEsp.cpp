@@ -9,10 +9,9 @@ AsyncClient wifiTcpClient;
 
 
 ThingifyEsp::ThingifyEsp(const char* deviceName):
-Thingify(deviceName, wifiTcpClient),
-_espZeroConfiguration(Thingify::_settingsStorage)
+_espZeroConfiguration(_settingsStorage,  Properties),
+Thingify(deviceName, wifiTcpClient)
 {
-
 	StartNetwork();
 
 	_wifiMulti.OnStateChanged = std::bind(&ThingifyEsp::OnWifiStateChanged, this, _1, _2);

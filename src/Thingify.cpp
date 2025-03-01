@@ -11,7 +11,7 @@
 #include <EEPROM.h>
 using namespace std::placeholders;
 
-Thingify::Thingify(const char *deviceName, IAsyncClient& client) :
+Thingify::Thingify(const char *defaultName, IAsyncClient& client) :
 _mqtt(client),
 _currentState(ThingState::Disabled),
 _incomingPackets(0),
@@ -19,11 +19,11 @@ _valueSendInterval(0),
 _errorType(ThingError::NoError),
 _packetSender(_mqtt),
 _logger(LoggerInstance),
-_deviceName(deviceName), 
 _firmwareUpdateService(_packetSender, _settingsStorage),
 _resetSequenceDetector(1, _settingsStorage),
 NodeCollection(&_settings)
 {
+	Properties.DefaultName = defaultName;
 	_modules.reserve(16);
 	_publishedNodeCount = 0;	
 
@@ -102,7 +102,7 @@ void Thingify::StartInternal()
 			_settings.ApiServer = "api.thingify.it";
 			_settingsStorage.Set(_settings);
 			// end to remove
-            _logger.info(F("Configuration read successfull"));
+            _logger.info(F("Config read successfull"));
         }
     }
 	
@@ -144,7 +144,7 @@ void Thingify::SetConfiguration(ThingSettings &settings)
 	}
 	if(_settings.ThingName.length() == 0)
 	{
-		_settings.ThingName = _deviceName;
+		_settings.ThingName = Properties.DefaultName;
 	}
     for (auto wifi : settings.WifiNetworks)
     {
@@ -166,7 +166,7 @@ void Thingify::ResetConfiguration()
     _settingsStorage.SetResetSettingsCount(resetConfigCount);
 	SetState(ThingState::Configuring);
 	StartZeroConfiguration();
-	_thingResetTime = millis();
+	Properties.ResetTime = millis();
 }
 
 void Thingify::OnConfigurationLoaded()
@@ -337,7 +337,7 @@ void Thingify::Authenticate()
 	auto thingSessionCreatePacket = new ThingSessionCreatePacket;
 	thingSessionCreatePacket->LoginToken = requestId;
 	thingSessionCreatePacket->ClientId = _settings.Token;
-	thingSessionCreatePacket->DeviceName = _deviceName;
+	thingSessionCreatePacket->DeviceName = Properties.DefaultName;
 	thingSessionCreatePacket->FirmwareVersion = "1.0.0";
 	thingSessionCreatePacket->Nodes = GetWorkingNodes();
 
@@ -468,7 +468,7 @@ void Thingify::HandlePacket(PacketBase *packet)
 		{
 			return;
 		}
-		_connectTime = millis();
+		Properties.ConnectTime = millis();
 		SetState(ThingState::Online);
 	}
 

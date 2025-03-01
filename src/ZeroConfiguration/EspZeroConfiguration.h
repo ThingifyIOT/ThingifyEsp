@@ -3,18 +3,11 @@
 
 #include "EspSmartConfig.h"
 #include "SmartConfigServer.h"
+#include "ThingProperties.h"
 #include "Logging/Logger.h"
 #include "Settings/ThingSettings.h"
 #include "Settings/SettingsStorage.h"
 
-enum class ZeroConfigurationState
-{
-    Stopped,
-    SmartConfigWifi,
-    SmartConfigServer,
-    Success,
-    Error
-};
 
 class EspZeroConfiguration
 {
@@ -24,17 +17,18 @@ class EspZeroConfiguration
         EspSmartConfig _espSmartConfig;
         SmartConfigServer _smartConfigServer;
         SettingsStorage& _settingsStorage;
+        ThingProperties& _properties;
         bool _isReady = false;
         uint64_t _stateChangeTime = 0;
-        ZeroConfigurationState _state = ZeroConfigurationState::Stopped;
         Logger& _logger;        
         void ZeroConfigurationPacketToSettings(ZeroConfigurationPacket *packet, ThingSettings &settings);
-        void ChangeState(ZeroConfigurationState state);
+
     public:
-        EspZeroConfiguration(SettingsStorage& settingsStorage);
+        EspZeroConfiguration(SettingsStorage& settingsStorage, ThingProperties& properties);
         void Start();
-        ZeroConfigurationState Loop();
+        void Loop();
         bool IsReady();
+
 };
 
 #endif

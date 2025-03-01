@@ -1,74 +1,66 @@
-
 #include "EspZeroConfiguration.h"
 #include "ThingifyUtils.h"
+#include "Api/ZeroConfigurationResponsePacket.h"
+#include "Api/ZeroConfigurationDeviceInfoRequestPacket.h"
+#include "Api/ZeroConfigurationDeviceInfoResponsePacket.h"
 
-EspZeroConfiguration::EspZeroConfiguration(SettingsStorage& settingsStorage):
+EspZeroConfiguration::EspZeroConfiguration(SettingsStorage& settingsStorage, ThingProperties &properties):
 _settingsStorage(settingsStorage),
+_properties(properties),
 _logger(LoggerInstance)
 {
 
 }
 void EspZeroConfiguration::Start()
 {    
-    ChangeState(ZeroConfigurationState::SmartConfigWifi);
     _smartConfigServer.Start();
     _espSmartConfig.Start();
 }
-ZeroConfigurationState EspZeroConfiguration::Loop()
+void EspZeroConfiguration::Loop()
 {    
-    if(_state == ZeroConfigurationState::SmartConfigWifi)
-    {
-        auto smartConfigState = _espSmartConfig.Loop();
-
-        if(smartConfigState == SmartConfigState::Success)
-        {
-            ChangeState(ZeroConfigurationState::SmartConfigServer);
-        }
-        if(smartConfigState == SmartConfigState::Error)
-        {
-            ChangeState(ZeroConfigurationState::Error);
-        }
-    }
-    if(_state == ZeroConfigurationState::SmartConfigServer)
-    {
-        auto zeroConfigurationPacket = _smartConfigServer.Loop();  
-
-        if(zeroConfigurationPacket != nullptr)
-        {
-            ThingSettings settings;
-            ZeroConfigurationPacketToSettings(zeroConfigurationPacket, settings);
-            delete zeroConfigurationPacket; 
-
-            _logger.info(L("Got settings from smart config:"));
-            ThingifyUtils::LogSettings(_logger, settings);
-            _settingsStorage.Clear();
-            _settingsStorage.Set(settings);
-            ChangeState(ZeroConfigurationState::Success);    
-        }
-        else if(millis() - _stateChangeTime > ServerConfigurationTimeout)
-        {
-            _logger.err(F("Timout waiting for config packet in server"));
-           ChangeState(ZeroConfigurationState::Error);
-        } 
-    }
-    return _state;
-}
-void EspZeroConfiguration::ChangeState(ZeroConfigurationState state)
-{
-    if(_state == state)
+    auto request = _smartConfigServer.GetRequest();
+    if(request == nullptr)
     {
         return;
     }
-    if(state == ZeroConfigurationState::Error || state == ZeroConfigurationState::Success || state == ZeroConfigurationState::Stopped)
-    {
-        _smartConfigServer.Stop();
-        _espSmartConfig.Stop();
+
+    auto packet = request->Packet;
+    if(packet->PacketType() == ThingifyPacketType::ZeroConfigurationDeviceInfoRequestPacket)
+    {   
+        auto zeroConfigurationDeviceInfoRequestPacket = static_cast<ZeroConfigurationDeviceInfoRequestPacket*>(packet);
+        _logger.info(L("[LOCAL_PACKET] -> ZeroConfigurationDeviceInfoRequestPacket"));
+
+        auto response = new ZeroConfigurationDeviceInfoResponsePacket();
+        response->DefaultName = _properties.DefaultName;
+        _smartConfigServer.SendPacket(request->Client, response);
+        delete response;
     }
-    _state = state;
-    _stateChangeTime = millis();    
+
+    if(packet->PacketType() == ThingifyPacketType::ZeroConfigurationPacket)
+    {          
+        auto zeroConfigurationPacket = static_cast<ZeroConfigurationPacket*>(packet);
+         _logger.info(L("[LOCAL_PACKET] -> ZeroConfigurationPacket"));
+
+        ThingSettings settings;
+        ZeroConfigurationPacketToSettings(zeroConfigurationPacket, settings);
+
+        _logger.info(L("Got settings from smart config:"));
+        ThingifyUtils::LogSettings(_logger, settings);
+        _settingsStorage.Clear();
+        _settingsStorage.Set(settings);
+        auto response = new ZeroConfigurationResponsePacket();
+        _smartConfigServer.SendPacket(request->Client, response);
+        delete response;
+
+        _isReady = true;
+    }
+
+    request->Client.flush();
+    delete request;    
 }
 void EspZeroConfiguration::ZeroConfigurationPacketToSettings(ZeroConfigurationPacket *packet, ThingSettings &settings)
 {
+    settings.ThingName = packet->ThingName;
     settings.Token = packet->Token;
     settings.ApiServer = packet->ApiServer;
     settings.ApiPort = packet->ApiPort;
@@ -84,5 +76,5 @@ void EspZeroConfiguration::ZeroConfigurationPacketToSettings(ZeroConfigurationPa
 }
 bool EspZeroConfiguration::IsReady()
 {
-    return _state == ZeroConfigurationState::Success || _state == ZeroConfigurationState::Error;
+    return _isReady;
 }

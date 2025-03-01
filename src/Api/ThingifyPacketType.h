@@ -18,6 +18,8 @@ enum class ThingifyPacketType
 	UpdateFirmwareCommitToThing = 24,
 	UpdateFirmwareBeginToThing = 26,
 	ZeroConfigurationPacket = 27,
-	ZeroConfigurationResponsePacket = 28
+	ZeroConfigurationResponsePacket = 28,
+	ZeroConfigurationDeviceInfoRequestPacket = 29,
+	ZeroConfigurationDeviceInfoResponsePacket = 30
 };
 #endif
