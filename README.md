@@ -4,7 +4,8 @@ How to start:
  - For ESP8266 - clone https://github.com/ThingifyIOT/Esp8266Template
  - For ESP32 - clone https://github.com/ThingifyIOT/Esp32Template
  - Download thingify IOT app
-![image](https://github.com/user-attachments/assets/d95de1ed-75e6-4bdf-8a0c-c8736edd1540)
+![image](https://github.com/user-attachments/assets/e85121e4-6f22-4a2c-a120-a6e43dd5023e)
+
 
 How to setup IOT project for ESP32/ESP8266:
  - Install vscode with platformio
